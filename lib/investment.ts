@@ -10,7 +10,10 @@ interface RawListing {
   repairs: number
   vacancyRate: number
   maintenanceRate: number
+  capExRate: number
   propertyManagementRate: number
+  tenancyYears: number
+  turnoverCost: number
   rentalDemand: RentalDemand
   rentConfidence: RentConfidence
   rentalEvidence: RentalEvidence
@@ -20,7 +23,11 @@ export function computeMetrics(listing: RawListing) {
   const totalCashInvested = listing.price * (1 + (listing.closingCostRate ?? 0.02)) + (listing.repairs ?? 10000)
   const grossAnnualRent = listing.estimatedRent * 12
   const vacancyReserve = grossAnnualRent * (listing.vacancyRate ?? 0.05)
-  const maintenanceReserve = grossAnnualRent * (listing.maintenanceRate ?? 0.10)
+  const maintenanceReserve = grossAnnualRent * (listing.maintenanceRate ?? 0.05)
+  const capExReserve = grossAnnualRent * (listing.capExRate ?? 0.03)
+  const turnoverReserve = listing.tenancyYears > 0
+    ? Math.round(listing.turnoverCost / listing.tenancyYears)
+    : 0
   const annualHOA = listing.hoaMonthly * 12
   const managementCost = grossAnnualRent * (listing.propertyManagementRate ?? 0.10)
   const insuranceAnnual = Math.round(listing.price * (listing.insuranceRate ?? 0.005))
@@ -28,6 +35,8 @@ export function computeMetrics(listing: RawListing) {
     grossAnnualRent -
     vacancyReserve -
     maintenanceReserve -
+    capExReserve -
+    turnoverReserve -
     managementCost -
     listing.propertyTaxAnnual -
     annualHOA -
@@ -49,6 +58,8 @@ export function computeMetrics(listing: RawListing) {
     grossAnnualRent: Math.round(grossAnnualRent),
     vacancyReserve: Math.round(vacancyReserve),
     maintenanceReserve: Math.round(maintenanceReserve),
+    capExReserve: Math.round(capExReserve),
+    turnoverReserve,
     netAnnualIncome: Math.round(netAnnualIncome),
     netCashYield,
     paybackYears,

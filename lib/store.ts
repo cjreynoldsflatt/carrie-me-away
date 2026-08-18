@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { SaleListing, RentalListing, SearchSettings, LayerSettings, SortOption, GlobalAssumptions } from './types'
+import type { SaleListing, RentalListing, SearchSettings, LayerSettings, SortOption, GlobalAssumptions, PropertyType } from './types'
 import { computeMetrics } from './investment'
 import { DEFAULT_ASSUMPTIONS } from './defaults'
 
@@ -40,11 +40,8 @@ interface AppState {
   toggleCompare: (id: string) => void
 
 
-  // Refresh / loading state
-  lastRefreshed: string | null
-  isRefreshing: boolean
+  // Loading state
   isLoading: boolean
-  refreshError: string | null
 
   // Original HUD rents — captured once per listing on first load, never overwritten
   originalRents: Record<string, number>
@@ -55,10 +52,13 @@ interface AppState {
   resetRentToOriginal: (id: string) => Promise<void>
   // Persist repairs value to Supabase
   saveRepairsToDb: (id: string, repairs: number) => Promise<void>
+  // Persist property type to Supabase
+  savePropertyTypeToDb: (id: string, propertyType: PropertyType) => Promise<void>
+  // Persist units count to Supabase
+  saveUnitsToDb: (id: string, units: number) => Promise<void>
 
   // Actions
   initialize: () => Promise<void>
-  refresh: () => Promise<void>
   deleteListing: (id: string) => Promise<void>
 
   // Computed selectors
@@ -136,6 +136,32 @@ export const useAppStore = create<AppState>()(
         }))
       },
 
+      savePropertyTypeToDb: async (id, propertyType) => {
+        await fetch(`/api/listings/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ property_type: propertyType }),
+        })
+        set((state) => ({
+          saleListings: state.saleListings.map((l) =>
+            l.id === id ? { ...l, propertyType } : l
+          ),
+        }))
+      },
+
+      saveUnitsToDb: async (id, units) => {
+        await fetch(`/api/listings/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ units }),
+        })
+        set((state) => ({
+          saleListings: state.saleListings.map((l) =>
+            l.id === id ? { ...l, units } : l
+          ),
+        }))
+      },
+
       resetRentToOriginal: async (id) => {
         const original = get().originalRents[id]
         if (original == null) return
@@ -169,14 +195,10 @@ export const useAppStore = create<AppState>()(
         }),
 
 
-      lastRefreshed: null,
-      isRefreshing: false,
       isLoading: false,
-      refreshError: null,
 
-      // Load cached data from Supabase (no Rentcast calls)
       initialize: async () => {
-        set({ isLoading: true, refreshError: null })
+        set({ isLoading: true })
         try {
           const res = await fetch('/api/listings')
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -194,7 +216,6 @@ export const useAppStore = create<AppState>()(
             return {
               saleListings: incoming,
               rentalListings: data.rentalListings ?? [],
-              lastRefreshed: data.lastRefreshed ?? null,
               originalRents: originals,
               assumptions: safeAssumptions,
             }
@@ -203,34 +224,6 @@ export const useAppStore = create<AppState>()(
           console.error('[store] initialize failed:', err)
         } finally {
           set({ isLoading: false })
-        }
-      },
-
-      // Fetch fresh data from Rentcast via API route (respects 24h throttle)
-      refresh: async () => {
-        set({ isRefreshing: true, refreshError: null })
-        try {
-          const res = await fetch('/api/refresh', { method: 'POST' })
-          if (res.status === 429) {
-            const data = await res.json()
-            set({
-              refreshError: `Next refresh available in ${data.hoursLeft}h`,
-            })
-            return
-          }
-          if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          const data = await res.json()
-          set({
-            saleListings: data.saleListings ?? [],
-            rentalListings: data.rentalListings ?? [],
-            lastRefreshed: data.lastRefreshed ?? null,
-            refreshError: null,
-          })
-        } catch (err) {
-          console.error('[store] refresh failed:', err)
-          set({ refreshError: 'Refresh failed — check console' })
-        } finally {
-          set({ isRefreshing: false })
         }
       },
 
@@ -256,7 +249,10 @@ export const useAppStore = create<AppState>()(
             repairs: l.repairs,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
+            capExRate: assumptions.capExRate,
             propertyManagementRate: assumptions.propertyManagementRate,
+            tenancyYears: assumptions.tenancyYears,
+            turnoverCost: assumptions.turnoverCost,
             rentalDemand: l.rentalDemand,
             rentConfidence: l.rentConfidence,
             rentalEvidence: l.rentalEvidence,
@@ -267,7 +263,10 @@ export const useAppStore = create<AppState>()(
             closingCostRate: assumptions.closingCostRate,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
+            capExRate: assumptions.capExRate,
             propertyManagementRate: assumptions.propertyManagementRate,
+            tenancyYears: assumptions.tenancyYears,
+            turnoverCost: assumptions.turnoverCost,
           }
         })
       },
@@ -318,7 +317,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'carrie-app-state',
-      version: 11,
+      version: 13,
       migrate: (persisted: unknown, version: number) => {
         const s = persisted as Record<string, unknown>
         if (version === 0) {
@@ -413,12 +412,35 @@ export const useAppStore = create<AppState>()(
             },
           }
         }
+        if (version < 12) {
+          // Add capExRate and reset maintenanceRate to 5% (was 10% which double-counted capEx)
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              maintenanceRate: 0.05,
+              capExRate: 0.03,
+            },
+          }
+        }
+        if (version < 13) {
+          // Add tenant turnover assumptions
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              tenancyYears: (assumptions.tenancyYears as number | undefined) ?? 3,
+              turnoverCost: (assumptions.turnoverCost as number | undefined) ?? 1500,
+            },
+          }
+        }
         return s
       },
       partialize: (state) => ({
         search: state.search,
         layers: state.layers,
-        lastRefreshed: state.lastRefreshed,
         assumptions: state.assumptions,
         originalRents: state.originalRents,
       }),

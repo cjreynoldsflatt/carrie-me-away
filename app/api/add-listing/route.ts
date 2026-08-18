@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       rent_low: fmr ? Math.round(fmr * 0.9) : null,
       rent_high: fmr ? Math.round(fmr * 1.1) : null,
       rent_confidence: fmr ? 'Medium' : 'Low',
-      property_tax_annual: Math.round((parsed.price ?? 0) * 0.01),
+      property_tax_annual: parsed.propertyTaxAnnual ?? Math.round((parsed.price ?? 0) * 0.01),
       repairs: 10000,
       rental_evidence: 'Unknown',
       rental_demand: 'Insufficient Data',
@@ -266,7 +266,16 @@ function parseListingText(text: string, url?: string) {
   const cityMatch = t.match(/([A-Za-z][A-Za-z\s]{1,30}),\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)/)
   const city = cityMatch ? `${cityMatch[1].trim()}, ${cityMatch[2]} ${cityMatch[3]}` : ''
 
-  return { price, beds, baths, sqft, yearBuilt, hoaMonthly, daysOnMarket, propertyType, units, city }
+  // Property tax — try several label patterns, sanity-check range ($200–$60k/yr)
+  const taxMatch =
+    t.match(/property\s+tax(?:es)?[^$]{0,80}?\$\s*([\d,]+)/i) ??
+    t.match(/\$\s*([\d,]+)[^.]{0,30}?property\s+tax/i) ??
+    t.match(/annual\s+tax(?:es)?[:\s]+\$?\s*([\d,]+)/i) ??
+    t.match(/tax(?:es)?\s*\/\s*assessments?[:\s]+\$?\s*([\d,]+)/i)
+  const taxRaw = taxMatch ? parseInt(taxMatch[1].replace(/,/g, '')) : null
+  const propertyTaxAnnual = taxRaw && taxRaw >= 200 && taxRaw <= 60000 ? taxRaw : null
+
+  return { price, beds, baths, sqft, yearBuilt, hoaMonthly, daysOnMarket, propertyType, units, city, propertyTaxAnnual }
 }
 
 // ── Geocoder (OpenStreetMap Nominatim — free, no key) ─────────────────────────

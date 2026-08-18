@@ -46,12 +46,17 @@ export interface SaleListing {
   repairs: number
   vacancyRate: number
   maintenanceRate: number
+  capExRate: number
   propertyManagementRate: number
+  tenancyYears: number
+  turnoverCost: number
   // Computed investment metrics
   totalCashInvested: number
   grossAnnualRent: number
   vacancyReserve: number
   maintenanceReserve: number
+  capExReserve: number
+  turnoverReserve: number
   netAnnualIncome: number
   netCashYield: number
   paybackYears: number
@@ -81,10 +86,13 @@ export interface RentalListing {
 
 export interface GlobalAssumptions {
   vacancyRate: number             // default 0.05
-  maintenanceRate: number         // default 0.07
+  maintenanceRate: number         // default 0.05 (routine repairs, appliances, wear)
+  capExRate: number               // default 0.03 (HVAC, roof, water heater, windows, flooring)
   insuranceRate: number           // default 0.005 (0.5% of price/yr)
   closingCostRate: number         // default 0.02
   propertyManagementRate: number  // default 0.10; 0 = self-manage
+  tenancyYears: number            // default 3 (expected tenancy in years)
+  turnoverCost: number            // default 1500 (one-time cost per tenant turnover)
 }
 
 export interface SearchSettings {

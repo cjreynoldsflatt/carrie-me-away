@@ -318,8 +318,12 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
                   </button>
                 </>
               ) : listing.rentLow > 0 ? (
-                <>{fmtRent(listing.rentLow)}–{fmtRent(listing.rentHigh).replace('$', '')}</>
-              ) : null}
+                <span>{fmtRent(listing.rentLow)}–{fmtRent(listing.rentHigh).replace('$', '')} <span className="text-slate-300">· HUD FMR</span></span>
+              ) : listing.rentConfidence === 'High' ? (
+                <span>Manually set</span>
+              ) : (
+                <span className="italic">No estimate — set rent</span>
+              )}
             </div>
           </div>
           <div className={cn('rounded-lg p-2.5', yieldBg(listing.investmentScore))}>

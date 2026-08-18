@@ -121,24 +121,29 @@ export default function PropertyDetail() {
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
   const originalRent = useAppStore((s) => selectedId ? s.originalRents[selectedId] : undefined)
   const saveRepairsToDb = useAppStore((s) => s.saveRepairsToDb)
+  const savePropertyTypeToDb = useAppStore((s) => s.savePropertyTypeToDb)
+  const saveUnitsToDb = useAppStore((s) => s.saveUnitsToDb)
   const listing = saleListings.find((l) => l.id === selectedId)
 
-  const isMultiFamily = !!(listing?.units && listing.units > 1)
+  const isMultiFamily = listing?.propertyType === 'Multi Family'
 
   // Local editable values — reset when selected property changes
   const [repairsInput, setRepairsInput] = useState(listing?.repairs ?? 10000)
   const [rentInput, setRentInput] = useState(listing?.estimatedRent ?? 0)
+  const [unitsInput, setUnitsInput] = useState(listing?.units ?? 2)
   // Per-unit rents for multi-family
   const [unitRents, setUnitRents] = useState<number[]>([])
 
   useEffect(() => {
     const dbRepairs = listing?.repairs ?? 10000
     const dbRent = listing?.estimatedRent ?? 0
+    const dbUnits = listing?.units ?? 2
     setRepairsInput(dbRepairs)
     setRentInput(dbRent)
-    if (listing?.units && listing.units > 1) {
-      const perUnit = Math.round(dbRent / listing.units)
-      setUnitRents(Array(listing.units).fill(perUnit))
+    setUnitsInput(dbUnits)
+    if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
+      const perUnit = Math.round(dbRent / dbUnits)
+      setUnitRents(Array(dbUnits).fill(perUnit))
     } else {
       setUnitRents([])
     }
@@ -161,7 +166,10 @@ export default function PropertyDetail() {
     repairs: repairsInput,
     vacancyRate: assumptions.vacancyRate,
     maintenanceRate: assumptions.maintenanceRate,
+    capExRate: assumptions.capExRate,
     propertyManagementRate: assumptions.propertyManagementRate,
+    tenancyYears: assumptions.tenancyYears,
+    turnoverCost: assumptions.turnoverCost,
     rentalDemand: listing.rentalDemand,
     rentConfidence: listing.rentConfidence,
     rentalEvidence: listing.rentalEvidence,
@@ -170,6 +178,9 @@ export default function PropertyDetail() {
   const closingCosts = listing.price * assumptions.closingCostRate
   const annualHOA = listing.hoaMonthly * 12
   const grossAnnualRent = effectiveRentInput * 12
+  const managementCost = assumptions.propertyManagementRate > 0
+    ? Math.round(grossAnnualRent * assumptions.propertyManagementRate)
+    : 0
   const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== listing.estimatedRent
   const repairsIsEdited = repairsInput !== (listing.repairs ?? 10000)
 
@@ -228,13 +239,65 @@ export default function PropertyDetail() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
-                {listing.units ? (
-                  <span className="font-medium text-slate-700">{listing.units} units</span>
+                {isMultiFamily ? (
+                  <span className="font-medium text-slate-700">{unitsInput} units</span>
                 ) : null}
-                <span>{listing.beds} bed{listing.units ? '/unit' : ''}</span>
-                <span>{listing.baths} bath{listing.units ? '/unit' : ''}</span>
+                <span>{listing.beds} bed{isMultiFamily ? '/unit' : ''}</span>
+                <span>{listing.baths} bath{isMultiFamily ? '/unit' : ''}</span>
                 <span>{listing.sqft.toLocaleString()} sqft</span>
                 <span>Built {listing.yearBuilt}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <div className="flex items-center gap-1.5 text-sm text-slate-500">
+                  <span className="text-xs text-slate-400">Type:</span>
+                  <select
+                    value={listing.propertyType}
+                    onChange={(e) => {
+                      const newType = e.target.value as import('@/lib/types').PropertyType
+                      savePropertyTypeToDb(listing.id, newType)
+                      if (newType === 'Multi Family') {
+                        const newUnits = (listing.units ?? 1) >= 2 ? (listing.units ?? 2) : 2
+                        if ((listing.units ?? 1) < 2) saveUnitsToDb(listing.id, newUnits)
+                        setUnitsInput(newUnits)
+                        const perUnit = Math.round(rentInput / newUnits)
+                        setUnitRents(Array(newUnits).fill(perUnit))
+                      } else {
+                        setUnitsInput(1)
+                        setUnitRents([])
+                      }
+                    }}
+                    className="text-sm text-slate-700 border border-slate-200 rounded-md px-2 py-0.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Townhouse">Townhouse</option>
+                    <option value="Condo">Condo</option>
+                    <option value="Single Family">Single Family</option>
+                    <option value="Multi Family">Multi Family</option>
+                  </select>
+                </div>
+                {isMultiFamily && (
+                  <div className="flex items-center gap-1.5 text-sm text-slate-500">
+                    <span className="text-xs text-slate-400">Units:</span>
+                    <input
+                      type="number"
+                      min={2}
+                      max={20}
+                      step={1}
+                      value={unitsInput}
+                      onChange={(e) => {
+                        const newUnits = Math.max(2, Math.round(Number(e.target.value)))
+                        setUnitsInput(newUnits)
+                        const total = unitRents.reduce((s, r) => s + r, 0) || rentInput
+                        const perUnit = Math.round(total / newUnits)
+                        setUnitRents(Array(newUnits).fill(perUnit))
+                      }}
+                      onBlur={(e) => {
+                        const newUnits = Math.max(2, Math.round(Number(e.target.value)))
+                        saveUnitsToDb(listing.id, newUnits)
+                      }}
+                      className="w-16 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
                 {listing.community && (
@@ -368,7 +431,7 @@ export default function PropertyDetail() {
                 <span className="text-xs text-slate-500 font-medium">Total: {fmtRent(effectiveRentInput)}</span>
                 {rentIsEdited && (
                   <button
-                    onClick={async () => { await resetRentToOriginal(listing.id); const orig = originalRent ?? 0; setUnitRents(Array(listing.units!).fill(Math.round(orig / listing.units!))) }}
+                    onClick={async () => { await resetRentToOriginal(listing.id); const orig = originalRent ?? 0; setUnitRents(Array(unitsInput).fill(Math.round(orig / unitsInput))) }}
                     className="text-orange-500 hover:text-orange-700 flex items-center gap-0.5 text-[10px]"
                     title="Reset to original HUD estimate"
                   >
@@ -387,15 +450,24 @@ export default function PropertyDetail() {
                 <RotateCcw size={9} /> reset rent
               </button>
             )}
-            {listing.rentLow > 0 && listing.rentHigh > 0 ? (
+            {listing.rentConfidence === 'High' ? (
               <div className="text-xs text-slate-400 pb-1">
-                Likely range: {fmtRent(listing.rentLow)}–{fmtRent(listing.rentHigh).replace('$', '')}
+                Manually entered — overrides the automated estimate.
+              </div>
+            ) : listing.rentLow > 0 && listing.rentHigh > 0 ? (
+              <div className="text-xs text-slate-400 pb-1 space-y-0.5">
+                <div>Likely range: {fmtRent(listing.rentLow)}–{fmtRent(listing.rentHigh).replace('$', '')}</div>
+                <div>Source: HUD Fair Market Rent for this ZIP and bedroom count. Range is ±10% of the FMR.</div>
               </div>
             ) : listing.estimatedRent === 0 ? (
               <div className="text-xs text-amber-600 pb-1">
-                No rent estimate — enter a value above to run calculations
+                No automated estimate — enter a rent above to run calculations.
               </div>
-            ) : null}
+            ) : (
+              <div className="text-xs text-slate-400 pb-1">
+                Estimated via HUD Fair Market Rent. Enter a value above to override.
+              </div>
+            )}
             <Row label="× 12 months" value="" muted />
             <Divider />
             <TotalRow label="Gross annual rent" value={fmtCurrency(grossAnnualRent)} />
@@ -416,17 +488,38 @@ export default function PropertyDetail() {
               label={`Maintenance reserve (${(listing.maintenanceRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.maintenanceReserve)}
               prefix="−"
-              sub="Repairs, appliances, wear"
+              sub="Routine repairs, appliances, wear"
             />
+            <Row
+              label={`CapEx reserve (${(listing.capExRate * 100).toFixed(0)}%)`}
+              value={fmtCurrency(metrics.capExReserve)}
+              prefix="−"
+              sub="HVAC, roof, water heater, windows, flooring"
+            />
+            {metrics.turnoverReserve > 0 && (
+              <Row
+                label={`Tenant turnover ($${assumptions.turnoverCost.toLocaleString()} / ${assumptions.tenancyYears} yr)`}
+                value={fmtCurrency(metrics.turnoverReserve)}
+                prefix="−"
+                sub="Cleaning, advertising, lost rent between tenancies"
+              />
+            )}
             <Row label="Property taxes" value={fmtCurrency(listing.propertyTaxAnnual)} prefix="−" />
             {listing.hoaMonthly > 0 && (
               <Row label={`HOA ($${listing.hoaMonthly}/mo × 12)`} value={fmtCurrency(annualHOA)} prefix="−" />
             )}
             <Row label="Insurance" value={fmtCurrency(metrics.insuranceAnnual)} prefix="−" />
+            {managementCost > 0 && (
+              <Row
+                label={`Property management (${(assumptions.propertyManagementRate * 100).toFixed(0)}% of rent)`}
+                value={fmtCurrency(managementCost)}
+                prefix="−"
+              />
+            )}
             <Divider />
             <TotalRow
               label="Total annual expenses"
-              value={fmtCurrency(metrics.vacancyReserve + metrics.maintenanceReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual)}
+              value={fmtCurrency(metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve + metrics.turnoverReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual + managementCost)}
               color="text-red-600"
             />
           </Section>
@@ -436,7 +529,7 @@ export default function PropertyDetail() {
             <Row label="Gross annual rent" value={fmtCurrency(grossAnnualRent)} />
             <Row
               label="Total annual expenses"
-              value={fmtCurrency(metrics.vacancyReserve + metrics.maintenanceReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual)}
+              value={fmtCurrency(metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve + metrics.turnoverReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual + managementCost)}
               prefix="−"
             />
             <Divider />
@@ -463,6 +556,56 @@ export default function PropertyDetail() {
               Target: 6%+ for a strong cash-flow investment. At 7%+ the deal earns meaningfully more than most liquid alternatives without the same concentration risk.
             </p>
           </div>
+
+          {/* ── Stress test ──────────────────────────────────── */}
+          {effectiveRentInput > 0 && (() => {
+            const stressBase = {
+              price: listing.price,
+              hoaMonthly: listing.hoaMonthly,
+              propertyTaxAnnual: listing.propertyTaxAnnual,
+              insuranceRate: assumptions.insuranceRate,
+              closingCostRate: assumptions.closingCostRate,
+              repairs: repairsInput,
+              capExRate: assumptions.capExRate,
+              propertyManagementRate: assumptions.propertyManagementRate,
+              tenancyYears: assumptions.tenancyYears,
+              turnoverCost: assumptions.turnoverCost,
+              rentalDemand: listing.rentalDemand,
+              rentConfidence: listing.rentConfidence,
+              rentalEvidence: listing.rentalEvidence,
+            }
+            const conservative = computeMetrics({ ...stressBase, estimatedRent: Math.round(effectiveRentInput * 0.90), vacancyRate: 0.10, maintenanceRate: 0.07 })
+            const downside = computeMetrics({ ...stressBase, estimatedRent: Math.round(effectiveRentInput * 0.85), vacancyRate: 0.15, maintenanceRate: 0.10 })
+            const scenarios = [
+              { label: 'Base Case', sub: `${fmtRent(effectiveRentInput)}, ${(assumptions.vacancyRate * 100).toFixed(0)}% vacancy`, m: metrics, highlight: true },
+              { label: 'Conservative', sub: 'Rent −10%, vacancy 10%, maintenance 7%', m: conservative },
+              { label: 'Downside', sub: 'Rent −15%, vacancy 15%, maintenance 10%', m: downside },
+            ]
+            return (
+              <Section title="Stress Test">
+                <p className="text-xs text-slate-400 leading-relaxed pt-1 pb-3">
+                  How this deal holds up under less favorable conditions.
+                </p>
+                <div className="space-y-1">
+                  {scenarios.map(({ label, sub, m, highlight }) => {
+                    const yc = m.netCashYield >= 0.05 ? 'text-emerald-700' : m.netCashYield >= 0.025 ? 'text-orange-600' : 'text-red-600'
+                    return (
+                      <div key={label} className={cn('flex items-center justify-between rounded-lg px-3 py-2.5', highlight ? 'bg-slate-100' : '')}>
+                        <div>
+                          <div className={cn('text-sm', highlight ? 'font-semibold text-slate-800' : 'text-slate-600')}>{label}</div>
+                          <div className="text-xs text-slate-400 mt-0.5">{sub}</div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className={cn('text-sm font-bold tabular-nums', yc)}>{fmtYield(m.netCashYield)}</div>
+                          <div className="text-xs text-slate-400 tabular-nums">{fmtCurrency(m.netAnnualIncome)}/yr</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </Section>
+            )
+          })()}
 
           {/* ── Payback period ────────────────────────────────── */}
           <Section title="Rental Income Payback">

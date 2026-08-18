@@ -61,7 +61,16 @@ export default function AddListingModal() {
 
   return (
     <>
-      <Button size="sm" variant="outline" onClick={() => setOpen(true)} className="h-7 text-xs gap-1.5 shrink-0">
+      {/* Mobile: icon-only button */}
+      <button
+        onClick={() => setOpen(true)}
+        className="md:hidden w-8 h-8 rounded-md flex items-center justify-center border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 transition-colors shrink-0"
+        title="Add listing"
+      >
+        <Plus size={15} />
+      </button>
+      {/* Desktop: text button */}
+      <Button size="sm" variant="outline" onClick={() => setOpen(true)} className="hidden md:flex h-7 text-xs gap-1.5 shrink-0">
         <Plus size={12} />
         Add listing
       </Button>

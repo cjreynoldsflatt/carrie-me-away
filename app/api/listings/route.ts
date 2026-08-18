@@ -1,13 +1,12 @@
-// GET /api/listings — returns cached listings from Supabase (no Rentcast calls)
+// GET /api/listings — returns listings from Supabase
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { rowToSaleListing, rowToRentalListing } from '@/lib/db-mappers'
 
 export async function GET() {
-  const [saleRes, rentalRes, stateRes] = await Promise.all([
+  const [saleRes, rentalRes] = await Promise.all([
     supabase.from('sale_listings').select('*').eq('is_manual', true).order('fetched_at', { ascending: false }),
     supabase.from('rental_listings').select('*').order('fetched_at', { ascending: false }),
-    supabase.from('refresh_state').select('last_refreshed_at').eq('id', 1).single(),
   ])
 
   const rows = saleRes.data ?? []
@@ -34,6 +33,5 @@ export async function GET() {
   return NextResponse.json({
     saleListings: deduped.map(rowToSaleListing),
     rentalListings: (rentalRes.data ?? []).map(rowToRentalListing),
-    lastRefreshed: stateRes.data?.last_refreshed_at ?? null,
   })
 }

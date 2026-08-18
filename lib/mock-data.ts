@@ -9,6 +9,8 @@ function makeSale(
     | 'grossAnnualRent'
     | 'vacancyReserve'
     | 'maintenanceReserve'
+    | 'capExReserve'
+    | 'turnoverReserve'
     | 'netAnnualIncome'
     | 'netCashYield'
     | 'paybackYears'
@@ -26,7 +28,10 @@ function makeSale(
     repairs: raw.repairs,
     vacancyRate: raw.vacancyRate,
     maintenanceRate: raw.maintenanceRate,
+    capExRate: raw.capExRate,
     propertyManagementRate: raw.propertyManagementRate,
+    tenancyYears: raw.tenancyYears,
+    turnoverCost: raw.turnoverCost,
     rentalDemand: raw.rentalDemand,
     rentConfidence: raw.rentConfidence,
     rentalEvidence: raw.rentalEvidence,
@@ -38,8 +43,11 @@ const defaults = {
   closingCostRate: 0.02,
   repairs: 10000,
   vacancyRate: 0.05,
-  maintenanceRate: 0.10,
+  maintenanceRate: 0.05,
+  capExRate: 0.03,
   propertyManagementRate: 0.10,
+  tenancyYears: 3,
+  turnoverCost: 1500,
   appreciationRate: 0.03, // fallback 3%
 }
 

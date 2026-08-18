@@ -19,6 +19,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.repairs === 'number' && body.repairs >= 0) {
     updates.repairs = body.repairs
   }
+  const validTypes = ['Townhouse', 'Condo', 'Single Family', 'Multi Family']
+  if (typeof body.property_type === 'string' && validTypes.includes(body.property_type)) {
+    updates.property_type = body.property_type
+  }
+  if (typeof body.units === 'number' && body.units >= 2 && body.units <= 100) {
+    updates.units = body.units
+  }
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No valid fields' }, { status: 400 })
   }

@@ -242,7 +242,7 @@ export default function FilterPopover() {
           </div>
 
           {/* Desktop: floating popover */}
-          <div className="hidden md:block absolute right-0 top-10 z-50 w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-4">
+          <div className="hidden md:block absolute right-0 top-10 z-[1000] w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-4">
             <div className="text-sm font-semibold text-slate-800 mb-4">Filters</div>
             {filterContent}
           </div>

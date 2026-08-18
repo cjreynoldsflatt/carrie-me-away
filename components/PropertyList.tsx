@@ -28,48 +28,66 @@ export default function PropertyList() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-4 pt-3 pb-2 border-b border-slate-200 bg-white">
+        {/* Row 1: count (left) + sort (right) */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-semibold text-slate-700">
-              {listings.length} {listings.length === 1 ? 'Property' : 'Properties'}
-            </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as import('@/lib/types').SortOption)}
-              className="text-xs border border-slate-200 rounded-md px-2 py-1 text-slate-600 bg-white outline-none focus:ring-1 focus:ring-blue-400"
-            >
-              <option value="best">Best</option>
-              <option value="date-added">Date Added</option>
-              <option value="yield">Yield</option>
-              <option value="price-asc">Price ↑</option>
-              <option value="price-desc">Price ↓</option>
-              <option value="newest">Newest Listing</option>
-              <option value="hoa">HOA ↑</option>
-            </select>
+          <div className="text-sm font-semibold text-slate-700">
+            {listings.length} {listings.length === 1 ? 'Property' : 'Properties'}
           </div>
-          <div className="flex items-center gap-1.5">
-            {/* Mobile-only: filter + add buttons */}
-            <div className="flex md:hidden items-center gap-1.5">
-              <FilterPopover />
-              <AddListingModal />
-            </div>
-            <AssumptionsPopover />
-            <button
-              onClick={() => setCompareMode(!compareMode)}
-              title={compareMode ? 'Exit compare mode' : 'Compare properties'}
-              className={cn(
-                'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
-                compareMode
-                  ? 'bg-blue-50 border-blue-300 text-blue-600'
-                  : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
-              )}
-            >
-              <GitCompare size={14} />
-            </button>
-            {compareMode && compareIds.length > 0 && (
-              <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as import('@/lib/types').SortOption)}
+            className="text-xs border border-slate-200 rounded-md px-2 py-1 text-slate-600 bg-white outline-none focus:ring-1 focus:ring-blue-400"
+          >
+            <option value="best">Best</option>
+            <option value="date-added">Date Added</option>
+            <option value="yield">Yield</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+            <option value="newest">Newest Listing</option>
+            <option value="hoa">HOA ↑</option>
+          </select>
+        </div>
+
+        {/* Row 2 (mobile): compare + filter + add + assumptions */}
+        <div className="flex md:hidden items-center gap-1.5 mt-2">
+          <button
+            onClick={() => setCompareMode(!compareMode)}
+            title={compareMode ? 'Exit compare mode' : 'Compare properties'}
+            className={cn(
+              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
+              compareMode
+                ? 'bg-blue-50 border-blue-300 text-blue-600'
+                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
             )}
-          </div>
+          >
+            <GitCompare size={14} />
+          </button>
+          {compareMode && compareIds.length > 0 && (
+            <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
+          )}
+          <FilterPopover />
+          <AddListingModal />
+          <AssumptionsPopover />
+        </div>
+
+        {/* Desktop action buttons (hidden on mobile, shown inline) */}
+        <div className="hidden md:flex items-center gap-1.5 mt-2">
+          <AssumptionsPopover />
+          <button
+            onClick={() => setCompareMode(!compareMode)}
+            title={compareMode ? 'Exit compare mode' : 'Compare properties'}
+            className={cn(
+              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
+              compareMode
+                ? 'bg-blue-50 border-blue-300 text-blue-600'
+                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
+            )}
+          >
+            <GitCompare size={14} />
+          </button>
+          {compareMode && compareIds.length > 0 && (
+            <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
+          )}
         </div>
       </div>
 
