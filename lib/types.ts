@@ -1,0 +1,108 @@
+export type PropertyType = 'Townhouse' | 'Condo' | 'Single Family' | 'Multi Family'
+export type RentConfidence = 'High' | 'Medium' | 'Low'
+export type RentalEvidence = 'High' | 'Likely' | 'Unknown' | 'Confirmed Restrictions'
+export type RentalDemand = 'Strong' | 'Moderate' | 'Weak' | 'Insufficient Data'
+
+export type SortOption =
+  | 'best'
+  | 'date-added'
+  | 'yield'
+  | 'payback'
+  | 'price-asc'
+  | 'price-desc'
+  | 'rent'
+  | 'demand'
+  | 'confidence'
+  | 'newest'
+  | 'hoa'
+
+export interface SaleListing {
+  id: string
+  address: string
+  city: string
+  lat: number
+  lng: number
+  price: number
+  propertyType: PropertyType
+  beds: number
+  baths: number
+  sqft: number
+  yearBuilt: number
+  daysOnMarket: number
+  hoaMonthly: number
+  units?: number        // multi-family only; undefined = single unit
+  photoUrl?: string
+  community?: string
+  listingUrl?: string
+  // Rent estimate
+  estimatedRent: number
+  rentLow: number
+  rentHigh: number
+  rentConfidence: RentConfidence
+  // Assumptions
+  propertyTaxAnnual: number
+  insuranceAnnual: number
+  closingCostRate: number
+  repairs: number
+  vacancyRate: number
+  maintenanceRate: number
+  propertyManagementRate: number
+  // Computed investment metrics
+  totalCashInvested: number
+  grossAnnualRent: number
+  vacancyReserve: number
+  maintenanceReserve: number
+  netAnnualIncome: number
+  netCashYield: number
+  paybackYears: number
+  investmentScore: number
+  // Community signals
+  rentalEvidence: RentalEvidence
+  rentalDemand: RentalDemand
+  // Appreciation
+  appreciationRate: number   // annualized historical rate, e.g. 0.03 = 3%
+  fetchedAt?: string         // ISO timestamp when added to DB
+}
+
+export interface RentalListing {
+  id: string
+  address: string
+  city: string
+  lat: number
+  lng: number
+  monthlyRent: number
+  beds: number
+  baths: number
+  sqft: number
+  daysOnMarket: number
+  community?: string
+  propertyType: PropertyType
+}
+
+export interface GlobalAssumptions {
+  vacancyRate: number             // default 0.05
+  maintenanceRate: number         // default 0.07
+  insuranceRate: number           // default 0.005 (0.5% of price/yr)
+  closingCostRate: number         // default 0.02
+  propertyManagementRate: number  // default 0.10; 0 = self-manage
+}
+
+export interface SearchSettings {
+  centerLat: number
+  centerLng: number
+  radiusMiles: number
+  minPrice: number
+  maxPrice: number
+  propertyTypes: PropertyType[]
+  minBeds: number
+  minBaths: number
+  maxHoaMonthly: number
+  minNetYield: number
+}
+
+export interface LayerSettings {
+  forSale: boolean
+  forRent: boolean
+  communities: boolean
+  investmentScore: boolean
+}
