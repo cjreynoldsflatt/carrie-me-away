@@ -58,7 +58,7 @@ export default function AboutPage() {
             </p>
 
             <p>
-              Her son grew up watching and learning from her. He brings a design-minded perspective, plenty of curiosity, and 40 years of secondhand real estate wisdom courtesy of his mom.
+              Her son grew up watching and learning from her. He brings a design-minded perspective, plenty of curiosity, and 37 years of being lovingly molded by his mom&rsquo;s wisdom, optimism, and eye for a good opportunity.
             </p>
 
             <p>
