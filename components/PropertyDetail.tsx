@@ -336,7 +336,7 @@ export default function PropertyDetail() {
           {/* ── Step 1: Total cash invested ──────────────────── */}
           <Section title="Step 1 — Total Cash Invested">
             <Row label="Purchase price" value={fmtCurrency(listing.price)} bold />
-            <Row label={`Closing costs (${(listing.closingCostRate * 100).toFixed(0)}%)`} value={fmtCurrency(closingCosts)} prefix="+" />
+            <Row label={`Closing costs (${(assumptions.closingCostRate * 100).toFixed(0)}%)`} value={fmtCurrency(closingCosts)} prefix="+" />
             {/* Editable repairs row */}
             <div className="flex items-center justify-between gap-4 py-1.5">
               <div className="flex items-center gap-1.5">
@@ -479,19 +479,19 @@ export default function PropertyDetail() {
           {/* ── Step 3: Annual expenses ───────────────────────── */}
           <Section title="Step 3 — Annual Expenses">
             <Row
-              label={`Vacancy reserve (${(listing.vacancyRate * 100).toFixed(0)}%)`}
+              label={`Vacancy reserve (${(assumptions.vacancyRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.vacancyReserve)}
               prefix="−"
               sub="Estimated periods without a tenant"
             />
             <Row
-              label={`Maintenance reserve (${(listing.maintenanceRate * 100).toFixed(0)}%)`}
+              label={`Maintenance reserve (${(assumptions.maintenanceRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.maintenanceReserve)}
               prefix="−"
               sub="Routine repairs, appliances, wear"
             />
             <Row
-              label={`CapEx reserve (${(listing.capExRate * 100).toFixed(0)}%)`}
+              label={`CapEx reserve (${(assumptions.capExRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.capExReserve)}
               prefix="−"
               sub="HVAC, roof, water heater, windows, flooring"
