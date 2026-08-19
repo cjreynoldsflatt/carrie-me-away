@@ -63,7 +63,7 @@ function HomeContent() {
           <img src="/cma-logo.png" alt="Carrie Me Away" className="h-7 w-auto" />
         </button>
 
-        {/* Desktop-only tools */}
+        {/* Desktop tools + About */}
         <div className="ml-auto hidden md:flex items-center gap-3 shrink-0">
           <FilterPopover />
           <AddListingModal />
@@ -76,12 +76,18 @@ function HomeContent() {
             <Bookmark size={13} />
             Bookmarklet
           </a>
+          <Link
+            href="/about"
+            className="h-7 px-2.5 text-xs font-medium rounded-md border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 flex items-center transition-colors"
+          >
+            About
+          </Link>
         </div>
 
-        {/* About button — always visible, far right */}
+        {/* Mobile-only About button */}
         <Link
           href="/about"
-          className="ml-auto md:ml-3 shrink-0 h-7 px-2.5 text-xs font-medium rounded-md border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 flex items-center transition-colors"
+          className="ml-auto md:hidden shrink-0 h-7 px-2.5 text-xs font-medium rounded-md border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 flex items-center transition-colors"
         >
           About
         </Link>
