@@ -4,6 +4,7 @@ import { useEffect, Suspense } from 'react'
 import { Bookmark } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import FilterPopover from '@/components/FilterPopover'
 import AddListingModal from '@/components/AddListingModal'
 import PropertyList from '@/components/PropertyList'
@@ -62,19 +63,28 @@ function HomeContent() {
           <img src="/cma-logo.png" alt="Carrie Me Away" className="h-7 w-auto" />
         </button>
 
-        {/* Desktop-only buttons */}
-        <div className="ml-auto hidden md:flex items-center gap-3 shrink-0">
-          <FilterPopover />
-          <AddListingModal />
-          <a
-            href="/bookmarklet"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="h-7 px-2.5 text-xs font-medium rounded-md border border-slate-200 text-slate-800 hover:text-slate-900 hover:border-slate-300 flex items-center gap-1.5 transition-colors"
+        {/* Nav links */}
+        <div className="ml-auto flex items-center gap-3 shrink-0">
+          <Link
+            href="/about"
+            className="text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium"
           >
-            <Bookmark size={13} />
-            Bookmarklet
-          </a>
+            About
+          </Link>
+          {/* Desktop-only tools */}
+          <div className="hidden md:flex items-center gap-3">
+            <FilterPopover />
+            <AddListingModal />
+            <a
+              href="/bookmarklet"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-7 px-2.5 text-xs font-medium rounded-md border border-slate-200 text-slate-800 hover:text-slate-900 hover:border-slate-300 flex items-center gap-1.5 transition-colors"
+            >
+              <Bookmark size={13} />
+              Bookmarklet
+            </a>
+          </div>
         </div>
       </header>
 
