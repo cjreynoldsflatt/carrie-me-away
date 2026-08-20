@@ -220,6 +220,15 @@ export default function PropertyDetail() {
                   <Home size={48} />
                 </div>
               )}
+              {/* Property type badge — mirrors PropertyCard */}
+              <div className="absolute top-2 left-2">
+                <span className="bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+                  {listing.propertyType === 'Condo' || listing.propertyType === 'Multi Family'
+                    ? <Building2 size={11} />
+                    : <Home size={11} />}
+                  {listing.propertyType}{isMultiFamily && unitsInput >= 2 ? ` · ${unitsInput} units` : ''}
+                </span>
+              </div>
             </div>
             <div className="px-4 py-3 space-y-2">
               <div className="flex items-start justify-between gap-2">
