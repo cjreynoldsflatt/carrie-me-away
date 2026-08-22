@@ -458,17 +458,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 {/* Low / Moderate / High segment picker */}
                 {hasRange && (
                   <div className="mb-3">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2">
                       <span className="text-xs text-slate-500">
                         {listing.rentConfidence === 'Medium' ? 'HUD SAFMR + adjustments' : 'HUD FMR + adjustments'}
-                      </span>
-                      <span className={cn(
-                        'text-[10px] font-semibold px-2 py-0.5 rounded-full border',
-                        listing.rentConfidence === 'Medium'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : 'bg-amber-50 text-amber-700 border-amber-200'
-                      )}>
-                        {listing.rentConfidence === 'Medium' ? 'Moderate' : 'Low'} confidence
                       </span>
                     </div>
                     <div className="grid grid-cols-3 gap-1 bg-slate-100 rounded-lg p-1">
