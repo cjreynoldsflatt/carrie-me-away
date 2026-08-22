@@ -228,7 +228,7 @@ export default function FilterPopover() {
       {open && (
         <>
           {/* Mobile: full-screen bottom sheet */}
-          <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          <div className="md:hidden fixed inset-0 z-[800] flex flex-col justify-end">
             <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
             <div className="relative bg-white rounded-t-2xl p-5 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">

@@ -5,11 +5,12 @@ export type RentalDemand = 'Strong' | 'Moderate' | 'Weak' | 'Insufficient Data'
 
 export type SortOption =
   | 'best'
+  | 'worst'
+  | 'price-asc'
+  | 'price-desc'
   | 'date-added'
   | 'yield'
   | 'payback'
-  | 'price-asc'
-  | 'price-desc'
   | 'rent'
   | 'demand'
   | 'confidence'
@@ -39,10 +40,12 @@ export interface SaleListing {
   rentLow: number
   rentHigh: number
   rentConfidence: RentConfidence
+  conservativeRent: number        // used for grading; lower-middle of range, or estimatedRent when manually set
   // Assumptions
   propertyTaxAnnual: number
   insuranceAnnual: number
   closingCostRate: number
+  realtorRate: number
   repairs: number
   vacancyRate: number
   maintenanceRate: number
@@ -90,6 +93,7 @@ export interface GlobalAssumptions {
   capExRate: number               // default 0.03 (HVAC, roof, water heater, windows, flooring)
   insuranceRate: number           // default 0.005 (0.5% of price/yr)
   closingCostRate: number         // default 0.02
+  realtorRate: number             // default 0.03 (buyer's agent commission)
   propertyManagementRate: number  // default 0.10; 0 = self-manage
   tenancyYears: number            // default 3 (expected tenancy in years)
   turnoverCost: number            // default 1500 (one-time cost per tenant turnover)

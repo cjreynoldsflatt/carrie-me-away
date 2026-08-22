@@ -1,12 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { computeMetrics, equityScenarios, tenYearRentalIncome, distanceMiles } from '@/lib/investment'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { HOME } from '@/lib/config'
 import type { SaleListing } from '@/lib/types'
 
 // ── Grade scale (matches PropertyCard) ───────────────────────────────────────
@@ -58,6 +59,7 @@ function yieldBg(score: number) {
 function Row({
   label,
   value,
+  monthly,
   sub,
   prefix = '',
   muted = false,
@@ -65,6 +67,7 @@ function Row({
 }: {
   label: string
   value: string
+  monthly?: string
   sub?: string
   prefix?: string
   muted?: boolean
@@ -79,9 +82,12 @@ function Row({
         </span>
         {sub && <div className="text-xs text-slate-400 ml-4">{sub}</div>}
       </div>
-      <span className={cn('text-sm tabular-nums shrink-0', bold ? 'font-semibold text-slate-900' : 'text-slate-700')}>
-        {value}
-      </span>
+      <div className="text-right shrink-0">
+        <span className={cn('text-sm tabular-nums', bold ? 'font-semibold text-slate-900' : 'text-slate-700')}>
+          {value}
+        </span>
+        {monthly && <div className="text-xs text-slate-400 tabular-nums">{monthly}/mo</div>}
+      </div>
     </div>
   )
 }
@@ -90,11 +96,14 @@ function Divider() {
   return <div className="border-t border-slate-200 my-1" />
 }
 
-function TotalRow({ label, value, color }: { label: string; value: string; color?: string }) {
+function TotalRow({ label, value, monthly, color }: { label: string; value: string; monthly?: string; color?: string }) {
   return (
     <div className="flex items-center justify-between gap-4 py-2">
       <span className="text-sm font-bold text-slate-900">{label}</span>
-      <span className={cn('text-base font-bold tabular-nums', color ?? 'text-slate-900')}>{value}</span>
+      <div className="text-right">
+        <span className={cn('text-base font-bold tabular-nums', color ?? 'text-slate-900')}>{value}</span>
+        {monthly && <div className="text-xs text-slate-400 tabular-nums">{monthly}/mo</div>}
+      </div>
     </div>
   )
 }
@@ -111,7 +120,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function PropertyDetail() {
+export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const saleListings = useAppStore((s) => s.saleListings)
@@ -155,6 +164,14 @@ export default function PropertyDetail() {
 
   if (!listing) return null
 
+  // Computed rent scenario — derived from rentInput vs preset values (no extra state needed)
+  const hasRange = listing.rentLow > 0 && listing.rentHigh > 0 && listing.rentConfidence !== 'High'
+  const activeScenario = !hasRange ? 'custom'
+    : rentInput === listing.rentLow ? 'low'
+    : rentInput === listing.estimatedRent ? 'moderate'
+    : rentInput === listing.rentHigh ? 'high'
+    : 'custom'
+
   // Recompute metrics live using global assumptions + current input values
   const metrics = computeMetrics({
     price: listing.price,
@@ -163,6 +180,7 @@ export default function PropertyDetail() {
     propertyTaxAnnual: listing.propertyTaxAnnual,
     insuranceRate: assumptions.insuranceRate,
     closingCostRate: assumptions.closingCostRate,
+    realtorRate: assumptions.realtorRate,
     repairs: repairsInput,
     vacancyRate: assumptions.vacancyRate,
     maintenanceRate: assumptions.maintenanceRate,
@@ -175,9 +193,11 @@ export default function PropertyDetail() {
     rentalEvidence: listing.rentalEvidence,
   })
 
+  const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
   const closingCosts = listing.price * assumptions.closingCostRate
   const annualHOA = listing.hoaMonthly * 12
   const grossAnnualRent = effectiveRentInput * 12
+  const mo = (annual: number) => fmtCurrency(Math.round(annual / 12))
   const managementCost = assumptions.propertyManagementRate > 0
     ? Math.round(grossAnnualRent * assumptions.propertyManagementRate)
     : 0
@@ -189,7 +209,7 @@ export default function PropertyDetail() {
       {/* Back header */}
       <div className="px-4 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
         <button
-          onClick={() => setSelectedId(null)}
+          onClick={() => onBack ? onBack() : setSelectedId(null)}
           className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
         >
           <ArrowLeft size={15} />
@@ -228,6 +248,19 @@ export default function PropertyDetail() {
                     : <Home size={11} />}
                   {listing.propertyType}{isMultiFamily && unitsInput >= 2 ? ` · ${unitsInput} units` : ''}
                 </span>
+              </div>
+              {/* Distance + days badges — mirrors PropertyCard top-right */}
+              <div className="absolute top-2 right-2 flex gap-1.5">
+                <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+                  <Navigation size={10} />
+                  {distFromHome.toFixed(1)} mi
+                </span>
+                {listing.daysOnMarket > 0 && (
+                  <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+                    <Clock size={10} />
+                    {fmtDom(listing.daysOnMarket)}
+                  </span>
+                )}
               </div>
             </div>
             <div className="px-4 py-3 space-y-2">
@@ -346,6 +379,7 @@ export default function PropertyDetail() {
           <Section title="Step 1 — Total Cash Invested">
             <Row label="Purchase price" value={fmtCurrency(listing.price)} bold />
             <Row label={`Closing costs (${(assumptions.closingCostRate * 100).toFixed(0)}%)`} value={fmtCurrency(closingCosts)} prefix="+" />
+            <Row label={`Realtor fee (${(assumptions.realtorRate * 100).toFixed(0)}%)`} value={fmtCurrency(listing.price * assumptions.realtorRate)} prefix="+" />
             {/* Editable repairs row */}
             <div className="flex items-center justify-between gap-4 py-1.5">
               <div className="flex items-center gap-1.5">
@@ -386,6 +420,12 @@ export default function PropertyDetail() {
 
           {/* ── Step 2: Gross annual rent ─────────────────────── */}
           <Section title="Step 2 — Gross Annual Rent">
+            {/* No estimate warning */}
+            {listing.rentConfidence !== 'High' && listing.estimatedRent === 0 && (
+              <div className="text-xs text-amber-600 pb-2">
+                No automated estimate — enter a rent below to run calculations.
+              </div>
+            )}
             {isMultiFamily && unitRents.length > 0 ? (
               // Per-unit rent inputs for multi-family — auto-save on blur
               unitRents.map((r, i) => (
@@ -414,25 +454,97 @@ export default function PropertyDetail() {
                 </div>
               ))
             ) : (
-              // Single-unit rent input — auto-save on blur
-              <div className="flex items-center justify-between gap-4 py-1.5">
-                <span className="text-sm font-semibold text-slate-900">Expected monthly rent</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm text-slate-400">$</span>
-                  <input
-                    type="number"
-                    min={0}
-                    step={50}
-                    value={rentInput}
-                    onChange={(e) => setRentInput(Math.max(0, Number(e.target.value)))}
-                    onBlur={(e) => {
-                      const val = Math.max(0, Number(e.target.value))
-                      if (val !== listing.estimatedRent) saveRentToDb(listing.id, val)
-                    }}
-                    className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                  />
+              <>
+                {/* Low / Moderate / High segment picker */}
+                {hasRange && (
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-slate-500">
+                        {listing.rentConfidence === 'Medium' ? 'HUD SAFMR + adjustments' : 'HUD FMR + adjustments'}
+                      </span>
+                      <span className={cn(
+                        'text-[10px] font-semibold px-2 py-0.5 rounded-full border',
+                        listing.rentConfidence === 'Medium'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      )}>
+                        {listing.rentConfidence === 'Medium' ? 'Moderate' : 'Low'} confidence
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1 bg-slate-100 rounded-lg p-1">
+                      {([
+                        { key: 'low' as const, label: 'Low', value: listing.rentLow },
+                        { key: 'moderate' as const, label: 'Moderate', value: listing.estimatedRent },
+                        { key: 'high' as const, label: 'High', value: listing.rentHigh },
+                      ]).map(({ key, label, value }) => (
+                        <button
+                          key={key}
+                          onClick={() => setRentInput(value)}
+                          className={cn(
+                            'rounded-md py-1.5 px-1 text-center transition-all',
+                            activeScenario === key
+                              ? 'bg-white shadow-sm text-slate-900'
+                              : 'text-slate-500 hover:text-slate-700'
+                          )}
+                        >
+                          <div className="text-[10px] font-medium uppercase tracking-wide">{label}</div>
+                          <div className="text-sm font-bold tabular-nums">{fmtRent(value)}</div>
+                        </button>
+                      ))}
+                    </div>
+                    {listing.conservativeRent > 0 && listing.conservativeRent < listing.estimatedRent && (
+                      <div className="text-xs text-blue-600 mt-1.5">
+                        Grade uses {fmtRent(listing.conservativeRent)} (conservative)
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* Custom override / manual input */}
+                <div className="flex items-center justify-between gap-4 py-1.5">
+                  <span className={cn(
+                    'text-sm',
+                    hasRange && activeScenario !== 'custom' ? 'text-slate-400' : 'font-semibold text-slate-900'
+                  )}>
+                    {hasRange
+                      ? 'Custom override'
+                      : listing.rentConfidence === 'High' ? 'Monthly rent' : 'Expected monthly rent'}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {activeScenario === 'custom' && rentIsEdited && (
+                      <button
+                        onClick={async () => {
+                          await resetRentToOriginal(listing.id)
+                          setRentInput(originalRent ?? listing.estimatedRent)
+                        }}
+                        className="text-orange-500 hover:text-orange-700"
+                        title="Reset to original HUD estimate"
+                      >
+                        <RotateCcw size={9} />
+                      </button>
+                    )}
+                    <span className="text-sm text-slate-400">$</span>
+                    <input
+                      type="number"
+                      min={0}
+                      step={50}
+                      value={hasRange && activeScenario !== 'custom' ? '' : rentInput}
+                      placeholder={hasRange && activeScenario !== 'custom' ? String(rentInput) : undefined}
+                      onChange={(e) => setRentInput(Math.max(0, Number(e.target.value)))}
+                      onBlur={(e) => {
+                        if (hasRange && activeScenario !== 'custom') return
+                        const val = Math.max(0, Number(e.target.value))
+                        if (val > 0 && val !== listing.estimatedRent) saveRentToDb(listing.id, val)
+                      }}
+                      className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    />
+                  </div>
                 </div>
-              </div>
+                {listing.rentConfidence === 'High' && (
+                  <div className="text-xs text-slate-400 pb-1">
+                    Manually entered — overrides the automated estimate.
+                  </div>
+                )}
+              </>
             )}
             {/* Total + reset for MF */}
             {isMultiFamily && unitRents.length > 0 && (
@@ -449,37 +561,9 @@ export default function PropertyDetail() {
                 )}
               </div>
             )}
-            {/* Reset for single-unit */}
-            {!isMultiFamily && rentIsEdited && (
-              <button
-                onClick={async () => { await resetRentToOriginal(listing.id); setRentInput(originalRent ?? 0) }}
-                className="text-orange-500 hover:text-orange-700 flex items-center gap-0.5 text-[10px] pb-1"
-                title="Reset to original HUD estimate"
-              >
-                <RotateCcw size={9} /> reset rent
-              </button>
-            )}
-            {listing.rentConfidence === 'High' ? (
-              <div className="text-xs text-slate-400 pb-1">
-                Manually entered — overrides the automated estimate.
-              </div>
-            ) : listing.rentLow > 0 && listing.rentHigh > 0 ? (
-              <div className="text-xs text-slate-400 pb-1 space-y-0.5">
-                <div>Likely range: {fmtRent(listing.rentLow)}–{fmtRent(listing.rentHigh).replace('$', '')}</div>
-                <div>Source: HUD Fair Market Rent for this ZIP and bedroom count. Range is ±10% of the FMR.</div>
-              </div>
-            ) : listing.estimatedRent === 0 ? (
-              <div className="text-xs text-amber-600 pb-1">
-                No automated estimate — enter a rent above to run calculations.
-              </div>
-            ) : (
-              <div className="text-xs text-slate-400 pb-1">
-                Estimated via HUD Fair Market Rent. Enter a value above to override.
-              </div>
-            )}
             <Row label="× 12 months" value="" muted />
             <Divider />
-            <TotalRow label="Gross annual rent" value={fmtCurrency(grossAnnualRent)} />
+            <TotalRow label="Gross annual rent" value={fmtCurrency(grossAnnualRent)} monthly={mo(grossAnnualRent)} />
           </Section>
 
           {/* ── Rent comparables ─────────────────────────────── */}
@@ -490,18 +574,21 @@ export default function PropertyDetail() {
             <Row
               label={`Vacancy reserve (${(assumptions.vacancyRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.vacancyReserve)}
+              monthly={mo(metrics.vacancyReserve)}
               prefix="−"
               sub="Estimated periods without a tenant"
             />
             <Row
               label={`Maintenance reserve (${(assumptions.maintenanceRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.maintenanceReserve)}
+              monthly={mo(metrics.maintenanceReserve)}
               prefix="−"
               sub="Routine repairs, appliances, wear"
             />
             <Row
               label={`CapEx reserve (${(assumptions.capExRate * 100).toFixed(0)}%)`}
               value={fmtCurrency(metrics.capExReserve)}
+              monthly={mo(metrics.capExReserve)}
               prefix="−"
               sub="HVAC, roof, water heater, windows, flooring"
             />
@@ -509,19 +596,21 @@ export default function PropertyDetail() {
               <Row
                 label={`Tenant turnover ($${assumptions.turnoverCost.toLocaleString()} / ${assumptions.tenancyYears} yr)`}
                 value={fmtCurrency(metrics.turnoverReserve)}
+                monthly={mo(metrics.turnoverReserve)}
                 prefix="−"
                 sub="Cleaning, advertising, lost rent between tenancies"
               />
             )}
-            <Row label="Property taxes" value={fmtCurrency(listing.propertyTaxAnnual)} prefix="−" />
+            <Row label="Property taxes" value={fmtCurrency(listing.propertyTaxAnnual)} monthly={mo(listing.propertyTaxAnnual)} prefix="−" />
             {listing.hoaMonthly > 0 && (
               <Row label={`HOA ($${listing.hoaMonthly}/mo × 12)`} value={fmtCurrency(annualHOA)} prefix="−" />
             )}
-            <Row label="Insurance" value={fmtCurrency(metrics.insuranceAnnual)} prefix="−" />
+            <Row label="Insurance" value={fmtCurrency(metrics.insuranceAnnual)} monthly={mo(metrics.insuranceAnnual)} prefix="−" />
             {managementCost > 0 && (
               <Row
                 label={`Property management (${(assumptions.propertyManagementRate * 100).toFixed(0)}% of rent)`}
                 value={fmtCurrency(managementCost)}
+                monthly={mo(managementCost)}
                 prefix="−"
               />
             )}
@@ -529,22 +618,25 @@ export default function PropertyDetail() {
             <TotalRow
               label="Total annual expenses"
               value={fmtCurrency(metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve + metrics.turnoverReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual + managementCost)}
+              monthly={mo(metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve + metrics.turnoverReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual + managementCost)}
               color="text-red-600"
             />
           </Section>
 
           {/* ── Step 4: Net annual income ─────────────────────── */}
           <Section title="Step 4 — Net Annual Income">
-            <Row label="Gross annual rent" value={fmtCurrency(grossAnnualRent)} />
+            <Row label="Gross annual rent" value={fmtCurrency(grossAnnualRent)} monthly={mo(grossAnnualRent)} />
             <Row
               label="Total annual expenses"
               value={fmtCurrency(metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve + metrics.turnoverReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual + managementCost)}
+              monthly={mo(metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve + metrics.turnoverReserve + listing.propertyTaxAnnual + annualHOA + metrics.insuranceAnnual + managementCost)}
               prefix="−"
             />
             <Divider />
             <TotalRow
               label="Net annual income"
               value={fmtCurrency(metrics.netAnnualIncome)}
+              monthly={mo(metrics.netAnnualIncome)}
               color={metrics.netAnnualIncome >= 0 ? 'text-emerald-700' : 'text-red-600'}
             />
           </Section>
@@ -574,6 +666,7 @@ export default function PropertyDetail() {
               propertyTaxAnnual: listing.propertyTaxAnnual,
               insuranceRate: assumptions.insuranceRate,
               closingCostRate: assumptions.closingCostRate,
+              realtorRate: assumptions.realtorRate,
               repairs: repairsInput,
               capExRate: assumptions.capExRate,
               propertyManagementRate: assumptions.propertyManagementRate,

@@ -2,10 +2,11 @@ import type { GlobalAssumptions } from './types'
 
 export const DEFAULT_ASSUMPTIONS: GlobalAssumptions = {
   vacancyRate: 0.05,
-  maintenanceRate: 0.05,
-  capExRate: 0.03,
+  maintenanceRate: 0.10,
+  capExRate: 0.10,
   insuranceRate: 0.005,
   closingCostRate: 0.02,
+  realtorRate: 0.03,
   propertyManagementRate: 0.10,
   tenancyYears: 3,
   turnoverCost: 1500,

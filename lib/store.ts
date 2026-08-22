@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SaleListing, RentalListing, SearchSettings, LayerSettings, SortOption, GlobalAssumptions, PropertyType } from './types'
-import { computeMetrics } from './investment'
+import { computeMetrics, computeConservativeRent } from './investment'
 import { DEFAULT_ASSUMPTIONS } from './defaults'
 
 export { DEFAULT_ASSUMPTIONS }
@@ -239,13 +239,17 @@ export const useAppStore = create<AppState>()(
       computedSaleListings: () => {
         const { assumptions, saleListings } = get()
         return saleListings.map((l) => {
+          // Recompute conservativeRent here so it stays current with any rent edits
+          const conservativeRent = computeConservativeRent(l.estimatedRent, l.rentLow, l.rentHigh, l.rentConfidence)
           const metrics = computeMetrics({
             price: l.price,
             hoaMonthly: l.hoaMonthly,
             estimatedRent: l.estimatedRent,
+            conservativeRent,
             propertyTaxAnnual: l.propertyTaxAnnual,
             insuranceRate: assumptions.insuranceRate,
             closingCostRate: assumptions.closingCostRate,
+            realtorRate: assumptions.realtorRate,
             repairs: l.repairs,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
@@ -260,7 +264,9 @@ export const useAppStore = create<AppState>()(
           return {
             ...l,
             ...metrics,
+            conservativeRent,
             closingCostRate: assumptions.closingCostRate,
+            realtorRate: assumptions.realtorRate,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
             capExRate: assumptions.capExRate,
@@ -294,6 +300,7 @@ export const useAppStore = create<AppState>()(
         return [...listings].sort((a, b) => {
           switch (sortBy) {
             case 'best':       return b.investmentScore - a.investmentScore
+            case 'worst':      return a.investmentScore - b.investmentScore
             case 'date-added': return (b.fetchedAt ?? '').localeCompare(a.fetchedAt ?? '')
             case 'yield':      return b.netCashYield - a.netCashYield
             case 'payback':   return a.paybackYears - b.paybackYears
@@ -317,7 +324,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'carrie-app-state',
-      version: 13,
+      version: 14,
       migrate: (persisted: unknown, version: number) => {
         const s = persisted as Record<string, unknown>
         if (version === 0) {
@@ -433,6 +440,21 @@ export const useAppStore = create<AppState>()(
               ...assumptions,
               tenancyYears: (assumptions.tenancyYears as number | undefined) ?? 3,
               turnoverCost: (assumptions.turnoverCost as number | undefined) ?? 1500,
+            },
+          }
+        }
+        if (version < 14) {
+          // Update maintenance/capEx to new defaults; add realtorRate
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          const maint = assumptions.maintenanceRate as number | undefined
+          const capEx = assumptions.capExRate as number | undefined
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              maintenanceRate: (maint === 0.05 || maint == null) ? 0.10 : maint,
+              capExRate: (capEx === 0.03 || capEx == null) ? 0.10 : capEx,
+              realtorRate: (assumptions.realtorRate as number | undefined) ?? 0.03,
             },
           }
         }

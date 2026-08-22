@@ -90,6 +90,7 @@ export default function AssumptionsPopover() {
     draft.capExRate === DEFAULT_ASSUMPTIONS.capExRate &&
     draft.insuranceRate === DEFAULT_ASSUMPTIONS.insuranceRate &&
     draft.closingCostRate === DEFAULT_ASSUMPTIONS.closingCostRate &&
+    draft.realtorRate === DEFAULT_ASSUMPTIONS.realtorRate &&
     draft.propertyManagementRate === DEFAULT_ASSUMPTIONS.propertyManagementRate &&
     draft.tenancyYears === DEFAULT_ASSUMPTIONS.tenancyYears &&
     draft.turnoverCost === DEFAULT_ASSUMPTIONS.turnoverCost
@@ -99,116 +100,122 @@ export default function AssumptionsPopover() {
   const upd = (key: keyof GlobalAssumptions) => (v: number) =>
     setDraft((d) => ({ ...d, [key]: v }))
 
-  const content = (
-    <div className="space-y-4">
-      <div className="space-y-3">
+  const controls = (
+    <div className="space-y-3">
+      <NumericInput
+        label="Vacancy Rate"
+        value={draft.vacancyRate}
+        onChange={upd('vacancyRate')}
+        min={0} max={0.3} step={0.005}
+        format={(v) => `${(v * 100).toFixed(1)}%`}
+      />
+      <NumericInput
+        label="Maintenance Reserve"
+        value={draft.maintenanceRate}
+        onChange={upd('maintenanceRate')}
+        min={0} max={0.30} step={0.005}
+        format={(v) => `${(v * 100).toFixed(1)}% of rent`}
+      />
+      <NumericInput
+        label="CapEx Reserve"
+        value={draft.capExRate}
+        onChange={upd('capExRate')}
+        min={0} max={0.30} step={0.005}
+        format={(v) => `${(v * 100).toFixed(1)}% of rent`}
+      />
+      <NumericInput
+        label="Insurance Rate"
+        value={draft.insuranceRate}
+        onChange={upd('insuranceRate')}
+        min={0.001} max={0.015} step={0.001}
+        format={(v) => `${(v * 100).toFixed(1)}% of price/yr`}
+      />
+      <NumericInput
+        label="Closing Costs"
+        value={draft.closingCostRate}
+        onChange={upd('closingCostRate')}
+        min={0} max={0.1} step={0.005}
+        format={(v) => `${(v * 100).toFixed(1)}%`}
+      />
+      <NumericInput
+        label="Realtor Fee"
+        value={draft.realtorRate}
+        onChange={upd('realtorRate')}
+        min={0} max={0.06} step={0.005}
+        format={(v) => `${(v * 100).toFixed(1)}% of price`}
+      />
+      <div className="space-y-2 pt-1">
+        <label className="text-sm text-slate-600">Tenant Turnover</label>
         <NumericInput
-          label="Vacancy Rate"
-          value={draft.vacancyRate}
-          onChange={upd('vacancyRate')}
-          min={0} max={0.3} step={0.005}
-          format={(v) => `${(v * 100).toFixed(1)}%`}
+          label="Expected tenancy"
+          value={draft.tenancyYears}
+          onChange={upd('tenancyYears')}
+          min={1} max={10} step={1}
+          format={(v) => `${v} yr${v === 1 ? '' : 's'}`}
         />
         <NumericInput
-          label="Maintenance Reserve"
-          value={draft.maintenanceRate}
-          onChange={upd('maintenanceRate')}
-          min={0} max={0.15} step={0.005}
-          format={(v) => `${(v * 100).toFixed(1)}% of rent`}
+          label="Turnover cost"
+          value={draft.turnoverCost}
+          onChange={upd('turnoverCost')}
+          min={0} max={5000} step={250}
+          format={(v) => `$${v.toLocaleString()}`}
         />
-        <NumericInput
-          label="CapEx Reserve"
-          value={draft.capExRate}
-          onChange={upd('capExRate')}
-          min={0} max={0.15} step={0.005}
-          format={(v) => `${(v * 100).toFixed(1)}% of rent`}
-        />
-        <NumericInput
-          label="Insurance Rate"
-          value={draft.insuranceRate}
-          onChange={upd('insuranceRate')}
-          min={0.001} max={0.015} step={0.001}
-          format={(v) => `${(v * 100).toFixed(1)}% of price/yr`}
-        />
-        <NumericInput
-          label="Closing Costs"
-          value={draft.closingCostRate}
-          onChange={upd('closingCostRate')}
-          min={0} max={0.1} step={0.005}
-          format={(v) => `${(v * 100).toFixed(1)}%`}
-        />
-        <div className="space-y-2">
-          <label className="text-sm text-slate-600">Property Management</label>
-          <div className="flex rounded-md border border-slate-200 overflow-hidden text-xs font-medium">
-            <button
-              onClick={() => setDraft((d) => ({ ...d, propertyManagementRate: 0 }))}
-              className={`flex-1 py-1.5 transition-colors ${draft.propertyManagementRate === 0 ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Self-manage: $0
-            </button>
-            <button
-              onClick={() => setDraft((d) => ({ ...d, propertyManagementRate: d.propertyManagementRate > 0 ? d.propertyManagementRate : 0.10 }))}
-              className={`flex-1 py-1.5 transition-colors border-l border-slate-200 ${draft.propertyManagementRate > 0 ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Property Manager
-            </button>
-          </div>
-          {draft.propertyManagementRate > 0 && (
-            <NumericInput
-              label="Manager Rate"
-              value={draft.propertyManagementRate}
-              onChange={upd('propertyManagementRate')}
-              min={0.05} max={0.2} step={0.005}
-              format={(v) => `${(v * 100).toFixed(1)}% of rent`}
-            />
-          )}
-        </div>
-        <div className="space-y-2 pt-1">
-          <label className="text-sm text-slate-600">Tenant Turnover</label>
-          <NumericInput
-            label="Expected tenancy"
-            value={draft.tenancyYears}
-            onChange={upd('tenancyYears')}
-            min={1} max={10} step={1}
-            format={(v) => `${v} yr${v === 1 ? '' : 's'}`}
-          />
-          <NumericInput
-            label="Turnover cost"
-            value={draft.turnoverCost}
-            onChange={upd('turnoverCost')}
-            min={0} max={5000} step={250}
-            format={(v) => `$${v.toLocaleString()}`}
-          />
-          <div className="text-xs text-slate-400">
-            = ${Math.round(draft.turnoverCost / Math.max(1, draft.tenancyYears)).toLocaleString()}/yr annualized
-          </div>
+        <div className="text-xs text-slate-400">
+          = ${Math.round(draft.turnoverCost / Math.max(1, draft.tenancyYears)).toLocaleString()}/yr annualized
         </div>
       </div>
-
-      {/* Save / Reset row */}
-      <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-        {!isDraftDefault && (
+      <div className="space-y-2 pt-1">
+        <label className="text-sm text-slate-600">Property Management</label>
+        <div className="flex rounded-md border border-slate-200 overflow-hidden text-xs font-medium">
           <button
-            onClick={handleReset}
-            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 border border-slate-200 rounded-md px-2 py-1.5 hover:border-slate-300 transition-colors"
+            onClick={() => setDraft((d) => ({ ...d, propertyManagementRate: 0 }))}
+            className={`flex-1 py-1.5 transition-colors ${draft.propertyManagementRate === 0 ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
           >
-            <RotateCcw size={11} />
-            Reset defaults
+            Self-manage: $0
           </button>
+          <button
+            onClick={() => setDraft((d) => ({ ...d, propertyManagementRate: d.propertyManagementRate > 0 ? d.propertyManagementRate : 0.10 }))}
+            className={`flex-1 py-1.5 transition-colors border-l border-slate-200 ${draft.propertyManagementRate > 0 ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            Property Manager
+          </button>
+        </div>
+        {draft.propertyManagementRate > 0 && (
+          <NumericInput
+            label="Manager Rate"
+            value={draft.propertyManagementRate}
+            onChange={upd('propertyManagementRate')}
+            min={0.05} max={0.2} step={0.005}
+            format={(v) => `${(v * 100).toFixed(1)}% of rent`}
+          />
         )}
-        <button
-          onClick={handleSave}
-          className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold rounded-md px-3 py-1.5 transition-colors ${
-            isDirty
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-slate-100 text-slate-400 cursor-default'
-          }`}
-          disabled={!isDirty}
-        >
-          <Check size={13} />
-          Save changes
-        </button>
       </div>
+    </div>
+  )
+
+  const actions = (
+    <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+      {!isDraftDefault && (
+        <button
+          onClick={handleReset}
+          className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 border border-slate-200 rounded-md px-2 py-1.5 hover:border-slate-300 transition-colors"
+        >
+          <RotateCcw size={11} />
+          Reset defaults
+        </button>
+      )}
+      <button
+        onClick={handleSave}
+        className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold rounded-md px-3 py-1.5 transition-colors ${
+          isDirty
+            ? 'bg-blue-600 text-white hover:bg-blue-700'
+            : 'bg-slate-100 text-slate-400 cursor-default'
+        }`}
+        disabled={!isDirty}
+      >
+        <Check size={13} />
+        Save changes
+      </button>
     </div>
   )
 
@@ -228,11 +235,11 @@ export default function AssumptionsPopover() {
 
       {open && (
         <>
-          {/* Mobile: bottom sheet */}
-          <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          {/* Mobile: bottom sheet — header + save always visible, controls scroll */}
+          <div className="md:hidden fixed inset-0 z-[800] flex flex-col justify-end">
             <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-            <div className="relative bg-white rounded-t-2xl p-5 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
+            <div className="relative bg-white rounded-t-2xl flex flex-col max-h-[90vh]">
+              <div className="flex items-center justify-between px-5 pt-5 pb-4 shrink-0">
                 <div>
                   <div className="text-base font-semibold text-slate-800">Global Assumptions</div>
                   <div className="text-xs text-slate-400 mt-0.5">Applied to all yield calculations</div>
@@ -241,19 +248,27 @@ export default function AssumptionsPopover() {
                   <X size={20} />
                 </button>
               </div>
-              {content}
+              <div className="overflow-y-auto flex-1 min-h-0 px-5">
+                {controls}
+              </div>
+              <div className="px-5 pb-6 pt-1 shrink-0">
+                {actions}
+              </div>
             </div>
           </div>
 
-          {/* Desktop: floating popover */}
-          <div className="hidden md:block absolute left-0 top-10 z-[1000] w-80 bg-white border border-slate-200 rounded-xl shadow-lg p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-semibold text-slate-800">Global Assumptions</div>
-                <div className="text-xs text-slate-400 mt-0.5">Applied to all yield calculations</div>
-              </div>
+          {/* Desktop: floating popover — controls scroll, save pinned at bottom */}
+          <div className="hidden md:flex flex-col absolute left-0 top-10 z-[1000] w-80 bg-white border border-slate-200 rounded-xl shadow-lg max-h-[calc(100vh-10rem)]">
+            <div className="px-4 pt-4 pb-2 shrink-0">
+              <div className="text-sm font-semibold text-slate-800">Global Assumptions</div>
+              <div className="text-xs text-slate-400 mt-0.5">Applied to all yield calculations</div>
             </div>
-            {content}
+            <div className="overflow-y-auto flex-1 min-h-0 px-4">
+              {controls}
+            </div>
+            <div className="px-4 pb-4 pt-1 shrink-0">
+              {actions}
+            </div>
           </div>
         </>
       )}

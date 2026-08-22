@@ -1,4 +1,4 @@
-import { computeMetrics } from './investment'
+import { computeMetrics, computeConservativeRent } from './investment'
 import type { SaleListing, RentalListing } from './types'
 
 // Helper to build a sale listing with computed investment metrics
@@ -16,15 +16,19 @@ function makeSale(
     | 'paybackYears'
     | 'investmentScore'
     | 'insuranceAnnual'
+    | 'conservativeRent'
   >,
 ): SaleListing {
+  const conservativeRent = computeConservativeRent(raw.estimatedRent, raw.rentLow, raw.rentHigh, raw.rentConfidence)
   const metrics = computeMetrics({
     price: raw.price,
     hoaMonthly: raw.hoaMonthly,
     estimatedRent: raw.estimatedRent,
+    conservativeRent,
     propertyTaxAnnual: raw.propertyTaxAnnual,
     insuranceRate: 0.005,
     closingCostRate: raw.closingCostRate,
+    realtorRate: raw.realtorRate,
     repairs: raw.repairs,
     vacancyRate: raw.vacancyRate,
     maintenanceRate: raw.maintenanceRate,
@@ -36,12 +40,13 @@ function makeSale(
     rentConfidence: raw.rentConfidence,
     rentalEvidence: raw.rentalEvidence,
   })
-  return { ...raw, ...metrics }
+  return { ...raw, conservativeRent, ...metrics }
 }
 
 const defaults = {
   closingCostRate: 0.02,
-  repairs: 10000,
+  realtorRate: 0.03,
+  repairs: 15000,
   vacancyRate: 0.05,
   maintenanceRate: 0.05,
   capExRate: 0.03,

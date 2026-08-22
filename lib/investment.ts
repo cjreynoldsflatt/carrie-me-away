@@ -1,12 +1,31 @@
 import type { RentalDemand, RentalEvidence, RentConfidence } from './types'
 
+// Returns the rent used for conservative grading (lower-middle of range).
+// When the user has manually set rent (High confidence) we trust their value directly.
+export function computeConservativeRent(
+  estimatedRent: number,
+  rentLow: number,
+  rentHigh: number,
+  rentConfidence: string,
+): number {
+  if (rentConfidence === 'High') return estimatedRent
+  if (rentLow > 0 && rentHigh > 0) {
+    // 20th percentile — just above the lower bound, keeping grading conservative
+    return Math.round(rentLow + (rentHigh - rentLow) * 0.20)
+  }
+  // No range: apply a 10% haircut as a safety margin
+  return estimatedRent > 0 ? Math.round(estimatedRent * 0.90) : 0
+}
+
 interface RawListing {
   price: number
   hoaMonthly: number
-  estimatedRent: number
+  estimatedRent: number          // display rent (midpoint of range)
+  conservativeRent?: number      // rent used for calculations; defaults to estimatedRent
   propertyTaxAnnual: number
   insuranceRate: number
   closingCostRate: number
+  realtorRate: number
   repairs: number
   vacancyRate: number
   maintenanceRate: number
@@ -20,8 +39,10 @@ interface RawListing {
 }
 
 export function computeMetrics(listing: RawListing) {
-  const totalCashInvested = listing.price * (1 + (listing.closingCostRate ?? 0.02)) + (listing.repairs ?? 10000)
-  const grossAnnualRent = listing.estimatedRent * 12
+  // Use conservativeRent for all financial calculations; estimatedRent is display-only
+  const calcRent = listing.conservativeRent ?? listing.estimatedRent
+  const totalCashInvested = listing.price * (1 + (listing.closingCostRate ?? 0.02) + (listing.realtorRate ?? 0.03)) + (listing.repairs ?? 15000)
+  const grossAnnualRent = calcRent * 12
   const vacancyReserve = grossAnnualRent * (listing.vacancyRate ?? 0.05)
   const maintenanceReserve = grossAnnualRent * (listing.maintenanceRate ?? 0.05)
   const capExReserve = grossAnnualRent * (listing.capExRate ?? 0.03)

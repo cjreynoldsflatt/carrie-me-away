@@ -1,15 +1,45 @@
 'use client'
 
 import { useMemo } from 'react'
-import { GitCompare } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { GitCompare, MapPin } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
 import FilterPopover from './FilterPopover'
 import AddListingModal from './AddListingModal'
 import { cn } from '@/lib/utils'
+import type { SaleListing } from '@/lib/types'
 
-export default function PropertyList() {
+const MiniMapView = dynamic(() => import('@/components/map/MiniMapView'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-slate-100" />,
+})
+
+function MiniMapStrip({ listings, onOpenMap }: { listings: SaleListing[]; onOpenMap: () => void }) {
+  if (listings.length === 0) return null
+
+  return (
+    <div
+      className="md:hidden w-full relative border-b border-slate-200 overflow-hidden cursor-pointer isolate"
+      style={{ height: 140 }}
+      onClick={onOpenMap}
+    >
+      <MiniMapView listings={listings} onClick={onOpenMap} />
+
+      {/* "View on map" label — z-[800] to paint above Leaflet's panes */}
+      <div className="absolute inset-0 z-[800] flex items-center justify-center pointer-events-none">
+        <div className="bg-white/80 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-sm border border-slate-200/80">
+          <MapPin size={12} className="text-slate-600" />
+          <span className="text-xs font-semibold text-slate-700">View on map</span>
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
+export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const sortedSaleListings = useAppStore((s) => s.sortedSaleListings)
@@ -39,12 +69,9 @@ export default function PropertyList() {
             className="text-xs border border-slate-200 rounded-md px-2 py-1 text-slate-600 bg-white outline-none focus:ring-1 focus:ring-blue-400"
           >
             <option value="best">Best</option>
-            <option value="date-added">Date Added</option>
-            <option value="yield">Yield</option>
+            <option value="worst">Worst</option>
             <option value="price-asc">Price ↑</option>
             <option value="price-desc">Price ↓</option>
-            <option value="newest">Newest Listing</option>
-            <option value="hoa">HOA ↑</option>
           </select>
         </div>
 
@@ -102,6 +129,9 @@ export default function PropertyList() {
 
       {/* List */}
       <div className="flex-1 min-h-0 overflow-y-auto">
+        {/* Mini map strip — inside scroll so it scrolls away */}
+        {onOpenMap && <MiniMapStrip listings={listings} onOpenMap={onOpenMap} />}
+
         <div className="p-3 space-y-3">
           {listings.length === 0 ? (
             <div className="text-center py-16 text-slate-400">

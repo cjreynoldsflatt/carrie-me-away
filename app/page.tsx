@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, Suspense } from 'react'
-import { Bookmark } from 'lucide-react'
+import { useEffect, useState, Suspense } from 'react'
+import { Bookmark, ArrowLeft } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -30,6 +30,8 @@ function HomeContent() {
   const setCompareMode = useAppStore((s) => s.setCompareMode)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [mobileShowMap, setMobileShowMap] = useState(false)
+  const [mobileReturnToMap, setMobileReturnToMap] = useState(false)
 
   // On mount: load data, then restore selected listing from URL
   useEffect(() => {
@@ -48,6 +50,15 @@ function HomeContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId])
 
+  // Close mobile map when a listing is selected; remember to return to map on back
+  useEffect(() => {
+    if (selectedId) {
+      setMobileReturnToMap(mobileShowMap)
+      setMobileShowMap(false)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId])
+
   const showDetail = !!selectedId && !compareMode
   const showCompare = compareMode && compareIds.length >= 2
 
@@ -57,7 +68,7 @@ function HomeContent() {
       <header className="min-h-14 shrink-0 bg-white border-b border-slate-200 px-5 py-2 flex items-center gap-4 z-10">
         {/* Logo — click to reset to list view */}
         <button
-          onClick={() => { setSelectedId(null); setCompareMode(false) }}
+          onClick={() => { setSelectedId(null); setCompareMode(false); setMobileShowMap(false) }}
           className="shrink-0 focus:outline-none"
         >
           <img src="/cma-logo.png" alt="Carrie Me Away" className="h-7 w-auto" />
@@ -94,20 +105,37 @@ function HomeContent() {
       </header>
 
       {/* Main content */}
-      <main className="flex flex-1 overflow-hidden">
-        {/* Map — hidden on mobile. isolate keeps Leaflet's z-indices contained. */}
+      <main className="flex flex-1 overflow-hidden relative">
+        {/* Desktop map — always rendered */}
         <div className="hidden md:block flex-1 relative isolate">
           <MapView />
         </div>
 
+        {/* Mobile full-screen map — only mounted when active, so Leaflet sizes correctly */}
+        {mobileShowMap && (
+          <div className="md:hidden absolute inset-0 z-20 isolate">
+            <MapView />
+            <button
+              onClick={() => setMobileShowMap(false)}
+              className="absolute top-3 left-3 z-[1000] bg-white/95 backdrop-blur-sm shadow-md rounded-full pl-2.5 pr-3.5 py-2 text-sm font-semibold text-slate-700 flex items-center gap-1.5 border border-slate-200"
+            >
+              <ArrowLeft size={14} />
+              List
+            </button>
+          </div>
+        )}
+
         {/* Right panel — full width on mobile, fixed 420px on desktop */}
-        <aside className="w-full md:w-[420px] shrink-0 md:border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden">
+        <aside className="w-full md:w-[420px] shrink-0 md:border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden isolate z-0">
           {showDetail ? (
-            <PropertyDetail />
+            <PropertyDetail onBack={() => {
+              setSelectedId(null)
+              if (mobileReturnToMap) setMobileShowMap(true)
+            }} />
           ) : showCompare ? (
             <ComparePanel />
           ) : (
-            <PropertyList />
+            <PropertyList onOpenMap={() => setMobileShowMap(true)} />
           )}
         </aside>
       </main>

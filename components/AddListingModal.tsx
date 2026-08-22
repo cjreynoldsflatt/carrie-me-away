@@ -77,7 +77,7 @@ export default function AddListingModal() {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-[800] flex items-center justify-center bg-black/40"
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}
         >
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">

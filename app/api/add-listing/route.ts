@@ -47,8 +47,18 @@ export async function POST(req: NextRequest) {
     const resolvedType = clientPropertyType ?? parsed.propertyType ?? 'Townhouse'
     const isMultiFamily = resolvedType === 'Multi Family'
     const units = isMultiFamily ? (clientUnits ?? parsed.units ?? 2) : 1
-    const fmrPerUnit = zip ? await fetchHudFmr(zip, beds) : null
-    const fmr = fmrPerUnit ? fmrPerUnit * units : null
+    const hudResult = zip ? await fetchHudFmr(zip, beds) : null
+    const fmrPerUnit = hudResult?.fmr ?? null
+    const isSafmr = hudResult?.isSafmr ?? false
+    const fmrBase = fmrPerUnit ? fmrPerUnit * units : null
+    // Apply property-type, bath, sqft, and age adjustments on top of the HUD baseline
+    const fmr = fmrBase ? applyPropertyAdjustments(fmrBase, {
+      propertyType: resolvedType,
+      beds,
+      baths: parsed.baths ?? 0,
+      sqft: parsed.sqft,
+      yearBuilt: parsed.yearBuilt,
+    }) : null
 
     const id = stableId(url, streetAddress, city)
 
@@ -78,10 +88,11 @@ export async function POST(req: NextRequest) {
       hoa_monthly: parsed.hoaMonthly ?? 0,
       photo_url: photoUrl ?? null,
       listing_url: url ?? null,
+      // Range width: ±15% for zip-specific SAFMR, ±20% for metro-level FMR
       estimated_rent: fmr,
-      rent_low: fmr ? Math.round(fmr * 0.9) : null,
-      rent_high: fmr ? Math.round(fmr * 1.1) : null,
-      rent_confidence: fmr ? 'Medium' : 'Low',
+      rent_low: fmr ? Math.round(fmr * (isSafmr ? 0.85 : 0.80)) : null,
+      rent_high: fmr ? Math.round(fmr * (isSafmr ? 1.15 : 1.20)) : null,
+      rent_confidence: fmr ? (isSafmr ? 'Medium' : 'Low') : 'Low',
       property_tax_annual: parsed.propertyTaxAnnual ?? Math.round((parsed.price ?? 0) * 0.01),
       repairs: 10000,
       rental_evidence: 'Unknown',
@@ -266,14 +277,35 @@ function parseListingText(text: string, url?: string) {
   const cityMatch = t.match(/([A-Za-z][A-Za-z\s]{1,30}),\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)/)
   const city = cityMatch ? `${cityMatch[1].trim()}, ${cityMatch[2]} ${cityMatch[3]}` : ''
 
-  // Property tax — try several label patterns, sanity-check range ($200–$60k/yr)
-  const taxMatch =
-    t.match(/property\s+tax(?:es)?[^$]{0,80}?\$\s*([\d,]+)/i) ??
-    t.match(/\$\s*([\d,]+)[^.]{0,30}?property\s+tax/i) ??
+  // Property tax — Redfin shows all payment breakdown figures as monthly;
+  // realtor.com and manual entries show annual. Detect source from URL.
+  const isRedfin = url?.includes('redfin.com') ?? false
+
+  // Prefer explicit monthly indicator (e.g. "$450/mo"), then explicit annual label, then generic
+  const taxMonthlyMatch =
+    t.match(/property\s+tax(?:es)?[^$]{0,80}?\$\s*([\d,]+)\s*\/\s*(?:mo(?:nth)?)/i) ??
+    t.match(/\$\s*([\d,]+)\s*\/\s*(?:mo(?:nth)?)[^.]{0,40}?property\s+tax/i)
+  const taxAnnualMatch =
     t.match(/annual\s+tax(?:es)?[:\s]+\$?\s*([\d,]+)/i) ??
     t.match(/tax(?:es)?\s*\/\s*assessments?[:\s]+\$?\s*([\d,]+)/i)
-  const taxRaw = taxMatch ? parseInt(taxMatch[1].replace(/,/g, '')) : null
-  const propertyTaxAnnual = taxRaw && taxRaw >= 200 && taxRaw <= 60000 ? taxRaw : null
+  const taxGeneralMatch =
+    t.match(/property\s+tax(?:es)?[^$]{0,80}?\$\s*([\d,]+)/i) ??
+    t.match(/\$\s*([\d,]+)[^.]{0,30}?property\s+tax/i)
+
+  let taxRaw: number | null = null
+  let taxIsMonthly = isRedfin  // Redfin always shows monthly in its payment breakdown
+  if (taxMonthlyMatch) {
+    taxRaw = parseInt(taxMonthlyMatch[1].replace(/,/g, ''))
+    taxIsMonthly = true
+  } else if (taxAnnualMatch) {
+    taxRaw = parseInt(taxAnnualMatch[1].replace(/,/g, ''))
+    taxIsMonthly = false  // explicit "annual" label overrides Redfin default
+  } else if (taxGeneralMatch) {
+    taxRaw = parseInt(taxGeneralMatch[1].replace(/,/g, ''))
+    // taxIsMonthly stays as isRedfin
+  }
+  const taxValue = taxRaw != null ? (taxIsMonthly ? taxRaw * 12 : taxRaw) : null
+  const propertyTaxAnnual = taxValue && taxValue >= 200 && taxValue <= 60000 ? taxValue : null
 
   return { price, beds, baths, sqft, yearBuilt, hoaMonthly, daysOnMarket, propertyType, units, city, propertyTaxAnnual }
 }
@@ -322,7 +354,51 @@ function extractZip(city: string): string | null {
   return m ? m[1] : null
 }
 
-async function fetchHudFmr(zip: string, beds: number): Promise<number | null> {
+// Adjusts a base HUD FMR estimate using property-specific factors.
+// All multipliers are relative — a Townhouse at the baseline beds/baths/age is 1.0.
+function applyPropertyAdjustments(baseRent: number, opts: {
+  propertyType: string
+  beds: number
+  baths: number
+  sqft?: number | null
+  yearBuilt?: number | null
+}): number {
+  let mult = 1.0
+
+  // Property type premium/discount vs. standard apartment/townhouse
+  if (opts.propertyType === 'Condo') mult *= 0.93
+  else if (opts.propertyType === 'Single Family') mult *= 1.07
+  // Townhouse = 1.0, Multi Family = 1.0 per unit
+
+  // Bath premium — extra half-baths above the typical count for the bed count
+  const baseBaths = opts.beds <= 2 ? 1 : 2
+  const extraHalfBaths = Math.max(0, (opts.baths - baseBaths) * 2)
+  mult *= 1 + extraHalfBaths * 0.025  // +2.5% per extra half bath
+
+  // Square footage adjustment (sqft per bedroom vs. ~650 sqft/bed baseline)
+  if (opts.sqft && opts.sqft > 0 && opts.beds > 0) {
+    const sqftPerBed = opts.sqft / opts.beds
+    if (sqftPerBed > 900) mult *= 1.08
+    else if (sqftPerBed > 750) mult *= 1.04
+    else if (sqftPerBed < 450) mult *= 0.93
+    else if (sqftPerBed < 550) mult *= 0.97
+    // 550–750: no adjustment (near baseline)
+  }
+
+  // Age adjustment — newer builds command a premium
+  if (opts.yearBuilt && opts.yearBuilt > 1900) {
+    const age = new Date().getFullYear() - opts.yearBuilt
+    if (age < 5) mult *= 1.06
+    else if (age < 15) mult *= 1.03
+    else if (age < 30) mult *= 1.00
+    else if (age < 50) mult *= 0.98
+    else mult *= 0.95
+  }
+
+  return Math.round(baseRent * mult)
+}
+
+async function fetchHudFmr(zip: string, beds: number): Promise<{ fmr: number; isSafmr: boolean } | null> {
   const token = process.env.HUD_TOKEN
   if (!token) return null
   try {
@@ -359,16 +435,18 @@ async function fetchHudFmr(zip: string, beds: number): Promise<number | null> {
     }
     const key = bedroomMap[Math.min(Math.round(beds), 4)]
 
-    // Small-area FMR: basicdata is an array of zip-level rows
+    // Small-area FMR: basicdata is an array of zip-level rows — zip-specific = SAFMR
     if (Array.isArray(basicdata)) {
-      const row =
-        basicdata.find((r: Record<string, unknown>) => r.zip_code === zip) ??
-        basicdata.find((r: Record<string, unknown>) => r.zip_code === 'MSA level')
-      return (row?.[key] as number) ?? null
+      const zipRow = basicdata.find((r: Record<string, unknown>) => r.zip_code === zip)
+      const msaRow = basicdata.find((r: Record<string, unknown>) => r.zip_code === 'MSA level')
+      if (zipRow?.[key]) return { fmr: zipRow[key] as number, isSafmr: true }
+      if (msaRow?.[key]) return { fmr: msaRow[key] as number, isSafmr: false }
+      return null
     }
 
-    // Standard FMR: basicdata is a plain object
-    return basicdata[key] ?? null
+    // Standard county/metro FMR: basicdata is a plain object
+    const fmr = basicdata[key] as number | undefined
+    return fmr ? { fmr, isSafmr: false } : null
   } catch {
     return null
   }
