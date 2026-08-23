@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { GitCompare, MapPin } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
@@ -65,12 +65,14 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const sortBy = useAppStore((s) => s.sortBy)
   const setSortBy = useAppStore((s) => s.setSortBy)
 
-  const [gradeFilter, setGradeFilter] = useState<Set<string>>(new Set())
+  const gradeFilter = useAppStore((s) => s.gradeFilter)
+  const setGradeFilter = useAppStore((s) => s.setGradeFilter)
+  const toggleGradeFilter = useAppStore((s) => s.toggleGradeFilter)
 
   const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
 
   const listings = useMemo(
-    () => gradeFilter.size === 0 ? allListings : allListings.filter((l) => gradeFilter.has(scoreToGrade(l.investmentScore))),
+    () => allListings.filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore))),
     [allListings, gradeFilter],
   )
 
@@ -84,13 +86,8 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
     return counts
   }, [allListings])
 
-  function toggleGrade(key: string) {
-    setGradeFilter((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key); else next.add(key)
-      return next
-    })
-  }
+  const allGrades = GRADES.map((g) => g.key as string)
+  const allSelected = allGrades.every((g) => gradeFilter.includes(g))
 
   return (
     <div className="flex flex-col h-full">
@@ -168,10 +165,10 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
         <button
-          onClick={() => setGradeFilter(new Set())}
+          onClick={() => setGradeFilter(allGrades)}
           className={cn(
             'shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors',
-            gradeFilter.size === 0
+            allSelected
               ? 'bg-slate-800 text-white border-slate-800'
               : 'border-slate-200 text-slate-500 hover:border-slate-300',
           )}
@@ -181,11 +178,11 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
         {GRADES.map((g) => {
           const count = gradeCounts[g.key] ?? 0
           if (count === 0) return null
-          const active = gradeFilter.has(g.key)
+          const active = gradeFilter.includes(g.key)
           return (
             <button
               key={g.key}
-              onClick={() => toggleGrade(g.key)}
+              onClick={() => toggleGradeFilter(g.key)}
               className={cn(
                 'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all',
                 active

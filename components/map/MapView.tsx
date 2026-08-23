@@ -95,16 +95,29 @@ function makeIcon(listing: SaleListing, selected: boolean) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
+function scoreToGrade(score: number) {
+  if (score >= 70) return 'A+'
+  if (score >= 57) return 'A'
+  if (score >= 44) return 'B+'
+  if (score >= 32) return 'B'
+  if (score >= 20) return 'C'
+  return 'D'
+}
+
 export default function MapView() {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const sortedSaleListings = useAppStore((s) => s.sortedSaleListings)
   const rawSale = useAppStore((s) => s.saleListings)
   const search = useAppStore((s) => s.search)
+  const gradeFilter = useAppStore((s) => s.gradeFilter)
 
   const assumptions = useAppStore((s) => s.assumptions)
 
-  const listings = useMemo(() => sortedSaleListings(), [rawSale, search, sortedSaleListings, assumptions]) // eslint-disable-line
+  const listings = useMemo(
+    () => sortedSaleListings().filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore))),
+    [rawSale, search, sortedSaleListings, assumptions, gradeFilter], // eslint-disable-line
+  )
 
   return (
     <MapContainer

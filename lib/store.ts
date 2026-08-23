@@ -39,6 +39,11 @@ interface AppState {
   setCompareMode: (on: boolean) => void
   toggleCompare: (id: string) => void
 
+  // Grade filter
+  gradeFilter: string[]
+  setGradeFilter: (grades: string[]) => void
+  toggleGradeFilter: (grade: string) => void
+
 
   // Loading state
   isLoading: boolean
@@ -194,6 +199,14 @@ export const useAppStore = create<AppState>()(
           return { compareIds: [...state.compareIds, id] }
         }),
 
+      gradeFilter: ['A+', 'A', 'B+', 'B', 'C', 'D'],
+      setGradeFilter: (grades) => set({ gradeFilter: grades }),
+      toggleGradeFilter: (grade) =>
+        set((state) => ({
+          gradeFilter: state.gradeFilter.includes(grade)
+            ? state.gradeFilter.filter((g) => g !== grade)
+            : [...state.gradeFilter, grade],
+        })),
 
       isLoading: false,
 
