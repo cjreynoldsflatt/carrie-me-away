@@ -203,7 +203,7 @@ function parseListingText(text: string, url?: string) {
   // Price — must look like a home price (>= $50k, has comma or is big)
   // Try "List Price $490,000" or "$490,000" patterns first (prices with commas)
   const allPrices: number[] = []
-  const priceRe = /\$\s*([\d]{2,3}(?:,\d{3})+)/g
+  const priceRe = /\$\s*(\d{1,3}(?:,\d{3})+)/g
   let m: RegExpExecArray | null
   while ((m = priceRe.exec(t)) !== null) {
     const val = parseInt(m[1].replace(/,/g, ''))

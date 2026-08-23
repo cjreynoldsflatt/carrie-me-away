@@ -380,7 +380,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
                   return zip ? (
                     <a
-                      href={`https://crimegrade.org/safest-places-in/${zip}/`}
+                      href={`https://crimegrade.org/safest-places-in-${zip}/`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
