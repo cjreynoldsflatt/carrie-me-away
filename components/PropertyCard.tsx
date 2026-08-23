@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState, useRef } from 'react'
-import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink } from 'lucide-react'
+import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
@@ -228,6 +228,21 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
                 <MapPin size={13} />
                 Google Maps
               </a>
+              {(() => {
+                const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
+                return zip ? (
+                  <a
+                    href={`https://crimegrade.org/safest-places-in-${zip}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
+                  >
+                    <ShieldAlert size={13} />
+                    Crime map
+                  </a>
+                ) : null
+              })()}
             </div>
           </div>
           <GradeBadge score={listing.investmentScore} netCashYield={listing.netCashYield} />
