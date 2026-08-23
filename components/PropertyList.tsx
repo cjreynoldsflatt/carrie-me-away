@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { GitCompare, MapPin } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
@@ -10,6 +10,19 @@ import FilterPopover from './FilterPopover'
 import AddListingModal from './AddListingModal'
 import { cn } from '@/lib/utils'
 import type { SaleListing } from '@/lib/types'
+
+const GRADES = [
+  { key: 'A+', min: 70,  max: Infinity, bg: 'bg-emerald-500', ring: 'ring-emerald-400', text: 'text-white' },
+  { key: 'A',  min: 57,  max: 69,       bg: 'bg-cyan-500',    ring: 'ring-cyan-400',    text: 'text-white' },
+  { key: 'B+', min: 44,  max: 56,       bg: 'bg-blue-500',    ring: 'ring-blue-400',    text: 'text-white' },
+  { key: 'B',  min: 32,  max: 43,       bg: 'bg-orange-400',  ring: 'ring-orange-300',  text: 'text-white' },
+  { key: 'C',  min: 20,  max: 31,       bg: 'bg-orange-600',  ring: 'ring-orange-500',  text: 'text-white' },
+  { key: 'D',  min: 0,   max: 19,       bg: 'bg-red-600',     ring: 'ring-red-500',     text: 'text-white' },
+] as const
+
+function scoreToGrade(score: number) {
+  return GRADES.find((g) => score >= g.min && score <= g.max)?.key ?? 'D'
+}
 
 const MiniMapView = dynamic(() => import('@/components/map/MiniMapView'), {
   ssr: false,
@@ -52,7 +65,32 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const sortBy = useAppStore((s) => s.sortBy)
   const setSortBy = useAppStore((s) => s.setSortBy)
 
-  const listings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
+  const [gradeFilter, setGradeFilter] = useState<Set<string>>(new Set())
+
+  const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
+
+  const listings = useMemo(
+    () => gradeFilter.size === 0 ? allListings : allListings.filter((l) => gradeFilter.has(scoreToGrade(l.investmentScore))),
+    [allListings, gradeFilter],
+  )
+
+  // Count per grade across ALL listings (not filtered)
+  const gradeCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const l of allListings) {
+      const g = scoreToGrade(l.investmentScore)
+      counts[g] = (counts[g] ?? 0) + 1
+    }
+    return counts
+  }, [allListings])
+
+  function toggleGrade(key: string) {
+    setGradeFilter((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key); else next.add(key)
+      return next
+    })
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -126,6 +164,41 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           )}
         </div>
       )}
+
+      {/* Grade filter bar */}
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
+        <button
+          onClick={() => setGradeFilter(new Set())}
+          className={cn(
+            'shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors',
+            gradeFilter.size === 0
+              ? 'bg-slate-800 text-white border-slate-800'
+              : 'border-slate-200 text-slate-500 hover:border-slate-300',
+          )}
+        >
+          All
+        </button>
+        {GRADES.map((g) => {
+          const count = gradeCounts[g.key] ?? 0
+          if (count === 0) return null
+          const active = gradeFilter.has(g.key)
+          return (
+            <button
+              key={g.key}
+              onClick={() => toggleGrade(g.key)}
+              className={cn(
+                'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all',
+                active
+                  ? `${g.bg} ${g.text} border-transparent ring-2 ${g.ring}`
+                  : 'border-slate-200 text-slate-600 hover:border-slate-300',
+              )}
+            >
+              {g.key}
+              <span className={cn('text-[10px]', active ? 'opacity-80' : 'text-slate-400')}>{count}</span>
+            </button>
+          )
+        })}
+      </div>
 
       {/* List */}
       <div className="flex-1 min-h-0 overflow-y-auto">
