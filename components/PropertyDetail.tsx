@@ -376,15 +376,20 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <MapPin size={13} />
                   Google Maps
                 </a>
-                <a
-                  href={`https://crimegrade.org/crime-in-my-area/?q=${encodeURIComponent(`${listing.address}, ${listing.city}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  <ShieldAlert size={13} />
-                  Crime map
-                </a>
+                {(() => {
+                  const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
+                  return zip ? (
+                    <a
+                      href={`https://crimegrade.org/safest-places-in/${zip}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      <ShieldAlert size={13} />
+                      Crime map
+                    </a>
+                  ) : null
+                })()}
               </div>
             </div>
           </div>
