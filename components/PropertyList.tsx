@@ -72,7 +72,9 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
 
   const listings = useMemo(
-    () => allListings.filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore))),
+    () => gradeFilter.length === 0
+      ? allListings
+      : allListings.filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore))),
     [allListings, gradeFilter],
   )
 
@@ -85,9 +87,6 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
     }
     return counts
   }, [allListings])
-
-  const allGrades = GRADES.map((g) => g.key as string)
-  const allSelected = allGrades.every((g) => gradeFilter.includes(g))
 
   return (
     <div className="flex flex-col h-full">
@@ -165,10 +164,10 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
         <button
-          onClick={() => setGradeFilter(allGrades)}
+          onClick={() => setGradeFilter([])}
           className={cn(
             'shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors',
-            allSelected
+            gradeFilter.length === 0
               ? 'bg-slate-800 text-white border-slate-800'
               : 'border-slate-200 text-slate-500 hover:border-slate-300',
           )}

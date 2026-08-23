@@ -199,7 +199,7 @@ export const useAppStore = create<AppState>()(
           return { compareIds: [...state.compareIds, id] }
         }),
 
-      gradeFilter: ['A+', 'A', 'B+', 'B', 'C', 'D'],
+      gradeFilter: [],
       setGradeFilter: (grades) => set({ gradeFilter: grades }),
       toggleGradeFilter: (grade) =>
         set((state) => ({

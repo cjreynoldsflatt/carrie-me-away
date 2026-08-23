@@ -115,7 +115,10 @@ export default function MapView() {
   const assumptions = useAppStore((s) => s.assumptions)
 
   const listings = useMemo(
-    () => sortedSaleListings().filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore))),
+    () => {
+      const all = sortedSaleListings()
+      return gradeFilter.length === 0 ? all : all.filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore)))
+    },
     [rawSale, search, sortedSaleListings, assumptions, gradeFilter], // eslint-disable-line
   )
 
