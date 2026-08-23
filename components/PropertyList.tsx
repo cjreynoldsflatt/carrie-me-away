@@ -164,7 +164,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
         <button
-          onClick={() => setGradeFilter([])}
+          onClick={() => { setGradeFilter([]); setSortBy('best') }}
           className={cn(
             'shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors',
             gradeFilter.length === 0
@@ -181,7 +181,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           return (
             <button
               key={g.key}
-              onClick={() => toggleGradeFilter(g.key)}
+              onClick={() => { toggleGradeFilter(g.key); setSortBy('yield') }}
               className={cn(
                 'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all',
                 active
