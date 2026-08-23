@@ -304,6 +304,11 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                         const perUnit = Math.round(rentInput / newUnits)
                         setUnitRents(Array(newUnits).fill(perUnit))
                       } else {
+                        // Carry the current effective rent (sum of unit rents if edited) into single-unit input
+                        const currentRent = unitRents.length > 0
+                          ? unitRents.reduce((s, r) => s + r, 0)
+                          : rentInput
+                        setRentInput(currentRent)
                         setUnitsInput(1)
                         setUnitRents([])
                       }
