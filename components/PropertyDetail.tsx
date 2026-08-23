@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { computeMetrics, equityScenarios, tenYearRentalIncome, distanceMiles } from '@/lib/investment'
@@ -375,6 +375,15 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 >
                   <MapPin size={13} />
                   Google Maps
+                </a>
+                <a
+                  href={`https://crimegrade.org/crime-in-my-area/?q=${encodeURIComponent(`${listing.address}, ${listing.city}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  <ShieldAlert size={13} />
+                  Crime map
                 </a>
               </div>
             </div>
