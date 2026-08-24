@@ -262,7 +262,6 @@ export const useAppStore = create<AppState>()(
             propertyTaxAnnual: l.propertyTaxAnnual,
             insuranceRate: assumptions.insuranceRate,
             closingCostRate: assumptions.closingCostRate,
-            realtorRate: assumptions.realtorRate,
             repairs: l.repairs,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
@@ -281,7 +280,6 @@ export const useAppStore = create<AppState>()(
             ...metrics,
             conservativeRent,
             closingCostRate: assumptions.closingCostRate,
-            realtorRate: assumptions.realtorRate,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
             capExRate: assumptions.capExRate,
@@ -339,7 +337,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'carrie-app-state',
-      version: 17,
+      version: 18,
       migrate: (persisted: unknown, version: number) => {
         const s = persisted as Record<string, unknown>
         if (version === 0) {
@@ -499,6 +497,19 @@ export const useAppStore = create<AppState>()(
         if (version < 17) {
           // LLC_ANNUAL_COST is now baked into computeMetrics — no assumption to migrate
           return s
+        }
+        if (version < 18) {
+          // Remove realtorRate; bump closingCostRate default from 2% → 3%
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          const { realtorRate: _dropped, ...rest } = assumptions as Record<string, unknown> & { realtorRate?: unknown }
+          void _dropped
+          return {
+            ...s,
+            assumptions: {
+              ...rest,
+              closingCostRate: (rest.closingCostRate as number | undefined) === 0.02 ? 0.03 : (rest.closingCostRate as number | undefined) ?? 0.03,
+            },
+          }
         }
         return s
       },

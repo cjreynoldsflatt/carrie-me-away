@@ -45,7 +45,6 @@ export interface SaleListing {
   propertyTaxAnnual: number
   insuranceAnnual: number
   closingCostRate: number
-  realtorRate: number
   repairs: number
   vacancyRate: number
   maintenanceRate: number
@@ -92,8 +91,7 @@ export interface GlobalAssumptions {
   maintenanceRate: number         // default 0.05 (routine repairs, appliances, wear)
   capExRate: number               // default 0.03 (HVAC, roof, water heater, windows, flooring)
   insuranceRate: number           // default 0.005 (0.5% of price/yr)
-  closingCostRate: number         // default 0.02
-  realtorRate: number             // default 0.03 (buyer's agent commission)
+  closingCostRate: number         // default 0.03
   propertyManagementRate: number  // default 0.10; 0 = self-manage
   tenancyYears: number            // default 3 (expected tenancy in years)
   turnoverCost: number            // default 1500 (one-time cost per tenant turnover)

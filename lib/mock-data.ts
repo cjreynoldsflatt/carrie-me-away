@@ -28,7 +28,6 @@ function makeSale(
     propertyTaxAnnual: raw.propertyTaxAnnual,
     insuranceRate: 0.005,
     closingCostRate: raw.closingCostRate,
-    realtorRate: raw.realtorRate,
     repairs: raw.repairs,
     vacancyRate: raw.vacancyRate,
     maintenanceRate: raw.maintenanceRate,
@@ -44,8 +43,7 @@ function makeSale(
 }
 
 const defaults = {
-  closingCostRate: 0.02,
-  realtorRate: 0.03,
+  closingCostRate: 0.03,
   repairs: 15000,
   vacancyRate: 0.05,
   maintenanceRate: 0.05,

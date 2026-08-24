@@ -27,7 +27,6 @@ interface RawListing {
   propertyTaxAnnual: number
   insuranceRate: number
   closingCostRate: number
-  realtorRate: number
   repairs: number
   vacancyRate: number
   maintenanceRate: number
@@ -45,7 +44,7 @@ interface RawListing {
 export function computeMetrics(listing: RawListing) {
   // Use conservativeRent for all financial calculations; estimatedRent is display-only
   const calcRent = listing.conservativeRent ?? listing.estimatedRent
-  const totalCashInvested = listing.price * (1 + (listing.closingCostRate ?? 0.02) + (listing.realtorRate ?? 0.03)) + (listing.repairs ?? 15000)
+  const totalCashInvested = listing.price * (1 + (listing.closingCostRate ?? 0.03)) + (listing.repairs ?? 15000)
   const grossAnnualRent = calcRent * 12
   const vacancyReserve = grossAnnualRent * (listing.vacancyRate ?? 0.05)
   const maintenanceReserve = grossAnnualRent * (listing.maintenanceRate ?? 0.05)

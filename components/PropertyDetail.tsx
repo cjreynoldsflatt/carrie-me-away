@@ -274,7 +274,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     propertyTaxAnnual: propertyTaxInput,
     insuranceRate: assumptions.insuranceRate,
     closingCostRate: assumptions.closingCostRate,
-    realtorRate: assumptions.realtorRate,
     repairs: repairsInput,
     vacancyRate: assumptions.vacancyRate,
     maintenanceRate: assumptions.maintenanceRate,
@@ -301,7 +300,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     metrics.turnoverReserve + propertyTaxInput + annualHOA + metrics.insuranceAnnual +
     metrics.pestControlAnnual + metrics.lawnCareAnnual + managementCost + LLC_ANNUAL_COST
   const ccapMonthlyPayment = purchaseMethod === 'ccap'
-    ? computeMonthlyPayment(listing.price, ccapRate)
+    ? computeMonthlyPayment(metrics.totalCashInvested, ccapRate)
     : 0
   const annualDebtService = ccapMonthlyPayment * 12
   const cmaCashFlowAnnual = metrics.netAnnualIncome - annualDebtService
@@ -516,9 +515,25 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 </button>
               </div>
               {purchaseMethod === 'ccap' && (
-                <div className="space-y-2">
+                <div className="space-y-3">
+                  {/* Acquisition summary */}
+                  <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Total acquisition cost</span>
+                      <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">CCAP loan</span>
+                      <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-semibold border-t border-slate-200 pt-1.5">
+                      <span className="text-slate-800">CMA initial cash invested</span>
+                      <span className="text-emerald-600">$0</span>
+                    </div>
+                  </div>
+                  {/* Rate + debt service */}
                   <InlineSlider
-                    label="Loan interest rate"
+                    label="CCAP loan rate"
                     value={ccapRate}
                     onChange={setCcapRate}
                     min={0.02}
@@ -527,7 +542,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     format={(v) => `${(v * 100).toFixed(1)}%`}
                   />
                   <div className="flex justify-between text-xs text-slate-600">
-                    <span>Monthly P&amp;I payment</span>
+                    <span>Monthly P&amp;I</span>
                     <span className="font-semibold tabular-nums">{fmtCurrency(ccapMonthlyPayment)}/mo</span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-600">
@@ -535,7 +550,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     <span className="font-semibold tabular-nums">{fmtCurrency(annualDebtService)}/yr</span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    CCAP funds 100% of the purchase price via a 30-year P+I loan. CMA earns the equity and cash flow.
+                    CCAP finances 100% of the acquisition (price + closing costs + repairs) via a 30-year P+I loan. CMA's equity grows through appreciation and principal paydown.
                   </p>
                 </div>
               )}
@@ -546,7 +561,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
           <Section title="Step 1 — Total Cash Invested">
             <Row label="Purchase price" value={fmtCurrency(listing.price)} bold />
             <Row label={`Closing costs (${(assumptions.closingCostRate * 100).toFixed(0)}%)`} value={fmtCurrency(closingCosts)} prefix="+" />
-            <Row label={`Realtor fee (${(assumptions.realtorRate * 100).toFixed(0)}%)`} value={fmtCurrency(listing.price * assumptions.realtorRate)} prefix="+" />
             {/* Editable repairs row */}
             <div className="flex items-center justify-between gap-4 py-1.5">
               <div className="flex items-center gap-1.5">
@@ -932,7 +946,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               propertyTaxAnnual: listing.propertyTaxAnnual,
               insuranceRate: assumptions.insuranceRate,
               closingCostRate: assumptions.closingCostRate,
-              realtorRate: assumptions.realtorRate,
               repairs: repairsInput,
               capExRate: assumptions.capExRate,
               propertyManagementRate: assumptions.propertyManagementRate,
@@ -997,7 +1010,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             const tenYrRent = tenYearRentalIncome(metrics.netAnnualIncome)
 
             // CCAP-specific 10-yr calculations (computed always, used only in CCAP branch)
-            const remBal10 = computeRemainingBalance(listing.price, ccapRate, 360, 120)
+            const remBal10 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 120)
             const propVal10 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 10))
             const cmaEquity10 = propVal10 - remBal10
             const cumCashFlow10CCAP = Math.round(cmaCashFlowAnnual * 10)
@@ -1011,7 +1024,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               const ccapChartData = Array.from({ length: 11 }, (_, yr) => {
                 const cashFlow = Math.round(cmaCashFlowAnnual * yr)
                 const propVal = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, yr))
-                const remBal = yr === 0 ? listing.price : computeRemainingBalance(listing.price, ccapRate, 360, yr * 12)
+                const remBal = yr === 0 ? metrics.totalCashInvested : computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, yr * 12)
                 const equity = propVal - remBal
                 return { yr, cashFlow, equity, total: cashFlow + equity }
               })
@@ -1041,25 +1054,21 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       </div>
                       <div className="border-t border-slate-200 pt-3 space-y-1.5">
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Property value at Yr 10</span>
+                          <span className="text-slate-600">Property value at Year 10</span>
                           <span className="font-semibold text-slate-800">{fmtCurrency(propVal10)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Remaining CCAP balance</span>
-                          <span className="font-semibold text-slate-800">−{fmtCurrency(remBal10)}</span>
+                          <span className="text-slate-500">minus remaining CCAP balance</span>
+                          <span className="font-semibold text-red-600">−{fmtCurrency(remBal10)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">CMA equity at Yr 10</span>
-                          <span className="font-semibold text-slate-800">+{fmtCurrency(cmaEquity10)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Cumulative cash flow (10 yr)</span>
+                          <span className="text-slate-500">plus/minus cumulative cash flow</span>
                           <span className={cn('font-semibold', cumCashFlow10CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                             {cumCashFlow10CCAP >= 0 ? '+' : ''}{fmtCurrency(cumCashFlow10CCAP)}
                           </span>
                         </div>
                         <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
-                          <span className="text-slate-900">Total CMA gain at Yr 10</span>
+                          <span className="text-slate-900">CMA net equity / value created</span>
                           <span className={cn(cmaTotalGain10 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                             {cmaTotalGain10 >= 0 ? '+' : ''}{fmtCurrency(cmaTotalGain10)}
                           </span>
@@ -1075,7 +1084,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       <p className="text-xs text-slate-500">CMA Investments LLC — 50% Carrie Reynolds-Flatt / 50% Cameron Reynolds-Flatt</p>
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Total 10-yr CMA gain</span>
+                          <span className="text-slate-600">CMA net equity / value created</span>
                           <span className={cn('font-semibold', ownershipGain >= 0 ? 'text-slate-800' : 'text-red-600')}>{ownershipGain >= 0 ? '+' : ''}{fmtCurrency(ownershipGain)}</span>
                         </div>
                         <Divider />

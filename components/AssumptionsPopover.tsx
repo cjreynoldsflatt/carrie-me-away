@@ -90,7 +90,6 @@ export default function AssumptionsPopover() {
     draft.capExRate === DEFAULT_ASSUMPTIONS.capExRate &&
     draft.insuranceRate === DEFAULT_ASSUMPTIONS.insuranceRate &&
     draft.closingCostRate === DEFAULT_ASSUMPTIONS.closingCostRate &&
-    draft.realtorRate === DEFAULT_ASSUMPTIONS.realtorRate &&
     draft.propertyManagementRate === DEFAULT_ASSUMPTIONS.propertyManagementRate &&
     draft.tenancyYears === DEFAULT_ASSUMPTIONS.tenancyYears &&
     draft.turnoverCost === DEFAULT_ASSUMPTIONS.turnoverCost &&
@@ -138,13 +137,6 @@ export default function AssumptionsPopover() {
         onChange={upd('closingCostRate')}
         min={0} max={0.1} step={0.005}
         format={(v) => `${(v * 100).toFixed(1)}%`}
-      />
-      <NumericInput
-        label="Realtor Fee"
-        value={draft.realtorRate}
-        onChange={upd('realtorRate')}
-        min={0} max={0.06} step={0.005}
-        format={(v) => `${(v * 100).toFixed(1)}% of price`}
       />
       <div className="space-y-2 pt-1">
         <label className="text-sm text-slate-600">Tenant Turnover</label>
