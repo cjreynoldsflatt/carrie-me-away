@@ -1053,29 +1053,25 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                         <span className="flex items-center gap-1.5"><span className="inline-block w-4 border-t-[3px] border-blue-600" />Total position</span>
                       </div>
                       <div className="border-t border-slate-200 pt-3 space-y-1.5">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Property value at Year 10</span>
-                          <span className="font-semibold text-slate-800">{fmtCurrency(propVal10)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-500">minus remaining CCAP balance</span>
-                          <span className="font-semibold text-red-600">−{fmtCurrency(remBal10)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-500">plus/minus cumulative cash flow</span>
-                          <span className={cn('font-semibold', cumCashFlow10CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                        <div className="flex justify-between text-sm font-medium">
+                          <span className="text-slate-700">10-year cash profit/loss</span>
+                          <span className={cn('tabular-nums', cumCashFlow10CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                             {cumCashFlow10CCAP >= 0 ? '+' : ''}{fmtCurrency(cumCashFlow10CCAP)}
                           </span>
                         </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-600">Property equity at Year 10</span>
+                          <span className="font-semibold tabular-nums text-slate-700">+{fmtCurrency(cmaEquity10)}</span>
+                        </div>
                         <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
-                          <span className="text-slate-900">CMA net equity / value created</span>
+                          <span className="text-slate-900">CMA net wealth created after 10 years</span>
                           <span className={cn(cmaTotalGain10 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                             {cmaTotalGain10 >= 0 ? '+' : ''}{fmtCurrency(cmaTotalGain10)}
                           </span>
                         </div>
                       </div>
                       <p className="text-xs text-slate-400 leading-relaxed">
-                        CAGR not shown — CCAP funds 100% of purchase price ($0 CMA cash invested). Return improves as the property appreciates and the loan amortizes.
+                        Equity is wealth locked in the property — real but not spendable unless you sell or refinance. Cash flow is actual money in or out each month.
                       </p>
                     </div>
                   </Section>
@@ -1083,26 +1079,33 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     <div className="py-2 space-y-3">
                       <p className="text-xs text-slate-500">CMA Investments LLC — 50% Carrie Reynolds-Flatt / 50% Cameron Reynolds-Flatt</p>
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">CMA net equity / value created</span>
-                          <span className={cn('font-semibold', ownershipGain >= 0 ? 'text-slate-800' : 'text-red-600')}>{ownershipGain >= 0 ? '+' : ''}{fmtCurrency(ownershipGain)}</span>
-                        </div>
-                        <Divider />
                         {[{ name: 'Carrie Reynolds-Flatt', pct: 0.5 }, { name: 'Cameron Reynolds-Flatt', pct: 0.5 }].map(({ name, pct }) => {
-                          const partnerGain = Math.round(ownershipGain * pct)
+                          const partnerCash = Math.round(cumCashFlow10CCAP * pct)
+                          const partnerEquity = Math.round(cmaEquity10 * pct)
+                          const partnerNet = Math.round(cmaTotalGain10 * pct)
                           const partnerMonthly = Math.round(cmaCashFlowAnnual * pct / 12)
                           return (
-                            <div key={name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
-                              <div>
-                                <div className="text-sm font-semibold text-slate-800">{name}</div>
-                                <div className="text-xs text-slate-400">{(pct * 100).toFixed(0)}% ownership</div>
+                            <div key={name} className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
+                              <div className="text-sm font-semibold text-slate-800">{name}</div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-slate-500">Cash contributed over 10 years</span>
+                                <span className={cn('font-semibold tabular-nums', partnerCash >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                  {partnerCash >= 0 ? '+' : ''}{fmtCurrency(partnerCash)}
+                                </span>
                               </div>
-                              <div className="text-right">
-                                <div className={cn('text-base font-bold tabular-nums', ownershipGain >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                  {ownershipGain >= 0 ? '+' : ''}{fmtCurrency(partnerGain)}
-                                </div>
-                                <div className={cn('text-xs tabular-nums', partnerMonthly >= 0 ? 'text-slate-500' : 'text-red-400')}>
-                                  {partnerMonthly >= 0 ? '+' : ''}{fmtCurrency(partnerMonthly)}/mo
+                              <div className="flex justify-between text-xs">
+                                <span className="text-slate-500">Share of property equity</span>
+                                <span className="font-semibold tabular-nums text-slate-700">+{fmtCurrency(partnerEquity)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm border-t border-slate-200 pt-1.5">
+                                <span className="font-semibold text-slate-800">Net wealth position</span>
+                                <div className="text-right">
+                                  <div className={cn('font-bold tabular-nums', partnerNet >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {partnerNet >= 0 ? '+' : ''}{fmtCurrency(partnerNet)}
+                                  </div>
+                                  <div className={cn('text-xs tabular-nums', partnerMonthly >= 0 ? 'text-emerald-600' : 'text-red-500')}>
+                                    {partnerMonthly >= 0 ? '+' : ''}{fmtCurrency(partnerMonthly)}/mo {partnerMonthly < 0 ? 'cash needed' : 'cash income'}
+                                  </div>
                                 </div>
                               </div>
                             </div>
