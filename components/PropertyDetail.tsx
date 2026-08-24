@@ -232,6 +232,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   // Purchase method for CMA financing
   const [purchaseMethod, setPurchaseMethod] = useState<'cash' | 'ccap'>('cash')
   const [ccapRate, setCcapRate] = useState(0.06)
+  const [carrieCapital, setCarrieCapital] = useState(1_000_000)
 
   useEffect(() => {
     const dbRepairs = listing?.repairs ?? 10000
@@ -244,6 +245,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     setOpenGear(null)
     setPurchaseMethod('cash')
     setCcapRate(0.06)
+    setCarrieCapital(1_000_000)
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
       setUnitRents(Array(dbUnits).fill(perUnit))
@@ -505,7 +507,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   onClick={() => setPurchaseMethod('cash')}
                   className={`flex-1 py-2 transition-colors ${purchaseMethod === 'cash' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  Cash Purchase
+                  Carrie Capital
                 </button>
                 <button
                   onClick={() => setPurchaseMethod('ccap')}
@@ -552,6 +554,45 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <p className="text-xs text-slate-400 leading-relaxed">
                     CCAP finances 100% of the acquisition (price + closing costs + repairs) via a 30-year P+I loan. CMA's equity grows through appreciation and principal paydown.
                   </p>
+                </div>
+              )}
+              {purchaseMethod === 'cash' && (
+                <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-2">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">CMA Funding</div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Capital source</span>
+                    <span className="font-semibold text-slate-800">Carrie Reynolds-Flatt</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600">Carrie initial capital</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-slate-400 text-xs">$</span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={50000}
+                        value={carrieCapital}
+                        onChange={(e) => setCarrieCapital(Math.max(0, Number(e.target.value)))}
+                        className="w-28 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Cameron initial capital</span>
+                    <span className="font-semibold text-slate-500">$0</span>
+                  </div>
+                  <div className="border-t border-slate-200 pt-2 space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Capital deployed to this property</span>
+                      <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Remaining undeployed CMA capital</span>
+                      <span className={cn('font-semibold', carrieCapital - metrics.totalCashInvested >= 0 ? 'text-slate-800' : 'text-amber-600')}>
+                        {fmtCurrency(Math.max(0, carrieCapital - metrics.totalCashInvested))}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -1246,38 +1287,140 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     </div>
                   </div>
                 </Section>
-                <Section title="CMA Investments Ownership">
-                  <div className="py-2 space-y-3">
-                    <p className="text-xs text-slate-500">CMA Investments LLC — 50% Carrie Reynolds-Flatt / 50% Cameron Reynolds-Flatt</p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">10-yr combined gain (expected)</span>
-                        <span className="font-semibold text-slate-800">+{fmtCurrency(ownershipGain)}</span>
-                      </div>
-                      <Divider />
-                      {[{ name: 'Carrie Reynolds-Flatt', pct: 0.5 }, { name: 'Cameron Reynolds-Flatt', pct: 0.5 }].map(({ name, pct }) => {
-                        const partnerGain = Math.round(ownershipGain * pct)
-                        const partnerMonthly = Math.round(metrics.netAnnualIncome * pct / 12)
-                        return (
-                          <div key={name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
-                            <div>
-                              <div className="text-sm font-semibold text-slate-800">{name}</div>
-                              <div className="text-xs text-slate-400">{(pct * 100).toFixed(0)}% ownership</div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-base font-bold tabular-nums text-emerald-700">
-                                +{fmtCurrency(partnerGain)}
+                {(() => {
+                  const propVal10Cash = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 10))
+                  const carrieCapitalBasis = metrics.totalCashInvested
+                  const excessGain = propVal10Cash - carrieCapitalBasis
+                  const excessEach = Math.round(excessGain / 2)
+                  const tenYrRentEach = Math.round(tenYrRent / 2)
+                  const monthlyEach = Math.round(metrics.netAnnualIncome * 0.5 / 12)
+                  const carrieProfit = tenYrRentEach + excessEach
+                  const cameronBenefit = tenYrRentEach + excessEach
+                  return (
+                    <Section title="CMA Investments Economics">
+                      <div className="py-2 space-y-4">
+                        <p className="text-xs text-slate-500">CMA Investments LLC — 50% Carrie Reynolds-Flatt / 50% Cameron Reynolds-Flatt</p>
+
+                        {/* Ongoing rental distributions */}
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Ongoing Rental Distributions</div>
+                          <div className="space-y-2">
+                            {(['Carrie Reynolds-Flatt', 'Cameron Reynolds-Flatt'] as const).map((name) => (
+                              <div key={name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
+                                <div>
+                                  <div className="text-sm font-semibold text-slate-800">{name}</div>
+                                  <div className="text-xs text-slate-400">50% of distributable rental income</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-base font-bold tabular-nums text-emerald-700">+{fmtCurrency(monthlyEach)}/mo</div>
+                                  <div className="text-xs text-slate-400 tabular-nums">+{fmtCurrency(tenYrRentEach)} over 10 yrs</div>
+                                </div>
                               </div>
-                              <div className="text-xs text-slate-500 tabular-nums">
-                                +{fmtCurrency(partnerMonthly)}/mo
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 10-year capital waterfall */}
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">10-Year Capital Position</div>
+                          <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-slate-600">Carrie's capital invested in this property</span>
+                              <span className="font-semibold text-slate-800">{fmtCurrency(carrieCapitalBasis)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-slate-600">Estimated property value at Year 10</span>
+                              <span className="font-semibold text-slate-800">{fmtCurrency(propVal10Cash)}</span>
+                            </div>
+                            <div className="border-t border-slate-200 pt-1.5 space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-slate-600">Capital returned to Carrie</span>
+                                <span className="font-semibold text-slate-800">{fmtCurrency(carrieCapitalBasis)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-slate-600">Profit / appreciation above capital</span>
+                                <span className={cn('font-semibold', excessGain >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                  {excessGain >= 0 ? '+' : ''}{fmtCurrency(excessGain)}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="border-t border-slate-200 pt-1.5 space-y-1">
+                              <div className="flex justify-between text-xs">
+                                <span className="text-slate-500">Carrie's share of excess profit (50%)</span>
+                                <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                  {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-slate-500">Cameron's share of excess profit (50%)</span>
+                                <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                  {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
+                                </span>
                               </div>
                             </div>
                           </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </Section>
+                        </div>
+
+                        {/* Partner summary cards */}
+                        <div className="space-y-2">
+                          {/* Carrie */}
+                          <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
+                            <div className="text-sm font-bold text-slate-800">Carrie Reynolds-Flatt</div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-500">Capital returned (from sale)</span>
+                              <span className="font-semibold tabular-nums text-slate-700">{fmtCurrency(carrieCapitalBasis)}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-500">Rental distributions over 10 yrs</span>
+                              <span className="font-semibold tabular-nums text-emerald-700">+{fmtCurrency(tenYrRentEach)}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-500">Share of appreciation / profit</span>
+                              <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
+                              <span className="font-semibold text-slate-700">Total profit (excl. capital return)</span>
+                              <span className={cn('font-bold tabular-nums', carrieProfit >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                {carrieProfit >= 0 ? '+' : ''}{fmtCurrency(carrieProfit)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Cameron */}
+                          <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
+                            <div className="text-sm font-bold text-slate-800">Cameron Reynolds-Flatt</div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-500">Initial capital contributed</span>
+                              <span className="font-semibold tabular-nums text-slate-500">$0</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-500">Rental distributions over 10 yrs</span>
+                              <span className="font-semibold tabular-nums text-emerald-700">+{fmtCurrency(tenYrRentEach)}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-500">Share of appreciation / profit</span>
+                              <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
+                              <span className="font-semibold text-slate-700">Total economic benefit</span>
+                              <span className={cn('font-bold tabular-nums', cameronBenefit >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                {cameronBenefit >= 0 ? '+' : ''}{fmtCurrency(cameronBenefit)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          Carrie's contributed capital is returned first at sale. Profit and appreciation above that capital is split 50/50. Rental distributions are paid 50/50 throughout and do not reduce Carrie's capital preference.
+                        </p>
+                      </div>
+                    </Section>
+                  )
+                })()}
               </>
             )
           })()}
