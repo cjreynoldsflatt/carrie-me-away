@@ -36,6 +36,8 @@ export function rowToSaleListing(row: Row): SaleListing {
     propertyManagementRate: DEFAULT_ASSUMPTIONS.propertyManagementRate,
     tenancyYears: DEFAULT_ASSUMPTIONS.tenancyYears,
     turnoverCost: DEFAULT_ASSUMPTIONS.turnoverCost,
+    pestControlMonthly: DEFAULT_ASSUMPTIONS.pestControlMonthly,
+    lawnCareMonthly: DEFAULT_ASSUMPTIONS.lawnCareMonthly,
     rentalDemand: (row.rental_demand ?? 'Insufficient Data') as RentalDemand,
     rentConfidence,
     rentalEvidence: (row.rental_evidence ?? 'Unknown') as RentalEvidence,

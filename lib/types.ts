@@ -97,6 +97,8 @@ export interface GlobalAssumptions {
   propertyManagementRate: number  // default 0.10; 0 = self-manage
   tenancyYears: number            // default 3 (expected tenancy in years)
   turnoverCost: number            // default 1500 (one-time cost per tenant turnover)
+  pestControlMonthly: number      // default 50 ($/month)
+  lawnCareMonthly: number         // default 50 ($/month)
 }
 
 export interface SearchSettings {

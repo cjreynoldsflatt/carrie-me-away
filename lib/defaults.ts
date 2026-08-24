@@ -6,10 +6,12 @@ export const DEFAULT_ASSUMPTIONS: GlobalAssumptions = {
   capExRate: 0.10,
   insuranceRate: 0.005,
   closingCostRate: 0.02,
-  realtorRate: 0.03,
+  realtorRate: 0.02,
   propertyManagementRate: 0.10,
   tenancyYears: 3,
   turnoverCost: 1500,
+  pestControlMonthly: 50,
+  lawnCareMonthly: 50,
 }
 
 // Primary search center (Ellicott City / Columbia, MD)

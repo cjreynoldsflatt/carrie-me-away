@@ -93,7 +93,9 @@ export default function AssumptionsPopover() {
     draft.realtorRate === DEFAULT_ASSUMPTIONS.realtorRate &&
     draft.propertyManagementRate === DEFAULT_ASSUMPTIONS.propertyManagementRate &&
     draft.tenancyYears === DEFAULT_ASSUMPTIONS.tenancyYears &&
-    draft.turnoverCost === DEFAULT_ASSUMPTIONS.turnoverCost
+    draft.turnoverCost === DEFAULT_ASSUMPTIONS.turnoverCost &&
+    draft.pestControlMonthly === DEFAULT_ASSUMPTIONS.pestControlMonthly &&
+    draft.lawnCareMonthly === DEFAULT_ASSUMPTIONS.lawnCareMonthly
 
   const isDirty = JSON.stringify(draft) !== JSON.stringify(assumptions)
 
@@ -163,6 +165,23 @@ export default function AssumptionsPopover() {
         <div className="text-xs text-slate-400">
           = ${Math.round(draft.turnoverCost / Math.max(1, draft.tenancyYears)).toLocaleString()}/yr annualized
         </div>
+      </div>
+      <div className="space-y-2 pt-1">
+        <label className="text-sm text-slate-600">Fixed Monthly Costs</label>
+        <NumericInput
+          label="Pest control"
+          value={draft.pestControlMonthly}
+          onChange={upd('pestControlMonthly')}
+          min={0} max={200} step={5}
+          format={(v) => v === 0 ? 'Included / N/A' : `$${v}/mo`}
+        />
+        <NumericInput
+          label="Lawn care"
+          value={draft.lawnCareMonthly}
+          onChange={upd('lawnCareMonthly')}
+          min={0} max={300} step={5}
+          format={(v) => v === 0 ? 'Included / N/A' : `$${v}/mo`}
+        />
       </div>
       <div className="space-y-2 pt-1">
         <label className="text-sm text-slate-600">Property Management</label>

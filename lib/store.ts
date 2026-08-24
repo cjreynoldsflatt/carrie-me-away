@@ -270,6 +270,8 @@ export const useAppStore = create<AppState>()(
             propertyManagementRate: assumptions.propertyManagementRate,
             tenancyYears: assumptions.tenancyYears,
             turnoverCost: assumptions.turnoverCost,
+            pestControlMonthly: assumptions.pestControlMonthly,
+            lawnCareMonthly: assumptions.lawnCareMonthly,
             rentalDemand: l.rentalDemand,
             rentConfidence: l.rentConfidence,
             rentalEvidence: l.rentalEvidence,
@@ -337,7 +339,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'carrie-app-state',
-      version: 14,
+      version: 17,
       migrate: (persisted: unknown, version: number) => {
         const s = persisted as Record<string, unknown>
         if (version === 0) {
@@ -470,6 +472,33 @@ export const useAppStore = create<AppState>()(
               realtorRate: (assumptions.realtorRate as number | undefined) ?? 0.03,
             },
           }
+        }
+        if (version < 15) {
+          // Add pest control and lawn care monthly costs
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              pestControlMonthly: (assumptions.pestControlMonthly as number | undefined) ?? 50,
+              lawnCareMonthly: (assumptions.lawnCareMonthly as number | undefined) ?? 50,
+            },
+          }
+        }
+        if (version < 16) {
+          // Drop realtor rate default from 3% → 2%
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              realtorRate: (assumptions.realtorRate as number | undefined) === 0.03 ? 0.02 : assumptions.realtorRate,
+            },
+          }
+        }
+        if (version < 17) {
+          // LLC_ANNUAL_COST is now baked into computeMetrics — no assumption to migrate
+          return s
         }
         return s
       },

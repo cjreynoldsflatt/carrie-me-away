@@ -1,5 +1,7 @@
 import type { RentalDemand, RentalEvidence, RentConfidence } from './types'
 
+export const LLC_ANNUAL_COST = 300  // CMA Investments LLC fixed annual fee
+
 // Returns the rent used for conservative grading (lower-middle of range).
 // When the user has manually set rent (High confidence) we trust their value directly.
 export function computeConservativeRent(
@@ -33,6 +35,8 @@ interface RawListing {
   propertyManagementRate: number
   tenancyYears: number
   turnoverCost: number
+  pestControlMonthly?: number
+  lawnCareMonthly?: number
   rentalDemand: RentalDemand
   rentConfidence: RentConfidence
   rentalEvidence: RentalEvidence
@@ -52,6 +56,8 @@ export function computeMetrics(listing: RawListing) {
   const annualHOA = listing.hoaMonthly * 12
   const managementCost = grossAnnualRent * (listing.propertyManagementRate ?? 0.10)
   const insuranceAnnual = Math.round(listing.price * (listing.insuranceRate ?? 0.005))
+  const pestControlAnnual = (listing.pestControlMonthly ?? 50) * 12
+  const lawnCareAnnual = (listing.lawnCareMonthly ?? 50) * 12
   const netAnnualIncome =
     grossAnnualRent -
     vacancyReserve -
@@ -61,7 +67,10 @@ export function computeMetrics(listing: RawListing) {
     managementCost -
     listing.propertyTaxAnnual -
     annualHOA -
-    insuranceAnnual
+    insuranceAnnual -
+    pestControlAnnual -
+    lawnCareAnnual -
+    LLC_ANNUAL_COST
   const netCashYield = totalCashInvested > 0 ? netAnnualIncome / totalCashInvested : 0
   const paybackYears = netAnnualIncome > 0 ? totalCashInvested / netAnnualIncome : Infinity
 
@@ -86,6 +95,9 @@ export function computeMetrics(listing: RawListing) {
     paybackYears,
     investmentScore,
     insuranceAnnual,
+    pestControlAnnual,
+    lawnCareAnnual,
+    llcAnnualCost: LLC_ANNUAL_COST,
   }
 }
 
@@ -162,6 +174,33 @@ export function equityScenarios(price: number, appreciationRate: number, years =
 
 export function tenYearRentalIncome(netAnnualIncome: number, years = 10): number {
   return Math.round(netAnnualIncome * years)
+}
+
+// ── CCAP financing helpers ────────────────────────────────────────────────────
+
+/** Monthly principal + interest payment for a fully-amortizing loan. */
+export function computeMonthlyPayment(principal: number, annualRate: number, termMonths = 360): number {
+  if (annualRate === 0) return Math.round(principal / termMonths)
+  const r = annualRate / 12
+  const factor = Math.pow(1 + r, termMonths)
+  return Math.round(principal * r * factor / (factor - 1))
+}
+
+/** Remaining loan balance after `monthsPaid` payments. */
+export function computeRemainingBalance(
+  principal: number,
+  annualRate: number,
+  termMonths: number,
+  monthsPaid: number,
+): number {
+  if (monthsPaid <= 0) return Math.round(principal)
+  if (annualRate === 0) {
+    return Math.max(0, Math.round(principal - (principal / termMonths) * monthsPaid))
+  }
+  const r = annualRate / 12
+  const payment = principal * r * Math.pow(1 + r, termMonths) / (Math.pow(1 + r, termMonths) - 1)
+  const bal = principal * Math.pow(1 + r, monthsPaid) - payment * (Math.pow(1 + r, monthsPaid) - 1) / r
+  return Math.max(0, Math.round(bal))
 }
 
 // Haversine distance in miles
