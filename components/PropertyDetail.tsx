@@ -300,7 +300,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     metrics.turnoverReserve + propertyTaxInput + annualHOA + metrics.insuranceAnnual +
     metrics.pestControlAnnual + metrics.lawnCareAnnual + managementCost + LLC_ANNUAL_COST
   const ccapMonthlyPayment = purchaseMethod === 'ccap'
-    ? computeMonthlyPayment(metrics.totalCashInvested, ccapRate)
+    ? computeMonthlyPayment(metrics.totalCashInvested, ccapRate, 480)
     : 0
   const annualDebtService = ccapMonthlyPayment * 12
   const cmaCashFlowAnnual = metrics.netAnnualIncome - annualDebtService
@@ -550,7 +550,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     <span className="font-semibold tabular-nums">{fmtCurrency(annualDebtService)}/yr</span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    CCAP finances 100% of the acquisition (price + closing costs + repairs) via a 30-year P+I loan. CMA's equity grows through appreciation and principal paydown.
+                    CCAP finances 100% of the acquisition (price + closing costs + repairs) via a 40-year P+I loan. CMA's equity grows through appreciation and principal paydown.
                   </p>
                 </div>
               )}
@@ -1010,7 +1010,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             const tenYrRent = tenYearRentalIncome(metrics.netAnnualIncome)
 
             // CCAP-specific 10-yr calculations (computed always, used only in CCAP branch)
-            const remBal10 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 120)
+            const remBal10 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 480, 120)
             const propVal10 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 10))
             const cmaEquity10 = propVal10 - remBal10
             const cumCashFlow10CCAP = Math.round(cmaCashFlowAnnual * 10)
@@ -1024,7 +1024,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               const ccapChartData = Array.from({ length: 11 }, (_, yr) => {
                 const cashFlow = Math.round(cmaCashFlowAnnual * yr)
                 const propVal = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, yr))
-                const remBal = yr === 0 ? metrics.totalCashInvested : computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, yr * 12)
+                const remBal = yr === 0 ? metrics.totalCashInvested : computeRemainingBalance(metrics.totalCashInvested, ccapRate, 480, yr * 12)
                 const equity = propVal - remBal
                 return { yr, cashFlow, equity, total: cashFlow + equity }
               })
