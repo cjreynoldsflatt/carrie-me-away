@@ -46,6 +46,7 @@ export interface SaleListing {
   insuranceAnnual: number
   closingCostRate: number
   repairs: number
+  superAnnualCost: number         // Super maintenance protection; 0 = disabled
   vacancyRate: number
   maintenanceRate: number
   capExRate: number

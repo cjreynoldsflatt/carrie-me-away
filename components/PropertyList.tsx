@@ -1,8 +1,8 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { GitCompare, MapPin } from 'lucide-react'
+import { GitCompare, MapPin, Trash2 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
@@ -68,6 +68,34 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const gradeFilter = useAppStore((s) => s.gradeFilter)
   const setGradeFilter = useAppStore((s) => s.setGradeFilter)
   const toggleGradeFilter = useAppStore((s) => s.toggleGradeFilter)
+  const deleteListings = useAppStore((s) => s.deleteListings)
+
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  function toggleSelectMode() {
+    if (selectMode) {
+      setSelectMode(false)
+      setSelectedIds([])
+    } else {
+      setSelectMode(true)
+      setCompareMode(false)
+    }
+  }
+
+  function toggleSelectId(id: string) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    )
+  }
+
+  async function handleDeleteSelected() {
+    if (selectedIds.length === 0) return
+    if (!confirm(`Delete ${selectedIds.length} propert${selectedIds.length === 1 ? 'y' : 'ies'}? This cannot be undone.`)) return
+    await deleteListings(selectedIds)
+    setSelectedIds([])
+    setSelectMode(false)
+  }
 
   const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
 
@@ -126,6 +154,18 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           {compareMode && compareIds.length > 0 && (
             <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
           )}
+          <button
+            onClick={toggleSelectMode}
+            title={selectMode ? 'Exit select mode' : 'Select to delete'}
+            className={cn(
+              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
+              selectMode
+                ? 'bg-red-50 border-red-300 text-red-600'
+                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
+            )}
+          >
+            <Trash2 size={14} />
+          </button>
           <FilterPopover />
           <AddListingModal />
           <AssumptionsPopover />
@@ -149,6 +189,18 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           {compareMode && compareIds.length > 0 && (
             <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
           )}
+          <button
+            onClick={toggleSelectMode}
+            title={selectMode ? 'Exit select mode' : 'Select to delete'}
+            className={cn(
+              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
+              selectMode
+                ? 'bg-red-50 border-red-300 text-red-600'
+                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
+            )}
+          >
+            <Trash2 size={14} />
+          </button>
         </div>
       </div>
 
@@ -158,6 +210,22 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           {compareIds.length >= 2 && (
             <span className="font-medium">Switch to Compare panel to view side-by-side.</span>
           )}
+        </div>
+      )}
+
+      {selectMode && (
+        <div className="px-4 py-2 bg-red-50 border-b border-red-100 text-xs text-red-700 flex items-center justify-between">
+          <span>{selectedIds.length === 0 ? 'Tap properties to select' : `${selectedIds.length} selected`}</span>
+          <div className="flex items-center gap-3">
+            {selectedIds.length > 0 && (
+              <button onClick={handleDeleteSelected} className="font-semibold text-red-700 hover:text-red-900">
+                Delete {selectedIds.length}
+              </button>
+            )}
+            <button onClick={toggleSelectMode} className="text-red-500 hover:text-red-700">
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
@@ -215,8 +283,12 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
                 selected={listing.id === selectedId}
                 compareMode={compareMode}
                 compareSelected={compareIds.includes(listing.id)}
+                selectMode={selectMode}
+                selectSelected={selectedIds.includes(listing.id)}
                 onClick={() => {
-                  if (compareMode) {
+                  if (selectMode) {
+                    toggleSelectId(listing.id)
+                  } else if (compareMode) {
                     toggleCompare(listing.id)
                   } else {
                     setSelectedId(listing.id === selectedId ? null : listing.id)

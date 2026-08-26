@@ -29,6 +29,7 @@ function makeSale(
     insuranceRate: 0.005,
     closingCostRate: raw.closingCostRate,
     repairs: raw.repairs,
+    superAnnualCost: raw.superAnnualCost ?? 1449,
     vacancyRate: raw.vacancyRate,
     maintenanceRate: raw.maintenanceRate,
     capExRate: raw.capExRate,
@@ -45,6 +46,7 @@ function makeSale(
 const defaults = {
   closingCostRate: 0.03,
   repairs: 15000,
+  superAnnualCost: 1449,
   vacancyRate: 0.05,
   maintenanceRate: 0.05,
   capExRate: 0.03,

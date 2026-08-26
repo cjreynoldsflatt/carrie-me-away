@@ -1,0 +1,453 @@
+# 03 — CMA Property Management LLC Operating Agreement
+
+## Operating Agreement of CMA Property Management LLC
+
+This Operating Agreement governs **CMA Property Management LLC**, referred to as **CMA-PM**.
+
+CMA-PM is intended to serve as the centralized property-management and operating company for rental properties ultimately owned by CMA Investments LLC (**CMA-I**).
+
+---
+
+# 1. Company
+
+### Legal Name
+
+**CMA Property Management LLC**
+
+### Abbreviation
+
+**CMA-PM**
+
+### State of Formation
+
+**Maryland**
+
+### Principal Purpose
+
+CMA-PM may provide property-management, administrative, bookkeeping, leasing, vendor-management, and related services for properties ultimately owned by CMA-I.
+
+CMA-PM does not ordinarily own rental real estate.
+
+---
+
+# 2. Sole Member
+
+The sole member of CMA-PM is:
+
+## CMA Investments LLC
+
+CMA-I owns:
+
+## 100% of CMA-PM
+
+No individual person directly owns CMA-PM.
+
+---
+
+# 3. Single-Member LLC
+
+CMA-PM is intended to operate as a:
+
+## Single-Member LLC
+
+with CMA-I as its sole member.
+
+CMA-PM shall remain legally separate from CMA-I and from each Property LLC despite common ownership.
+
+---
+
+# 4. Management
+
+CMA-PM is managed under the authority of its sole member:
+
+## CMA-I
+
+CMA-I may appoint one or more authorized representatives to act for CMA-PM.
+
+---
+
+# 5. Relationship to CMA-I Governance
+
+CMA-I currently has:
+
+### Carrie
+
+## 51% governance rights
+
+### Cameron
+
+## 49% governance rights
+
+Ordinary decisions affecting CMA-PM ultimately follow the governance rules of CMA-I.
+
+Fundamental decisions affecting CMA-PM that also constitute fundamental decisions of CMA-I remain subject to the approval requirements in the CMA-I Operating Agreement.
+
+Cameron's Service-Based Profits Interest in CMA-I does not create a direct ownership interest in CMA-PM.
+
+---
+
+# 6. Relationship to Property LLCs
+
+CMA-PM does not own the rental houses.
+
+Each house is generally owned by a separate Property LLC.
+
+CMA-PM manages the property as an authorized agent.
+
+---
+
+# 7. Property Management & Agency Agreements
+
+CMA-PM should be appointed by each Property LLC through a written:
+
+## Property Management & Agency Agreement
+
+---
+
+# 8. Property Management Services
+
+CMA-PM may perform or coordinate services including:
+
+- advertising rentals;
+- tenant screening administration;
+- lease administration;
+- rent collection;
+- security-deposit administration;
+- tenant communication;
+- maintenance coordination;
+- repair coordination;
+- vendor management;
+- insurance administration;
+- utility administration;
+- bookkeeping;
+- property-level reporting;
+- move-in and move-out administration;
+- outside property-manager oversight.
+
+---
+
+# 9. Property LLC Remains Landlord
+
+The applicable Property LLC remains:
+
+## The Landlord
+
+CMA-PM acts as:
+
+## Property Manager and Agent
+
+---
+
+# 10. Lease Signature Format
+
+When authorized, a lease may generally be signed in a form such as:
+
+```text
+FLAMINGO PROPERTIES LLC
+Landlord
+
+By: CMA Property Management LLC
+Its Authorized Property Manager and Agent
+
+By: ______________________________
+Authorized Representative
+```
+
+---
+
+# 11. Management Fee
+
+CMA-PM's initial internal management fee for properties ultimately owned by CMA-I is:
+
+## $0
+
+CMA-I may later approve a management fee.
+
+---
+
+# 12. Cameron's Operating Role
+
+Cameron is expected to perform substantial operating services connected with CMA-I and CMA-PM.
+
+These may include:
+
+- establishing management systems;
+- overseeing property operations;
+- coordinating vendors;
+- overseeing outside property managers;
+- maintaining reporting and bookkeeping workflows;
+- coordinating property compliance;
+- supporting acquisitions and renovations.
+
+Cameron's compensation for these broader services is primarily addressed through his:
+
+## Service-Based Profits Interest in CMA-I
+
+Detailed service and vesting requirements are established in:
+
+## 09 — Cameron Service & Profits Interest Agreement
+
+---
+
+# 13. Bank Accounts
+
+CMA-PM may maintain:
+
+### CMA-PM Operating Account
+
+and
+
+### CMA-PM Security Deposit Account
+
+---
+
+# 14. CMA-PM Operating Account
+
+The CMA-PM Operating Account may receive:
+
+- tenant rent;
+- tenant reimbursements;
+- property operating funds;
+- property reserve funding.
+
+It may be used to pay:
+
+- repairs;
+- maintenance;
+- HOA expenses;
+- utilities;
+- insurance;
+- taxes where appropriate;
+- vendors;
+- outside property managers.
+
+---
+
+# 15. Property-Specific Accounting
+
+CMA-PM may operate a centralized bank account for multiple properties.
+
+However, CMA-PM must maintain separate property-level records.
+
+### Core Rule
+
+> **Centralized banking does not mean centralized ownership of the money.**
+
+---
+
+# 16. Property Operating Reserves
+
+Each rental property should generally maintain:
+
+## $20,000
+
+as a property operating reserve.
+
+---
+
+# 17. Reserve Replenishment
+
+If a property's operating reserve falls below:
+
+## $20,000
+
+future cash generated by that property should generally replenish the reserve before excess cash is transferred to CMA-I.
+
+---
+
+# 18. Excess Property Cash
+
+After paying or providing for property expenses, obligations, reserves, and anticipated near-term costs, CMA-PM may transfer excess property cash to:
+
+## CMA-I
+
+CMA-PM does not make owner distributions directly to Carrie or Cameron.
+
+---
+
+# 19. Security Deposits
+
+Tenant security deposits are not:
+
+- rent;
+- CMA-PM revenue;
+- owner profit;
+- available operating cash.
+
+---
+
+# 20. CMA-PM Security Deposit Account
+
+Security deposits should generally be held through:
+
+## CMA-PM Security Deposit Account
+
+CMA-PM shall maintain records identifying:
+
+- tenant;
+- property;
+- Property LLC;
+- deposit amount;
+- receipt date;
+- deductions;
+- interest where required;
+- final disposition.
+
+---
+
+# 21. Spending Authority
+
+Authorized representatives may independently approve ordinary CMA-PM or property expenses up to:
+
+## $2,500 per occurrence
+
+---
+
+# 22. Emergency Authority
+
+An authorized representative may approve an expense exceeding $2,500 when reasonably necessary to:
+
+- protect tenant health or safety;
+- prevent substantial property damage;
+- comply with law;
+- restore essential services;
+- prevent substantial immediate financial loss.
+
+---
+
+# 23. Vendors
+
+CMA-PM may retain vendors and service providers for ordinary property operations.
+
+---
+
+# 24. Outside Property Managers
+
+CMA-PM may retain an outside property-management company when appropriate.
+
+---
+
+# 25. Insurance Administration
+
+CMA-PM may coordinate insurance applications, renewals, premium payments, claims, and insurer communication.
+
+The applicable Property LLC should generally remain the named insured.
+
+---
+
+# 26. Bookkeeping
+
+CMA-PM shall maintain records sufficient to identify:
+
+- rent received;
+- property expenses;
+- reserve balances;
+- security deposits;
+- intercompany transfers;
+- vendor payments;
+- amounts transferred to CMA-I.
+
+---
+
+# 27. Intercompany Transactions
+
+Transactions among CMA-I, CMA-PM, and Property LLCs should be clearly documented and consistently recorded.
+
+---
+
+# 28. Separate Legal Entity
+
+CMA-PM shall be operated as a legal entity separate from CMA-I, each Property LLC, Carrie, Cameron, and other persons or entities.
+
+---
+
+# 29. No Personal Ownership of Property Funds
+
+Property income received by CMA-PM does not become personal money belonging to an authorized representative.
+
+---
+
+# 30. Tax Classification
+
+Because CMA-PM is wholly owned by CMA-I, CMA-PM is intended to be treated as:
+
+## A disregarded entity for federal income-tax purposes
+
+unless another tax election is made.
+
+---
+
+# 31. No Additional Members
+
+CMA-PM may not admit another member without the approval required under the CMA-I Operating Agreement.
+
+---
+
+# 32. Transfer of CMA-PM Ownership
+
+CMA-I may not transfer its ownership of CMA-PM if the transfer would constitute a fundamental CMA-I decision without the approval required under the CMA-I Operating Agreement.
+
+---
+
+# 33. Limitation of Liability
+
+To the fullest extent permitted by applicable law, CMA-PM's debts and obligations are intended to remain obligations of CMA-PM rather than personal obligations of CMA-I's members, authorized representatives, employees, or agents.
+
+---
+
+# 34. Indemnification
+
+To the extent permitted by applicable law, CMA-PM may indemnify an authorized representative or other agent for actions taken in good faith, within authorized duties, and in the reasonable interests of CMA-PM.
+
+---
+
+# 35. Maryland Compliance
+
+CMA-PM shall operate in accordance with applicable Maryland landlord-tenant law, security-deposit requirements, rental-property requirements, licensing requirements, and local requirements applicable to the property.
+
+---
+
+# 36. Records Access
+
+CMA-I, as sole member, is entitled to access CMA-PM's business records.
+
+---
+
+# 37. Dissolution
+
+CMA-PM may be dissolved when approved in accordance with CMA-I's governance requirements.
+
+After payment of CMA-PM's debts and obligations, remaining assets shall generally be distributed to:
+
+## CMA-I
+
+---
+
+# 38. Amendments
+
+This Agreement may be amended by CMA-I as sole member.
+
+---
+
+# 39. Governing Law
+
+CMA-PM is a:
+
+## Maryland limited liability company
+
+This Agreement shall be governed by applicable Maryland law.
+
+---
+
+# 40. Sole Member Approval
+
+CMA Investments LLC adopts this Operating Agreement as the sole member of CMA Property Management LLC.
+
+### CMA Investments LLC  
+**Sole Member**
+
+By: ______________________________
+
+Title: ___________________________
+
+Date: ____________________________

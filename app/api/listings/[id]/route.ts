@@ -19,6 +19,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.repairs === 'number' && body.repairs >= 0) {
     updates.repairs = body.repairs
   }
+  if (typeof body.super_annual_cost === 'number' && body.super_annual_cost >= 0) {
+    updates.super_annual_cost = body.super_annual_cost
+  }
   const validTypes = ['Townhouse', 'Condo', 'Single Family', 'Multi Family']
   if (typeof body.property_type === 'string' && validTypes.includes(body.property_type)) {
     updates.property_type = body.property_type

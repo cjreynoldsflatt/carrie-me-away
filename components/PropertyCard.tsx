@@ -17,6 +17,8 @@ interface Props {
   onClick: () => void
   compareMode?: boolean
   compareSelected?: boolean
+  selectMode?: boolean
+  selectSelected?: boolean
 }
 
 // ── Grade scale (A+, A, B+, B, C, D) ────────────────────────────────────────
@@ -94,7 +96,7 @@ function GradeBadge({ score, netCashYield }: { score: number; netCashYield: numb
   )
 }
 
-export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false }: Props) {
+export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false }: Props) {
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
   const originalRent = useAppStore((s) => s.originalRents[listing.id])
@@ -142,9 +144,11 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
       onClick={onClick}
       className={cn(
         'bg-white rounded-xl border cursor-pointer transition-all hover:shadow-md',
-        compareMode && compareSelected
+        selectMode && selectSelected
+          ? 'border-red-500 shadow-md ring-1 ring-red-200'
+          : compareMode && compareSelected
           ? 'border-blue-500 shadow-md ring-1 ring-blue-200'
-          : selected && !compareMode
+          : selected && !compareMode && !selectMode
           ? 'border-blue-500 shadow-md ring-1 ring-blue-200'
           : 'border-slate-200 hover:border-slate-300',
       )}
@@ -159,8 +163,22 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
           </div>
         )}
 
+        {/* Select checkbox (top-left, when select mode) */}
+        {selectMode && (
+          <div className="absolute top-2 left-2">
+            <div className={cn(
+              'w-7 h-7 rounded-md flex items-center justify-center backdrop-blur-sm border transition-colors',
+              selectSelected
+                ? 'bg-red-500 border-red-500 text-white'
+                : 'bg-white/90 border-slate-200 text-slate-400',
+            )}>
+              {selectSelected ? <CheckSquare size={16} /> : <Square size={16} />}
+            </div>
+          </div>
+        )}
+
         {/* Compare checkbox (top-left, when compare mode) */}
-        {compareMode && (
+        {!selectMode && compareMode && (
           <div className="absolute top-2 left-2">
             <div className={cn(
               'w-7 h-7 rounded-md flex items-center justify-center backdrop-blur-sm border transition-colors',
@@ -173,8 +191,8 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
           </div>
         )}
 
-        {/* Property type badge (hidden in compare mode to avoid overlap) */}
-        {!compareMode && (
+        {/* Property type badge (hidden in compare/select mode to avoid overlap) */}
+        {!compareMode && !selectMode && (
           <div className="absolute top-2 left-2">
             <span className="bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
               {listing.propertyType === 'Condo' || listing.propertyType === 'Multi Family' ? <Building2 size={11} /> : <Home size={11} />}
@@ -363,15 +381,15 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
           </div>
         </div>
 
-        {/* 10-year equity */}
+        {/* 5-year equity */}
         <div className="bg-slate-900 rounded-lg p-2.5 grid grid-cols-2 gap-2">
           <div>
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">10-yr Equity</div>
+            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">5-yr Equity</div>
             <div className="text-base font-bold text-white">+{fmtCurrency(equity.expected)}</div>
             <div className="text-xs text-slate-400">at {(listing.appreciationRate * 100).toFixed(1)}%/yr est.</div>
           </div>
           <div>
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">10-yr Combined</div>
+            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">5-yr Combined</div>
             <div className="text-base font-bold text-white">+{fmtCurrency(tenYrCombined)}</div>
             <div className="text-xs text-slate-400">rent + equity</div>
           </div>

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ChevronLeft, Heart } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'About — Carrie Me Away',
@@ -12,30 +11,26 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-4">
-        <Link href="/" className="shrink-0">
-          <img src="/cma-logo.png" alt="Carrie Me Away" className="h-7 w-auto" />
+      <header className="bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3">
+        <Link href="/" className="text-slate-400 hover:text-slate-700 transition-colors">
+          <ChevronLeft size={20} />
         </Link>
-        <Link
-          href="/"
-          className="ml-auto flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
-        >
-          <ArrowLeft size={14} />
-          Back to app
-        </Link>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center">
+            <Heart size={15} className="text-rose-500" />
+          </div>
+          <span className="text-lg font-bold text-slate-900">About Us</span>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-14 space-y-12">
 
         {/* Photo */}
-        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-md bg-slate-100">
-          <Image
+        <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-md bg-slate-100">
+          <img
             src="/team.png"
             alt="Carrie and her son"
-            fill
-            className="object-cover object-top"
-            sizes="(max-width: 768px) 100vw, 672px"
-            priority
+            className="w-full h-full object-cover object-top"
           />
         </div>
 
@@ -77,8 +72,8 @@ export default function AboutPage() {
             href="/"
             className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
           >
-            <ArrowLeft size={14} />
-            Back to the property finder
+            <ChevronLeft size={16} />
+            Back to home
           </Link>
         </div>
       </main>

@@ -18,6 +18,7 @@ export function rowToSaleListing(row: Row): SaleListing {
   const hoaMonthly = row.hoa_monthly ?? 0
   const propertyTaxAnnual = row.property_tax_annual ?? Math.round(row.price * 0.01)
   const repairs = row.repairs ?? 15000
+  const superAnnualCost = row.super_annual_cost ?? 1449
   const conservativeRent = computeConservativeRent(estimatedRent, rentLow, rentHigh, rentConfidence)
 
   const metrics = computeMetrics({
@@ -29,6 +30,7 @@ export function rowToSaleListing(row: Row): SaleListing {
     insuranceRate: DEFAULT_ASSUMPTIONS.insuranceRate,
     closingCostRate: DEFAULT_ASSUMPTIONS.closingCostRate,
     repairs,
+    superAnnualCost,
     vacancyRate: DEFAULT_ASSUMPTIONS.vacancyRate,
     maintenanceRate: DEFAULT_ASSUMPTIONS.maintenanceRate,
     capExRate: DEFAULT_ASSUMPTIONS.capExRate,
@@ -68,6 +70,7 @@ export function rowToSaleListing(row: Row): SaleListing {
     propertyTaxAnnual,
     closingCostRate: DEFAULT_ASSUMPTIONS.closingCostRate,
     repairs,
+    superAnnualCost,
     vacancyRate: DEFAULT_ASSUMPTIONS.vacancyRate,
     maintenanceRate: DEFAULT_ASSUMPTIONS.maintenanceRate,
     capExRate: DEFAULT_ASSUMPTIONS.capExRate,

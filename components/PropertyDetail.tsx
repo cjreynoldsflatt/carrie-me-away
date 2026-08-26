@@ -9,6 +9,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { HOME } from '@/lib/config'
+import { CMA_I, getVestingStatus } from '@/lib/cmai'
 import type { SaleListing } from '@/lib/types'
 
 // ── Grade scale (matches PropertyCard) ───────────────────────────────────────
@@ -214,6 +215,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
   const originalRent = useAppStore((s) => selectedId ? s.originalRents[selectedId] : undefined)
   const saveRepairsToDb = useAppStore((s) => s.saveRepairsToDb)
+  const saveSuperToDb = useAppStore((s) => s.saveSuperToDb)
   const savePropertyTypeToDb = useAppStore((s) => s.savePropertyTypeToDb)
   const saveUnitsToDb = useAppStore((s) => s.saveUnitsToDb)
   const listing = saleListings.find((l) => l.id === selectedId)
@@ -221,7 +223,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const isMultiFamily = listing?.propertyType === 'Multi Family'
 
   // Local editable values — reset when selected property changes
-  const [repairsInput, setRepairsInput] = useState(listing?.repairs ?? 10000)
+  const [repairsInput, setRepairsInput] = useState(listing?.repairs ?? 20000)
   const [rentInput, setRentInput] = useState(listing?.estimatedRent ?? 0)
   const [unitsInput, setUnitsInput] = useState(listing?.units ?? 2)
   const [propertyTaxInput, setPropertyTaxInput] = useState(listing?.propertyTaxAnnual ?? 0)
@@ -232,20 +234,28 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   // Purchase method for CMA financing
   const [purchaseMethod, setPurchaseMethod] = useState<'cash' | 'ccap'>('cash')
   const [ccapRate, setCcapRate] = useState(0.06)
-  const [carrieCapital, setCarrieCapital] = useState(1_000_000)
+  const [pmRateBeforeDisable, setPmRateBeforeDisable] = useState(
+    assumptions.propertyManagementRate > 0 ? assumptions.propertyManagementRate : 0.10
+  )
+  const [superCostInput, setSuperCostInput] = useState(listing?.superAnnualCost ?? 1449)
+  const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
 
   useEffect(() => {
-    const dbRepairs = listing?.repairs ?? 10000
+    const dbRepairs = listing?.repairs ?? 20000
     const dbRent = listing?.estimatedRent ?? 0
     const dbUnits = listing?.units ?? 2
     setRepairsInput(dbRepairs)
-    setRentInput(dbRent)
+    // Default to Low rent scenario when a range exists; otherwise use the stored estimate
+    const hasRentRange = (listing?.rentLow ?? 0) > 0 && (listing?.rentHigh ?? 0) > 0 && listing?.rentConfidence !== 'High'
+    setRentInput(hasRentRange ? (listing?.rentLow ?? dbRent) : dbRent)
     setUnitsInput(dbUnits)
     setPropertyTaxInput(listing?.propertyTaxAnnual ?? 0)
+    const dbSuper = listing?.superAnnualCost ?? 1449
+    setSuperCostInput(dbSuper)
+    setSuperBeforeDisable(dbSuper > 0 ? dbSuper : 1449)
     setOpenGear(null)
     setPurchaseMethod('cash')
     setCcapRate(0.06)
-    setCarrieCapital(1_000_000)
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
       setUnitRents(Array(dbUnits).fill(perUnit))
@@ -259,6 +269,8 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     : rentInput
 
   if (!listing) return null
+
+  const vesting = getVestingStatus()
 
   // Computed rent scenario — derived from rentInput vs preset values (no extra state needed)
   const hasRange = listing.rentLow > 0 && listing.rentHigh > 0 && listing.rentConfidence !== 'High'
@@ -277,6 +289,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     insuranceRate: assumptions.insuranceRate,
     closingCostRate: assumptions.closingCostRate,
     repairs: repairsInput,
+    superAnnualCost: superCostInput,
     vacancyRate: assumptions.vacancyRate,
     maintenanceRate: assumptions.maintenanceRate,
     capExRate: assumptions.capExRate,
@@ -300,14 +313,14 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     : 0
   const totalExpenses = metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve +
     metrics.turnoverReserve + propertyTaxInput + annualHOA + metrics.insuranceAnnual +
-    metrics.pestControlAnnual + metrics.lawnCareAnnual + managementCost + LLC_ANNUAL_COST
+    metrics.pestControlAnnual + metrics.lawnCareAnnual + metrics.superAnnual + managementCost + LLC_ANNUAL_COST
   const ccapMonthlyPayment = purchaseMethod === 'ccap'
     ? computeMonthlyPayment(metrics.totalCashInvested, ccapRate, 360)
     : 0
   const annualDebtService = ccapMonthlyPayment * 12
   const cmaCashFlowAnnual = metrics.netAnnualIncome - annualDebtService
   const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== originalRent
-  const repairsIsEdited = repairsInput !== (listing.repairs ?? 10000)
+  const repairsIsEdited = repairsInput !== (listing.repairs ?? 20000)
 
   return (
     <div className="flex flex-col h-full">
@@ -513,7 +526,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   onClick={() => setPurchaseMethod('ccap')}
                   className={`flex-1 py-2 transition-colors border-l border-slate-200 ${purchaseMethod === 'ccap' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
                 >
-                  CCAP Loan
+                  Loan
                 </button>
               </div>
               {purchaseMethod === 'ccap' && (
@@ -525,7 +538,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">CCAP loan</span>
+                      <span className="text-slate-600">Loan</span>
                       <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
                     </div>
                     <div className="flex justify-between text-sm font-semibold border-t border-slate-200 pt-1.5">
@@ -535,7 +548,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   </div>
                   {/* Rate + debt service */}
                   <InlineSlider
-                    label="CCAP loan rate"
+                    label="Loan rate"
                     value={ccapRate}
                     onChange={setCcapRate}
                     min={0.02}
@@ -552,44 +565,35 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     <span className="font-semibold tabular-nums">{fmtCurrency(annualDebtService)}/yr</span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    CCAP finances 100% of the acquisition (price + closing costs + repairs) via a 30-year P+I loan. CMA's equity grows through appreciation and principal paydown.
+                    Finances 100% of the acquisition (price + closing costs + repairs) via a 30-year P+I loan. CMA's equity grows through appreciation and principal paydown.
                   </p>
                 </div>
               )}
               {purchaseMethod === 'cash' && (
                 <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-2">
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">CMA Funding</div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Capital source</span>
-                    <span className="font-semibold text-slate-800">Carrie Reynolds-Flatt</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Carrie initial capital</span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-slate-400 text-xs">$</span>
-                      <input
-                        type="number"
-                        min={0}
-                        step={50000}
-                        value={carrieCapital}
-                        onChange={(e) => setCarrieCapital(Math.max(0, Number(e.target.value)))}
-                        className="w-28 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Cameron initial capital</span>
-                    <span className="font-semibold text-slate-500">$0</span>
-                  </div>
-                  <div className="border-t border-slate-200 pt-2 space-y-1">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">CMA-I Capital</div>
+                  <div className="space-y-1.5">
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Capital deployed to this property</span>
-                      <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
+                      <span className="text-slate-600">Carrie contributed capital</span>
+                      <span className="font-semibold text-slate-800">{fmtCurrency(CMA_I.carrieContributedCapital)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Remaining undeployed CMA capital</span>
-                      <span className={cn('font-semibold', carrieCapital - metrics.totalCashInvested >= 0 ? 'text-slate-800' : 'text-amber-600')}>
-                        {fmtCurrency(Math.max(0, carrieCapital - metrics.totalCashInvested))}
+                      <span className="text-slate-600">Cameron contributed capital</span>
+                      <span className="font-semibold text-slate-500">$0</span>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-200 pt-2 space-y-1.5">
+                    <div className="flex items-start justify-between text-sm gap-2">
+                      <div>
+                        <span className="text-slate-600">CMA-I capital deployed to this property</span>
+                        <div className="text-xs text-slate-400">Source: Carrie-contributed CMA-I capital</div>
+                      </div>
+                      <span className="font-semibold text-slate-800 shrink-0">{fmtCurrency(metrics.totalCashInvested)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Remaining undeployed CMA-I capital</span>
+                      <span className={cn('font-semibold', CMA_I.carrieContributedCapital - metrics.totalCashInvested >= 0 ? 'text-slate-800' : 'text-amber-600')}>
+                        {fmtCurrency(Math.max(0, CMA_I.carrieContributedCapital - metrics.totalCashInvested))}
                       </span>
                     </div>
                   </div>
@@ -614,7 +618,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               <div className="flex items-center gap-1.5">
                 {repairsIsEdited && (
                   <button
-                    onClick={() => setRepairsInput(listing.repairs ?? 10000)}
+                    onClick={() => setRepairsInput(listing.repairs ?? 20000)}
                     className="text-orange-500 hover:text-orange-700 flex items-center gap-0.5"
                     title="Reset to saved value"
                   >
@@ -630,7 +634,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   onChange={(e) => setRepairsInput(Math.max(0, Number(e.target.value)))}
                   onBlur={(e) => {
                     const val = Math.max(0, Number(e.target.value))
-                    if (val !== (listing.repairs ?? 10000)) saveRepairsToDb(listing.id, val)
+                    if (val !== (listing.repairs ?? 20000)) saveRepairsToDb(listing.id, val)
                   }}
                   className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 />
@@ -894,6 +898,82 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               <InlineSlider value={assumptions.lawnCareMonthly} onChange={(v) => setAssumptions({ lawnCareMonthly: v })} min={0} max={300} step={5} format={(v) => v === 0 ? 'Included / N/A' : `$${v}/mo`} />
               <p className="text-xs text-slate-400">Global · applies to all properties</p>
             </GearRow>
+            {/* Super Maintenance Protection — per-property, with toggle */}
+            <div className={cn('-mx-4 px-4 transition-colors', openGear === 'super' ? 'bg-blue-50' : 'hover:bg-slate-50')}>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpenGear(openGear === 'super' ? null : 'super')}
+                onKeyDown={(e) => e.key === 'Enter' && setOpenGear(openGear === 'super' ? null : 'super')}
+                className="w-full flex items-start justify-between gap-4 text-left py-1.5 cursor-pointer"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="inline-block w-4 text-slate-400 text-sm shrink-0">−</span>
+                  <span className="text-sm text-slate-700">
+                    {superCostInput > 0 ? 'Super Maintenance Protection' : 'Super Maintenance Protection'}
+                  </span>
+                  {/* On/Off toggle */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (superCostInput > 0) {
+                        setSuperBeforeDisable(superCostInput)
+                        setSuperCostInput(0)
+                        saveSuperToDb(listing.id, 0)
+                      } else {
+                        setSuperCostInput(superBeforeDisable)
+                        saveSuperToDb(listing.id, superBeforeDisable)
+                      }
+                    }}
+                    className={cn(
+                      'relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none',
+                      superCostInput > 0 ? 'bg-blue-500' : 'bg-slate-300',
+                    )}
+                  >
+                    <span className={cn(
+                      'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform',
+                      superCostInput > 0 ? 'translate-x-3' : 'translate-x-0',
+                    )} />
+                  </button>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-sm tabular-nums text-slate-700">
+                    {superCostInput > 0 ? fmtCurrency(superCostInput) : 'Disabled'}
+                  </span>
+                  {superCostInput > 0 && <div className="text-xs text-slate-400 tabular-nums">{mo(superCostInput)}/mo</div>}
+                </div>
+              </div>
+              {openGear === 'super' && (
+                <div className="pb-3 pt-0.5 space-y-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Annual cost</span>
+                      <span className="text-xs font-semibold text-slate-700 tabular-nums">{fmtCurrency(superCostInput > 0 ? superCostInput : superBeforeDisable)}/yr</span>
+                    </div>
+                    <input
+                      type="number"
+                      min={0}
+                      step={100}
+                      value={superCostInput > 0 ? superCostInput : superBeforeDisable}
+                      onChange={(e) => {
+                        const v = Math.max(0, Number(e.target.value))
+                        setSuperBeforeDisable(v > 0 ? v : superBeforeDisable)
+                        if (superCostInput > 0) setSuperCostInput(v)
+                      }}
+                      onBlur={(e) => {
+                        const v = Math.max(0, Number(e.target.value))
+                        if (superCostInput > 0) {
+                          setSuperCostInput(v)
+                          saveSuperToDb(listing.id, v)
+                        }
+                      }}
+                      className="w-full text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400">Maintenance marketplace / home systems &amp; appliance protection. Per-property.</p>
+                </div>
+              )}
+            </div>
             <Row
               label="LLC annual fee"
               value={fmtCurrency(LLC_ANNUAL_COST)}
@@ -901,17 +981,62 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               prefix="−"
               sub="CMA Investments LLC fixed cost"
             />
-            <GearRow
-              id="management"
-              label={assumptions.propertyManagementRate > 0 ? `Property management (${(assumptions.propertyManagementRate * 100).toFixed(0)}% of rent)` : 'Property management'}
-              value={managementCost > 0 ? fmtCurrency(managementCost) : 'Self-managed'}
-              monthly={managementCost > 0 ? mo(managementCost) : undefined}
-              prefix="−"
-              openGear={openGear} setOpenGear={setOpenGear}
-            >
-              <InlineSlider value={assumptions.propertyManagementRate} onChange={(v) => setAssumptions({ propertyManagementRate: v })} min={0} max={0.2} step={0.005} format={(v) => v === 0 ? 'Self-manage' : `${(v * 100).toFixed(1)}% of rent`} />
-              <p className="text-xs text-slate-400">Global · applies to all properties</p>
-            </GearRow>
+            <div className={cn('-mx-4 px-4 transition-colors', openGear === 'management' ? 'bg-blue-50' : 'hover:bg-slate-50')}>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpenGear(openGear === 'management' ? null : 'management')}
+                onKeyDown={(e) => e.key === 'Enter' && setOpenGear(openGear === 'management' ? null : 'management')}
+                className="w-full flex items-start justify-between gap-4 text-left py-1.5 cursor-pointer"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="inline-block w-4 text-slate-400 text-sm shrink-0">−</span>
+                  <span className="text-sm text-slate-700">
+                    {assumptions.propertyManagementRate > 0
+                      ? `Property management (${(assumptions.propertyManagementRate * 100).toFixed(0)}%)`
+                      : 'Property management'}
+                  </span>
+                  {/* Inline on/off toggle — stopPropagation so it doesn't open/close the gear */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (assumptions.propertyManagementRate > 0) {
+                        setPmRateBeforeDisable(assumptions.propertyManagementRate)
+                        setAssumptions({ propertyManagementRate: 0 })
+                      } else {
+                        setAssumptions({ propertyManagementRate: pmRateBeforeDisable })
+                      }
+                    }}
+                    className={cn(
+                      'relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none',
+                      assumptions.propertyManagementRate > 0 ? 'bg-blue-500' : 'bg-slate-300',
+                    )}
+                  >
+                    <span className={cn(
+                      'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform',
+                      assumptions.propertyManagementRate > 0 ? 'translate-x-3' : 'translate-x-0',
+                    )} />
+                  </button>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-sm tabular-nums text-slate-700">
+                    {managementCost > 0 ? fmtCurrency(managementCost) : 'Self-managed'}
+                  </span>
+                  {managementCost > 0 && <div className="text-xs text-slate-400 tabular-nums">{mo(managementCost)}/mo</div>}
+                </div>
+              </div>
+              {openGear === 'management' && (
+                <div className="pb-3 pt-0.5 space-y-2">
+                  <InlineSlider
+                    value={assumptions.propertyManagementRate > 0 ? assumptions.propertyManagementRate : pmRateBeforeDisable}
+                    onChange={(v) => { setAssumptions({ propertyManagementRate: v }); if (v > 0) setPmRateBeforeDisable(v) }}
+                    min={0.05} max={0.2} step={0.005}
+                    format={(v) => `${(v * 100).toFixed(1)}% of rent`}
+                  />
+                  <p className="text-xs text-slate-400">Global · applies to all properties</p>
+                </div>
+              )}
+            </div>
             <Divider />
             <TotalRow
               label="Total annual expenses"
@@ -945,7 +1070,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               <div className="space-y-1 py-1">
                 <Row label="Property net income (before debt)" value={fmtCurrency(metrics.netAnnualIncome)} monthly={mo(metrics.netAnnualIncome)} />
                 <Row
-                  label={`CCAP debt service (${(ccapRate * 100).toFixed(1)}%)`}
+                  label={`Loan debt service (${(ccapRate * 100).toFixed(1)}%)`}
                   value={fmtCurrency(annualDebtService)}
                   monthly={`${fmtCurrency(ccapMonthlyPayment)}`}
                   prefix="−"
@@ -988,6 +1113,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               insuranceRate: assumptions.insuranceRate,
               closingCostRate: assumptions.closingCostRate,
               repairs: repairsInput,
+              superAnnualCost: superCostInput,
               capExRate: assumptions.capExRate,
               propertyManagementRate: assumptions.propertyManagementRate,
               tenancyYears: assumptions.tenancyYears,
@@ -1045,24 +1171,33 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
           </Section>
 
 
-          {/* ── 10-year equity outlook ────────────────────────── */}
+          {/* ── 5-year equity outlook (+ 1-yr breakdown) ──────── */}
           {(() => {
-            const eq = equityScenarios(listing.price, listing.appreciationRate)
-            const tenYrRent = tenYearRentalIncome(metrics.netAnnualIncome)
+            const eq = equityScenarios(listing.price, listing.appreciationRate)        // 5-yr
+            const eq1 = equityScenarios(listing.price, listing.appreciationRate, 1)    // 1-yr
+            const tenYrRent = tenYearRentalIncome(metrics.netAnnualIncome)             // 5-yr
+            const rent1yr = tenYearRentalIncome(metrics.netAnnualIncome, 1)            // 1-yr
 
-            // CCAP-specific 10-yr calculations (computed always, used only in CCAP branch)
-            const remBal10 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 120)
-            const propVal10 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 10))
+            // CCAP-specific 5-yr calculations (computed always, used only in CCAP branch)
+            const remBal10 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 60)
+            const propVal10 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 5))
             const cmaEquity10 = propVal10 - remBal10
-            const cumCashFlow10CCAP = Math.round(cmaCashFlowAnnual * 10)
+            const cumCashFlow10CCAP = Math.round(cmaCashFlowAnnual * 5)
             const cmaTotalGain10 = cumCashFlow10CCAP + cmaEquity10
 
-            // Ownership gain: CCAP total or cash expected scenario
+            // CCAP 1-year breakdown
+            const remBal1 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 12)
+            const propVal1 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 1))
+            const cmaEquity1 = propVal1 - remBal1
+            const cumCashFlow1CCAP = Math.round(cmaCashFlowAnnual * 1)
+            const cmaTotalGain1 = cumCashFlow1CCAP + cmaEquity1
+
+            // Combined gain for reference
             const ownershipGain = purchaseMethod === 'ccap' ? cmaTotalGain10 : tenYrRent + eq.expected
 
             // ── CCAP mode ──────────────────────────────────────────
             if (purchaseMethod === 'ccap') {
-              const ccapChartData = Array.from({ length: 11 }, (_, yr) => {
+              const ccapChartData = Array.from({ length: 6 }, (_, yr) => {
                 const cashFlow = Math.round(cmaCashFlowAnnual * yr)
                 const propVal = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, yr))
                 const remBal = yr === 0 ? metrics.totalCashInvested : computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, yr * 12)
@@ -1071,10 +1206,10 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               })
               return (
                 <>
-                  <Section title="10-Year CCAP Projection">
+                  <Section title="5-Year Loan Projection">
                     <div className="py-2 space-y-4">
                       <p className="text-xs text-slate-500 leading-relaxed">
-                        CMA economic position over 10 years — cumulative cash flow after CCAP debt service, plus equity built through appreciation and principal paydown.
+                        CMA economic position over 5 years — cumulative cash flow after loan debt service, plus equity built through appreciation and principal paydown.
                       </p>
                       <ResponsiveContainer width="100%" height={200}>
                         <LineChart data={ccapChartData} margin={{ top: 8, right: 16, bottom: 0, left: 8 }}>
@@ -1094,19 +1229,32 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                         <span className="flex items-center gap-1.5"><span className="inline-block w-4 border-t-[3px] border-blue-600" />Total position</span>
                       </div>
                       <div className="border-t border-slate-200 pt-3 space-y-1.5">
-                        <div className="flex justify-between text-sm font-medium">
-                          <span className="text-slate-700">10-year cash profit/loss</span>
-                          <span className={cn('tabular-nums', cumCashFlow10CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                        {/* Column headers */}
+                        <div className="grid grid-cols-3 text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+                          <span />
+                          <span className="text-center">Year 1</span>
+                          <span className="text-right">Year 5</span>
+                        </div>
+                        <div className="grid grid-cols-3 items-center text-sm font-medium">
+                          <span className="text-slate-700">Cash profit/loss</span>
+                          <span className={cn('text-center tabular-nums', cumCashFlow1CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                            {cumCashFlow1CCAP >= 0 ? '+' : ''}{fmtCurrency(cumCashFlow1CCAP)}
+                          </span>
+                          <span className={cn('text-right tabular-nums', cumCashFlow10CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                             {cumCashFlow10CCAP >= 0 ? '+' : ''}{fmtCurrency(cumCashFlow10CCAP)}
                           </span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-600">Property equity at Year 10</span>
-                          <span className="font-semibold tabular-nums text-slate-700">+{fmtCurrency(cmaEquity10)}</span>
+                        <div className="grid grid-cols-3 items-center text-sm">
+                          <span className="text-slate-600">Property equity</span>
+                          <span className="text-center font-semibold tabular-nums text-slate-700">+{fmtCurrency(cmaEquity1)}</span>
+                          <span className="text-right font-semibold tabular-nums text-slate-700">+{fmtCurrency(cmaEquity10)}</span>
                         </div>
-                        <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
-                          <span className="text-slate-900">CMA net wealth created after 10 years</span>
-                          <span className={cn(cmaTotalGain10 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                        <div className="grid grid-cols-3 items-center text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
+                          <span className="text-slate-900">Net wealth created</span>
+                          <span className={cn('text-center', cmaTotalGain1 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                            {cmaTotalGain1 >= 0 ? '+' : ''}{fmtCurrency(cmaTotalGain1)}
+                          </span>
+                          <span className={cn('text-right', cmaTotalGain10 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                             {cmaTotalGain10 >= 0 ? '+' : ''}{fmtCurrency(cmaTotalGain10)}
                           </span>
                         </div>
@@ -1116,22 +1264,30 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       </p>
                     </div>
                   </Section>
-                  <Section title="CMA Investments Ownership">
+                  <Section title="CMA-I Projected Member Outcome">
                     <div className="py-2 space-y-3">
-                      <p className="text-xs text-slate-500">CMA Investments LLC — 50% Carrie Reynolds-Flatt / 50% Cameron Reynolds-Flatt</p>
+                      <p className="text-xs text-slate-500">
+                        Carrie 51% governance &amp; residual economic interest · Cameron 49% Service-Based Profits Interest
+                      </p>
                       <div className="space-y-2">
-                        {[{ name: 'Carrie Reynolds-Flatt', pct: 0.5 }, { name: 'Cameron Reynolds-Flatt', pct: 0.5 }].map(({ name, pct }) => {
+                        {([
+                          { name: 'Carrie Reynolds-Flatt', pct: CMA_I.carrieResidualPct },
+                          { name: 'Cameron Reynolds-Flatt', pct: CMA_I.cameronResidualPct },
+                        ] as const).map(({ name, pct }) => {
                           const partnerCash = Math.round(cumCashFlow10CCAP * pct)
                           const partnerEquity = Math.round(cmaEquity10 * pct)
                           const partnerNet = Math.round(cmaTotalGain10 * pct)
                           const partnerMonthly = Math.round(cmaCashFlowAnnual * pct / 12)
                           return (
                             <div key={name} className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
-                              <div className="text-sm font-semibold text-slate-800">{name}</div>
+                              <div className="flex items-center justify-between">
+                                <div className="text-sm font-semibold text-slate-800">{name}</div>
+                                <div className="text-xs text-slate-400">{(pct * 100).toFixed(0)}% residual interest</div>
+                              </div>
                               <div className="flex justify-between text-xs">
-                                <span className="text-slate-500">Cash contributed over 10 years</span>
+                                <span className="text-slate-500">Rental cash flow (yr 1 / 5 yr)</span>
                                 <span className={cn('font-semibold tabular-nums', partnerCash >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                  {partnerCash >= 0 ? '+' : ''}{fmtCurrency(partnerCash)}
+                                  {fmtCurrency(Math.round(cmaCashFlowAnnual * pct))} · {partnerCash >= 0 ? '+' : ''}{fmtCurrency(partnerCash)}
                                 </span>
                               </div>
                               <div className="flex justify-between text-xs">
@@ -1139,13 +1295,13 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                                 <span className="font-semibold tabular-nums text-slate-700">+{fmtCurrency(partnerEquity)}</span>
                               </div>
                               <div className="flex justify-between text-sm border-t border-slate-200 pt-1.5">
-                                <span className="font-semibold text-slate-800">Net wealth position</span>
+                                <span className="font-semibold text-slate-800">Total projected benefit</span>
                                 <div className="text-right">
                                   <div className={cn('font-bold tabular-nums', partnerNet >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                                     {partnerNet >= 0 ? '+' : ''}{fmtCurrency(partnerNet)}
                                   </div>
                                   <div className={cn('text-xs tabular-nums', partnerMonthly >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                                    {partnerMonthly >= 0 ? '+' : ''}{fmtCurrency(partnerMonthly)}/mo {partnerMonthly < 0 ? 'cash needed' : 'cash income'}
+                                    {partnerMonthly >= 0 ? '+' : ''}{fmtCurrency(partnerMonthly)}/mo rental distribution
                                   </div>
                                 </div>
                               </div>
@@ -1163,13 +1319,13 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             const computeCagr = (gain: number) => {
               const total = metrics.totalCashInvested + gain
               if (total <= 0 || metrics.totalCashInvested <= 0) return null
-              return Math.pow(total / metrics.totalCashInvested, 0.1) - 1
+              return Math.pow(total / metrics.totalCashInvested, 1 / 5) - 1
             }
             const cagrCon = computeCagr(tenYrRent + eq.conservative)
             const cagrExp = computeCagr(tenYrRent + eq.expected)
             const cagrStr = computeCagr(tenYrRent + eq.strong)
 
-            const chartData = Array.from({ length: 11 }, (_, yr) => {
+            const chartData = Array.from({ length: 6 }, (_, yr) => {
               const rent = Math.round(metrics.netAnnualIncome * yr)
               const gain = (rate: number) => yr === 0 ? 0 : Math.round(listing.price * (Math.pow(1 + rate, yr) - 1))
               return {
@@ -1183,7 +1339,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
 
             return (
               <>
-                <Section title="10-Year Return Projection">
+                <Section title="5-Year Return Projection">
                   <div className="py-2 space-y-4">
                     <p className="text-xs text-slate-500 leading-relaxed">
                       Cumulative gain over time — rental income plus appreciation under three growth scenarios. Dashed line marks your total cash invested.
@@ -1212,9 +1368,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
 
                     <div className="space-y-2 border-t border-slate-100 pt-3">
                       {[
-                        { label: 'Conservative (1%/yr)', value: eq.conservative, projVal: Math.round(listing.price * Math.pow(1.01, 10)) },
+                        { label: 'Conservative (1%/yr)', value: eq.conservative, projVal: Math.round(listing.price * Math.pow(1.01, 5)) },
                         { label: `Expected (${(listing.appreciationRate * 100).toFixed(1)}%/yr)`, value: eq.expected, projVal: eq.projectedValue, highlight: true },
-                        { label: 'Strong (4%/yr)', value: eq.strong, projVal: Math.round(listing.price * Math.pow(1.04, 10)) },
+                        { label: 'Strong (4%/yr)', value: eq.strong, projVal: Math.round(listing.price * Math.pow(1.04, 5)) },
                       ].map(({ label, value, projVal, highlight }) => (
                         <div key={label} className={cn('flex items-center justify-between rounded-lg px-3 py-2', highlight ? 'bg-slate-100' : '')}>
                           <div>
@@ -1228,24 +1384,33 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       ))}
                     </div>
                     <div className="border-t border-slate-200 pt-3 space-y-1.5">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">10-yr net rental income</span>
-                        <span className="font-semibold text-slate-800">+{fmtCurrency(tenYrRent)}</span>
+                      {/* Year 1 / Year 5 column headers */}
+                      <div className="grid grid-cols-3 text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+                        <span />
+                        <span className="text-center">Year 1</span>
+                        <span className="text-right">5-yr total</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">10-yr equity gain (expected)</span>
-                        <span className="font-semibold text-slate-800">+{fmtCurrency(eq.expected)}</span>
+                      <div className="grid grid-cols-3 items-center text-sm">
+                        <span className="text-slate-600">Net rental income</span>
+                        <span className="text-center font-semibold text-slate-800">+{fmtCurrency(rent1yr)}</span>
+                        <span className="text-right font-semibold text-slate-800">+{fmtCurrency(tenYrRent)}</span>
                       </div>
-                      <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
-                        <span className="text-slate-900">10-yr combined gain</span>
-                        <span className="text-slate-900">+{fmtCurrency(tenYrRent + eq.expected)}</span>
+                      <div className="grid grid-cols-3 items-center text-sm">
+                        <span className="text-slate-600">Equity gain (expected)</span>
+                        <span className="text-center font-semibold text-slate-800">+{fmtCurrency(eq1.expected)}</span>
+                        <span className="text-right font-semibold text-slate-800">+{fmtCurrency(eq.expected)}</span>
+                      </div>
+                      <div className="grid grid-cols-3 items-center text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
+                        <span className="text-slate-900">Combined gain</span>
+                        <span className="text-center text-slate-900">+{fmtCurrency(rent1yr + eq1.expected)}</span>
+                        <span className="text-right text-slate-900">+{fmtCurrency(tenYrRent + eq.expected)}</span>
                       </div>
                     </div>
 
                     <div className="border-t border-slate-200 pt-3 space-y-3">
                       <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Effective Annual Return (CAGR)</div>
                       <p className="text-xs text-slate-500 -mt-1">
-                        Annualized return on your total cash invested, combining rental income and property appreciation over 10 years.
+                        Annualized return on your total cash invested, combining rental income and property appreciation over 5 years.
                       </p>
                       <div className="grid grid-cols-3 gap-2 text-xs text-center">
                         {([
@@ -1288,137 +1453,250 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   </div>
                 </Section>
                 {(() => {
-                  const propVal10Cash = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 10))
-                  const carrieCapitalBasis = metrics.totalCashInvested
-                  const excessGain = propVal10Cash - carrieCapitalBasis
-                  const excessEach = Math.round(excessGain / 2)
-                  const tenYrRentEach = Math.round(tenYrRent / 2)
-                  const monthlyEach = Math.round(metrics.netAnnualIncome * 0.5 / 12)
-                  const carrieProfit = tenYrRentEach + excessEach
-                  const cameronBenefit = tenYrRentEach + excessEach
-                  return (
-                    <Section title="CMA Investments Economics">
-                      <div className="py-2 space-y-4">
-                        <p className="text-xs text-slate-500">CMA Investments LLC — 50% Carrie Reynolds-Flatt / 50% Cameron Reynolds-Flatt</p>
+                  const propVal10Cash = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 5))
+                  const capitalDeployed = metrics.totalCashInvested
 
-                        {/* Ongoing rental distributions */}
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Ongoing Rental Distributions</div>
-                          <div className="space-y-2">
-                            {(['Carrie Reynolds-Flatt', 'Cameron Reynolds-Flatt'] as const).map((name) => (
-                              <div key={name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
-                                <div>
-                                  <div className="text-sm font-semibold text-slate-800">{name}</div>
-                                  <div className="text-xs text-slate-400">50% of distributable rental income</div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="text-base font-bold tabular-nums text-emerald-700">+{fmtCurrency(monthlyEach)}/mo</div>
-                                  <div className="text-xs text-slate-400 tabular-nums">+{fmtCurrency(tenYrRentEach)} over 10 yrs</div>
-                                </div>
+                  // Sale waterfall: return capital first, then split residual 51/49
+                  const residualGain = propVal10Cash - capitalDeployed
+                  const carrieResidualSale = Math.round(residualGain * CMA_I.carrieResidualPct)
+                  const cameronResidualSale = Math.round(residualGain * CMA_I.cameronResidualPct)
+
+                  // Rental distributions: 51/49 split
+                  const carrieRentalDist = Math.round(tenYrRent * CMA_I.carrieResidualPct)
+                  const cameronRentalDist = Math.round(tenYrRent * CMA_I.cameronResidualPct)
+                  const carrieMonthlyDist = Math.round(metrics.netAnnualIncome * CMA_I.carrieResidualPct / 12)
+                  const cameronMonthlyDist = Math.round(metrics.netAnnualIncome * CMA_I.cameronResidualPct / 12)
+
+                  // Member totals
+                  const carrieTotalBenefit = capitalDeployed + carrieResidualSale + carrieRentalDist
+                  const cameronBenefit = cameronResidualSale + cameronRentalDist
+
+                  return (
+                    <>
+                      {/* ── CMA-I Structure ── */}
+                      <Section title="CMA-I Structure">
+                        <div className="py-2 space-y-3">
+                          <div className="grid grid-cols-3 divide-x divide-slate-200 text-xs">
+                            <div className="pr-3 space-y-1.5">
+                              <div className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Governance</div>
+                              <div className="text-slate-700">Carrie <span className="font-semibold">51%</span></div>
+                              <div className="text-slate-700">Cameron <span className="font-semibold">49%</span></div>
+                            </div>
+                            <div className="px-3 space-y-1.5">
+                              <div className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Contributed Capital</div>
+                              <div className="text-slate-700">Carrie <span className="font-semibold">{fmtCurrency(CMA_I.carrieContributedCapital)}</span></div>
+                              <div className="text-slate-700">Cameron <span className="font-semibold">$0</span></div>
+                            </div>
+                            <div className="pl-3 space-y-1.5">
+                              <div className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">Residual Economics</div>
+                              <div className="text-slate-700">Carrie <span className="font-semibold">51%</span></div>
+                              <div className="text-slate-700 leading-tight">
+                                Cameron <span className="font-semibold">49%</span>
+                                <div className="text-[10px] text-slate-400 mt-0.5">Service-Based Profits Interest · 5-yr reverse vesting</div>
                               </div>
-                            ))}
+                            </div>
                           </div>
                         </div>
+                      </Section>
 
-                        {/* 10-year capital waterfall */}
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">10-Year Capital Position</div>
-                          <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-slate-600">Carrie's capital invested in this property</span>
-                              <span className="font-semibold text-slate-800">{fmtCurrency(carrieCapitalBasis)}</span>
+                      {/* ── Capital Protection ── */}
+                      <Section title="Capital Protection">
+                        <div className="py-2 space-y-3">
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            Carrie&apos;s contributed capital is returned before residual appreciation is divided.
+                          </p>
+                          <div className="space-y-2 text-xs text-slate-600">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
+                              <span>Pay debt, sale costs, and obligations</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-slate-600">Estimated property value at Year 10</span>
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-2 h-2 rounded-full bg-blue-300 shrink-0" />
+                              <span>Return applicable unrecovered contributed capital</span>
+                            </div>
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                              <span>Split remaining residual value <span className="font-semibold">51% Carrie / 49% Cameron</span></span>
+                            </div>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5 text-xs">
+                            <div className="text-slate-500 font-medium mb-1">At projected Year 5 sale:</div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Projected net sale proceeds</span>
                               <span className="font-semibold text-slate-800">{fmtCurrency(propVal10Cash)}</span>
                             </div>
-                            <div className="border-t border-slate-200 pt-1.5 space-y-1">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-slate-600">Capital returned to Carrie</span>
-                                <span className="font-semibold text-slate-800">{fmtCurrency(carrieCapitalBasis)}</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-slate-600">Profit / appreciation above capital</span>
-                                <span className={cn('font-semibold', excessGain >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                  {excessGain >= 0 ? '+' : ''}{fmtCurrency(excessGain)}
-                                </span>
-                              </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Return CMA-I capital (Carrie-contributed)</span>
+                              <span className="font-semibold text-blue-700">−{fmtCurrency(capitalDeployed)}</span>
                             </div>
-                            <div className="border-t border-slate-200 pt-1.5 space-y-1">
-                              <div className="flex justify-between text-xs">
-                                <span className="text-slate-500">Carrie's share of excess profit (50%)</span>
-                                <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                  {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-slate-500">Cameron's share of excess profit (50%)</span>
-                                <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                  {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Partner summary cards */}
-                        <div className="space-y-2">
-                          {/* Carrie */}
-                          <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
-                            <div className="text-sm font-bold text-slate-800">Carrie Reynolds-Flatt</div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-500">Capital returned (from sale)</span>
-                              <span className="font-semibold tabular-nums text-slate-700">{fmtCurrency(carrieCapitalBasis)}</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-500">Rental distributions over 10 yrs</span>
-                              <span className="font-semibold tabular-nums text-emerald-700">+{fmtCurrency(tenYrRentEach)}</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-500">Share of appreciation / profit</span>
-                              <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
-                              <span className="font-semibold text-slate-700">Total profit (excl. capital return)</span>
-                              <span className={cn('font-bold tabular-nums', carrieProfit >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                {carrieProfit >= 0 ? '+' : ''}{fmtCurrency(carrieProfit)}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Cameron */}
-                          <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
-                            <div className="text-sm font-bold text-slate-800">Cameron Reynolds-Flatt</div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-500">Initial capital contributed</span>
-                              <span className="font-semibold tabular-nums text-slate-500">$0</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-500">Rental distributions over 10 yrs</span>
-                              <span className="font-semibold tabular-nums text-emerald-700">+{fmtCurrency(tenYrRentEach)}</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-500">Share of appreciation / profit</span>
-                              <span className={cn('font-semibold tabular-nums', excessEach >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                {excessEach >= 0 ? '+' : ''}{fmtCurrency(excessEach)}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
-                              <span className="font-semibold text-slate-700">Total economic benefit</span>
-                              <span className={cn('font-bold tabular-nums', cameronBenefit >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                {cameronBenefit >= 0 ? '+' : ''}{fmtCurrency(cameronBenefit)}
+                            <div className="flex justify-between border-t border-slate-200 pt-1.5">
+                              <span className="text-slate-600">Residual gain — split 51/49</span>
+                              <span className={cn('font-semibold', residualGain >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                {residualGain >= 0 ? '+' : ''}{fmtCurrency(residualGain)}
                               </span>
                             </div>
                           </div>
                         </div>
+                      </Section>
 
-                        <p className="text-xs text-slate-400 leading-relaxed">
-                          Carrie's contributed capital is returned first at sale. Profit and appreciation above that capital is split 50/50. Rental distributions are paid 50/50 throughout and do not reduce Carrie's capital preference.
-                        </p>
-                      </div>
-                    </Section>
+                      {/* ── CMA-I Member Economics ── */}
+                      <Section title="CMA-I Member Economics">
+                        <div className="py-2 space-y-4">
+
+                          {/* Card A: Rental distributions */}
+                          <div>
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Ongoing Rental Distributions</div>
+                            <div className="space-y-2">
+                              {([
+                                { name: 'Carrie Reynolds-Flatt', pct: CMA_I.carrieResidualPct, monthly: carrieMonthlyDist, total: carrieRentalDist },
+                                { name: 'Cameron Reynolds-Flatt', pct: CMA_I.cameronResidualPct, monthly: cameronMonthlyDist, total: cameronRentalDist },
+                              ] as const).map(({ name, pct, monthly, total }) => (
+                                <div key={name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
+                                  <div>
+                                    <div className="text-sm font-semibold text-slate-800">{name}</div>
+                                    <div className="text-xs text-slate-400">{(pct * 100).toFixed(0)}% of distributable rental income</div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className={cn('text-base font-bold tabular-nums', monthly >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                      {monthly >= 0 ? '+' : ''}{fmtCurrency(monthly)}/mo
+                                    </div>
+                                    <div className="text-xs text-slate-400 tabular-nums">+{fmtCurrency(monthly * 12)} yr 1 · +{fmtCurrency(total)} / 5 yrs</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Card B: Sale waterfall */}
+                          <div>
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">5-Year Projected Sale Waterfall</div>
+                            <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-slate-600">Projected property value (Year 5)</span>
+                                <span className="font-semibold text-slate-800">{fmtCurrency(propVal10Cash)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-slate-600">Return CMA-I capital</span>
+                                <span className="font-semibold text-slate-800">−{fmtCurrency(capitalDeployed)}</span>
+                              </div>
+                              <div className="flex justify-between text-sm font-medium border-t border-slate-200 pt-1.5">
+                                <span className="text-slate-700">Residual gain (split 51/49)</span>
+                                <span className={cn(residualGain >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                  {residualGain >= 0 ? '+' : ''}{fmtCurrency(residualGain)}
+                                </span>
+                              </div>
+                              <div className="border-t border-slate-200 pt-1.5 space-y-1">
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">→ Carrie 51% of residual gain</span>
+                                  <span className={cn('font-semibold tabular-nums', carrieResidualSale >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {carrieResidualSale >= 0 ? '+' : ''}{fmtCurrency(carrieResidualSale)}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">→ Cameron 49% of residual gain</span>
+                                  <span className={cn('font-semibold tabular-nums', cameronResidualSale >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {cameronResidualSale >= 0 ? '+' : ''}{fmtCurrency(cameronResidualSale)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Member outcome summary */}
+                          <div>
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Projected Member Outcome</div>
+                            <div className="space-y-2">
+                              {/* Carrie */}
+                              <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
+                                <div className="text-sm font-bold text-slate-800">Carrie Reynolds-Flatt</div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">CMA-I capital returned at sale</span>
+                                  <span className="font-semibold tabular-nums text-slate-700">{fmtCurrency(capitalDeployed)}</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">51% of residual sale gain</span>
+                                  <span className={cn('font-semibold tabular-nums', carrieResidualSale >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {carrieResidualSale >= 0 ? '+' : ''}{fmtCurrency(carrieResidualSale)}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">51% of rental distributions (5 yr)</span>
+                                  <span className="font-semibold tabular-nums text-emerald-700">+{fmtCurrency(carrieRentalDist)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
+                                  <span className="font-semibold text-slate-700">Total projected cash benefit</span>
+                                  <div className="text-right">
+                                    <div className="font-bold tabular-nums text-emerald-700">+{fmtCurrency(carrieTotalBenefit)}</div>
+                                    <div className="text-xs text-slate-400">incl. {fmtCurrency(capitalDeployed)} capital return</div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Cameron */}
+                              <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
+                                <div className="text-sm font-bold text-slate-800">Cameron Reynolds-Flatt</div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">Capital contributed to CMA-I</span>
+                                  <span className="font-semibold tabular-nums text-slate-500">$0</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">49% of residual sale gain</span>
+                                  <span className={cn('font-semibold tabular-nums', cameronResidualSale >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {cameronResidualSale >= 0 ? '+' : ''}{fmtCurrency(cameronResidualSale)}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">49% of rental distributions (5 yr)</span>
+                                  <span className="font-semibold tabular-nums text-emerald-700">+{fmtCurrency(cameronRentalDist)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
+                                  <span className="font-semibold text-slate-700">Total projected economic benefit</span>
+                                  <span className={cn('font-bold tabular-nums', cameronBenefit >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {cameronBenefit >= 0 ? '+' : ''}{fmtCurrency(cameronBenefit)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Card C: Cameron Service Interest vesting */}
+                          <div>
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Cameron Service-Based Profits Interest</div>
+                            <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
+                              <div className="flex justify-between text-xs">
+                                <span className="text-slate-600">Granted interest</span>
+                                <span className="font-semibold text-slate-800">{(CMA_I.serviceProfitsInterestPct * 100).toFixed(1)}%</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-slate-600">Current distribution share</span>
+                                <span className="font-semibold text-emerald-700">{(vesting.currentDistributionPct * 100).toFixed(1)}%</span>
+                              </div>
+                              <div className="border-t border-slate-200 pt-1.5 space-y-1">
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">Nonforfeitable ({vesting.completedYears} yr{vesting.completedYears !== 1 ? 's' : ''} elapsed)</span>
+                                  <span className="font-semibold tabular-nums text-slate-700">{(vesting.nonforfeitablePct * 100).toFixed(1)}%</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">Still forfeitable</span>
+                                  <span className="font-semibold tabular-nums text-amber-600">{(vesting.forfeitablePct * 100).toFixed(1)}%</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-slate-500">Vesting period</span>
+                                  <span className="font-semibold tabular-nums text-slate-700">{CMA_I.vestingYears} years · {(CMA_I.annualNonforfeitablePct * 100).toFixed(1)}pp/yr</span>
+                                </div>
+                              </div>
+                              <p className="text-[10px] text-slate-400 leading-relaxed pt-0.5">
+                                Distribution share remains {(CMA_I.serviceProfitsInterestPct * 100).toFixed(0)}% while Cameron continues providing required services. Reverse vesting affects only what he permanently keeps if services cease.
+                              </p>
+                            </div>
+                          </div>
+
+                          <p className="text-xs text-slate-400 leading-relaxed">
+                            Rental distributions are paid {(CMA_I.carrieResidualPct * 100).toFixed(0)}%/{(CMA_I.cameronResidualPct * 100).toFixed(0)}% and do not reduce Carrie&apos;s capital preference. At sale, applicable contributed capital is returned first; residual appreciation above that is split {(CMA_I.carrieResidualPct * 100).toFixed(0)}%/{(CMA_I.cameronResidualPct * 100).toFixed(0)}%.
+                          </p>
+                        </div>
+                      </Section>
+                    </>
                   )
                 })()}
               </>

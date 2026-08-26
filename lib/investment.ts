@@ -36,6 +36,7 @@ interface RawListing {
   turnoverCost: number
   pestControlMonthly?: number
   lawnCareMonthly?: number
+  superAnnualCost?: number
   rentalDemand: RentalDemand
   rentConfidence: RentConfidence
   rentalEvidence: RentalEvidence
@@ -57,6 +58,7 @@ export function computeMetrics(listing: RawListing) {
   const insuranceAnnual = Math.round(listing.price * (listing.insuranceRate ?? 0.005))
   const pestControlAnnual = (listing.pestControlMonthly ?? 50) * 12
   const lawnCareAnnual = (listing.lawnCareMonthly ?? 50) * 12
+  const superAnnual = listing.superAnnualCost ?? 1449
   const netAnnualIncome =
     grossAnnualRent -
     vacancyReserve -
@@ -69,6 +71,7 @@ export function computeMetrics(listing: RawListing) {
     insuranceAnnual -
     pestControlAnnual -
     lawnCareAnnual -
+    superAnnual -
     LLC_ANNUAL_COST
   const netCashYield = totalCashInvested > 0 ? netAnnualIncome / totalCashInvested : 0
   const paybackYears = netAnnualIncome > 0 ? totalCashInvested / netAnnualIncome : Infinity
@@ -96,6 +99,7 @@ export function computeMetrics(listing: RawListing) {
     insuranceAnnual,
     pestControlAnnual,
     lawnCareAnnual,
+    superAnnual,
     llcAnnualCost: LLC_ANNUAL_COST,
   }
 }
@@ -161,7 +165,7 @@ export interface EquityScenarios {
   projectedValue: number // purchase price × (1 + appreciationRate)^years
 }
 
-export function equityScenarios(price: number, appreciationRate: number, years = 10): EquityScenarios {
+export function equityScenarios(price: number, appreciationRate: number, years = 5): EquityScenarios {
   const gain = (rate: number) => Math.round(price * (Math.pow(1 + rate, years) - 1))
   return {
     conservative: gain(0.01),
@@ -171,7 +175,7 @@ export function equityScenarios(price: number, appreciationRate: number, years =
   }
 }
 
-export function tenYearRentalIncome(netAnnualIncome: number, years = 10): number {
+export function tenYearRentalIncome(netAnnualIncome: number, years = 5): number {
   return Math.round(netAnnualIncome * years)
 }
 

@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS sale_listings (
   -- Per-listing fixed values (not affected by global assumptions)
   property_tax_annual  DOUBLE PRECISION,
   repairs              DOUBLE PRECISION DEFAULT 10000,
+  super_annual_cost    DOUBLE PRECISION DEFAULT 1449,      -- Super maintenance protection; 0 = disabled
   -- Rental signals derived from AVM comps
   rental_evidence      TEXT DEFAULT 'Unknown',
   rental_demand        TEXT DEFAULT 'Insufficient Data',

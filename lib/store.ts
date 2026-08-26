@@ -57,6 +57,8 @@ interface AppState {
   resetRentToOriginal: (id: string) => Promise<void>
   // Persist repairs value to Supabase
   saveRepairsToDb: (id: string, repairs: number) => Promise<void>
+  // Persist Super annual cost to Supabase (0 = disabled)
+  saveSuperToDb: (id: string, superAnnualCost: number) => Promise<void>
   // Persist property type to Supabase
   savePropertyTypeToDb: (id: string, propertyType: PropertyType) => Promise<void>
   // Persist units count to Supabase
@@ -65,6 +67,7 @@ interface AppState {
   // Actions
   initialize: () => Promise<void>
   deleteListing: (id: string) => Promise<void>
+  deleteListings: (ids: string[]) => Promise<void>
 
   // Computed selectors
   computedSaleListings: () => SaleListing[]
@@ -137,6 +140,19 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           saleListings: state.saleListings.map((l) =>
             l.id === id ? { ...l, repairs } : l
+          ),
+        }))
+      },
+
+      saveSuperToDb: async (id, superAnnualCost) => {
+        await fetch(`/api/listings/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ super_annual_cost: superAnnualCost }),
+        })
+        set((state) => ({
+          saleListings: state.saleListings.map((l) =>
+            l.id === id ? { ...l, superAnnualCost } : l
           ),
         }))
       },
@@ -248,6 +264,17 @@ export const useAppStore = create<AppState>()(
         }))
       },
 
+      deleteListings: async (ids) => {
+        await Promise.all(ids.map((id) =>
+          fetch(`/api/listings/${encodeURIComponent(id)}`, { method: 'DELETE' })
+        ))
+        const idSet = new Set(ids)
+        set((state) => ({
+          saleListings: state.saleListings.filter((l) => !idSet.has(l.id)),
+          selectedId: idSet.has(state.selectedId ?? '') ? null : state.selectedId,
+        }))
+      },
+
       // Re-runs computeMetrics with current assumptions (live recalc)
       computedSaleListings: () => {
         const { assumptions, saleListings } = get()
@@ -263,6 +290,7 @@ export const useAppStore = create<AppState>()(
             insuranceRate: assumptions.insuranceRate,
             closingCostRate: assumptions.closingCostRate,
             repairs: l.repairs,
+            superAnnualCost: l.superAnnualCost,
             vacancyRate: assumptions.vacancyRate,
             maintenanceRate: assumptions.maintenanceRate,
             capExRate: assumptions.capExRate,
