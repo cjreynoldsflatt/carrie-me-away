@@ -4,8 +4,12 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow the login page and auth API through without a cookie check
-  if (pathname.startsWith('/login') || pathname.startsWith('/api/auth')) {
+  // Allow the login page, auth API, and bookmarklet ingestion endpoint through without a cookie check
+  if (
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/add-listing')
+  ) {
     return NextResponse.next()
   }
 
