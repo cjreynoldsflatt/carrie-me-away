@@ -239,9 +239,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   )
   const [superCostInput, setSuperCostInput] = useState(listing?.superAnnualCost ?? 1449)
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
-  // Operating reserve assumptions
-  const [reserveMonths, setReserveMonths] = useState(6)
-  const [currentReserveInput, setCurrentReserveInput] = useState(0)
+  // Operating reserve — CMA funds $20k reserve per property at acquisition
+  const PROPERTY_RESERVE = 20_000
+  const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
 
   useEffect(() => {
     const dbRepairs = listing?.repairs ?? 20000
@@ -323,15 +323,12 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const annualDebtService = ccapMonthlyPayment * 12
   const cmaCashFlowAnnual = metrics.netAnnualIncome - annualDebtService
 
-  // Operating reserve (target-balance model — not a % of cash flow)
-  const monthlyCarryingCosts = Math.round(
-    (propertyTaxInput + metrics.insuranceAnnual + annualHOA + managementCost + LLC_ANNUAL_COST) / 12
-    + ccapMonthlyPayment
-  )
-  const reserveTarget = monthlyCarryingCosts * reserveMonths
+  // Operating reserve — fixed $20k target, funded at acquisition
+  const reserveTarget = PROPERTY_RESERVE
   const reserveShortfall = Math.max(reserveTarget - currentReserveInput, 0)
-  const reserveFundedPct = reserveTarget > 0 ? Math.min(currentReserveInput / reserveTarget, 1) : 1
   const reserveFullyFunded = reserveShortfall === 0
+  // Total cash CMA must commit at acquisition (property cost + operating reserve)
+  const totalCashRequired = metrics.totalCashInvested + PROPERTY_RESERVE
 
   // Quarterly distribution waterfall
   const quarterlyNetCashFlow = Math.round(metrics.netAnnualIncome / 4)
@@ -606,14 +603,14 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     <div className="flex items-start justify-between text-sm gap-2">
                       <div>
                         <span className="text-slate-600">CMA-I capital deployed to this property</span>
-                        <div className="text-xs text-slate-400">Source: Carrie-contributed CMA-I capital</div>
+                        <div className="text-xs text-slate-400">Incl. {fmtCurrency(PROPERTY_RESERVE)} Day 1 operating reserve</div>
                       </div>
-                      <span className="font-semibold text-slate-800 shrink-0">{fmtCurrency(metrics.totalCashInvested)}</span>
+                      <span className="font-semibold text-slate-800 shrink-0">{fmtCurrency(totalCashRequired)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-600">Remaining undeployed CMA-I capital</span>
-                      <span className={cn('font-semibold', CMA_I.carrieContributedCapital - metrics.totalCashInvested >= 0 ? 'text-slate-800' : 'text-amber-600')}>
-                        {fmtCurrency(Math.max(0, CMA_I.carrieContributedCapital - metrics.totalCashInvested))}
+                      <span className={cn('font-semibold', CMA_I.carrieContributedCapital - totalCashRequired >= 0 ? 'text-slate-800' : 'text-amber-600')}>
+                        {fmtCurrency(Math.max(0, CMA_I.carrieContributedCapital - totalCashRequired))}
                       </span>
                     </div>
                   </div>
@@ -623,7 +620,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
           </Section>
 
           {/* ── Step 1: Total cash invested ──────────────────── */}
-          <Section title="Step 1 — Total Cash Invested">
+          <Section title="Step 1 — Total Cash Required">
             <Row label="Purchase price" value={fmtCurrency(listing.price)} bold />
             <Row label={`Closing costs (${(assumptions.closingCostRate * 100).toFixed(0)}%)`} value={fmtCurrency(closingCosts)} prefix="+" />
             {/* Editable repairs row */}
@@ -660,8 +657,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 />
               </div>
             </div>
+            <Row label="Initial operating reserve (Day 1)" value={fmtCurrency(PROPERTY_RESERVE)} prefix="+" />
             <Divider />
-            <TotalRow label="Total cash invested" value={fmtCurrency(metrics.totalCashInvested)} />
+            <TotalRow label="Total cash required at acquisition" value={fmtCurrency(totalCashRequired)} />
           </Section>
 
           {/* ── Step 2: Gross annual rent ─────────────────────── */}
@@ -1475,7 +1473,8 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 </Section>
                 {(() => {
                   const propVal10Cash = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 5))
-                  const capitalDeployed = metrics.totalCashInvested
+                  // Capital deployed = property acquisition cost + Day 1 operating reserve
+                  const capitalDeployed = totalCashRequired
 
                   // Sale waterfall: return capital first, then split residual 51/49
                   const residualGain = propVal10Cash - capitalDeployed
@@ -1595,40 +1594,19 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                           {/* Card A: Property Operating Reserve */}
                           <div>
                             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Property Operating Reserve</div>
-                            <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-2 text-xs mb-3">
-                              {/* Reserve months selector */}
-                              <div className="flex items-center justify-between">
-                                <span className="text-slate-500">Target ({reserveMonths} months of carrying costs)</span>
-                                <div className="flex gap-1">
-                                  {[3, 6, 9, 12].map((m) => (
-                                    <button
-                                      key={m}
-                                      onClick={() => setReserveMonths(m)}
-                                      className={cn(
-                                        'w-7 h-6 rounded text-[10px] font-semibold transition-colors',
-                                        reserveMonths === m ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-                                      )}
-                                    >{m}</button>
-                                  ))}
-                                </div>
-                              </div>
+                            <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5 text-xs mb-3">
                               <div className="flex justify-between">
-                                <span className="text-slate-500">Monthly carrying costs</span>
-                                <span className="font-semibold text-slate-700 tabular-nums">{fmtCurrency(monthlyCarryingCosts)}/mo</span>
-                              </div>
-                              <div className="flex justify-between border-t border-slate-200 pt-1.5">
-                                <span className="text-slate-600 font-medium">Reserve target</span>
+                                <span className="text-slate-600">Reserve target</span>
                                 <span className="font-semibold text-slate-800 tabular-nums">{fmtCurrency(reserveTarget)}</span>
                               </div>
                               {/* Current reserve input */}
                               <div className="flex items-center justify-between">
-                                <span className="text-slate-500">Current reserve balance</span>
+                                <span className="text-slate-500">Current reserve</span>
                                 <div className="flex items-center gap-1">
                                   <span className="text-slate-400 text-[10px]">$</span>
                                   <input
                                     type="number"
-                                    value={currentReserveInput === 0 ? '' : currentReserveInput}
-                                    placeholder="0"
+                                    value={currentReserveInput}
                                     onChange={(e) => setCurrentReserveInput(Math.max(0, Number(e.target.value) || 0))}
                                     className="w-24 text-right text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded px-2 py-0.5 focus:outline-none focus:border-slate-400 tabular-nums"
                                   />
@@ -1637,23 +1615,23 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                               <div className="flex justify-between">
                                 <span className="text-slate-500">Reserve shortfall</span>
                                 <span className={cn('font-semibold tabular-nums', reserveShortfall > 0 ? 'text-amber-600' : 'text-emerald-700')}>
-                                  {reserveFullyFunded ? 'None' : `−${fmtCurrency(reserveShortfall)}`}
+                                  {reserveFullyFunded ? '$0' : `−${fmtCurrency(reserveShortfall)}`}
                                 </span>
                               </div>
-                              {/* Status bar */}
-                              <div className="pt-0.5">
-                                <div className="flex justify-between text-[10px] text-slate-400 mb-1">
-                                  <span>{reserveFullyFunded ? 'Fully Funded' : `${(reserveFundedPct * 100).toFixed(0)}% funded`}</span>
-                                  <span>{reserveTarget > 0 ? `${fmtCurrency(currentReserveInput)} / ${fmtCurrency(reserveTarget)}` : '—'}</span>
-                                </div>
-                                <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                  <div
-                                    className={cn('h-full rounded-full transition-all', reserveFullyFunded ? 'bg-emerald-500' : 'bg-amber-400')}
-                                    style={{ width: `${(reserveFundedPct * 100).toFixed(0)}%` }}
-                                  />
-                                </div>
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">Replenishment this quarter</span>
+                                <span className="font-semibold tabular-nums text-slate-700">
+                                  {quarterlyReserveContribution > 0 ? fmtCurrency(quarterlyReserveContribution) : '$0'}
+                                </span>
+                              </div>
+                              <div className="flex justify-between border-t border-slate-200 pt-1.5">
+                                <span className="text-slate-600 font-medium">Status</span>
+                                <span className={cn('font-semibold', reserveFullyFunded ? 'text-emerald-700' : 'text-amber-600')}>
+                                  {reserveFullyFunded ? 'Fully Funded' : `${fmtCurrency(currentReserveInput)} / ${fmtCurrency(reserveTarget)}`}
+                                </span>
                               </div>
                             </div>
+                            <p className="text-[10px] text-slate-400 mb-3 leading-relaxed">Reserve is funded at acquisition ($20k Day 1). Future cash flow replenishes it only if the balance drops below target.</p>
                           </div>
 
                           {/* Card B: Quarterly Distribution Estimate */}
