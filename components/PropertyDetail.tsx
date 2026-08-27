@@ -1666,7 +1666,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                                   <div className={cn('text-base font-bold tabular-nums', carrieQuarterly >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                                     {fmtCurrency(carrieQuarterly)}/qtr
                                   </div>
-                                  <div className="text-xs text-slate-400 tabular-nums">{fmtCurrency(Math.round(carrieQuarterly / 3))}/mo equiv</div>
+                                  <div className="text-xs text-slate-400 tabular-nums">{fmtCurrency(Math.round(carrieQuarterly / 3))}/mo · {fmtCurrency(carrieQuarterly * 4)}/yr</div>
                                 </div>
                               </div>
                               {/* Cameron */}
@@ -1679,7 +1679,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                                   <div className={cn('text-base font-bold tabular-nums', cameronQuarterly >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                                     {fmtCurrency(cameronQuarterly)}/qtr
                                   </div>
-                                  <div className="text-xs text-slate-400 tabular-nums">{fmtCurrency(Math.round(cameronQuarterly / 3))}/mo equiv</div>
+                                  <div className="text-xs text-slate-400 tabular-nums">{fmtCurrency(Math.round(cameronQuarterly / 3))}/mo · {fmtCurrency(cameronQuarterly * 4)}/yr</div>
                                 </div>
                               </div>
                             </div>
