@@ -925,12 +925,12 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 onKeyDown={(e) => e.key === 'Enter' && setOpenGear(openGear === 'super' ? null : 'super')}
                 className="w-full flex items-start justify-between gap-4 text-left py-1.5 cursor-pointer"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="inline-block w-4 text-slate-400 text-sm shrink-0">−</span>
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-slate-700">
-                    {superCostInput > 0 ? 'Super Maintenance Protection' : 'Super Maintenance Protection'}
+                    <span className="inline-block w-4 text-slate-400 text-sm">−</span>
+                    Super Maintenance Protection
                   </span>
-                  {/* On/Off toggle */}
+                  {/* On/Off toggle — inline next to label */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
@@ -1007,9 +1007,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 onKeyDown={(e) => e.key === 'Enter' && setOpenGear(openGear === 'management' ? null : 'management')}
                 className="w-full flex items-start justify-between gap-4 text-left py-1.5 cursor-pointer"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="inline-block w-4 text-slate-400 text-sm shrink-0">−</span>
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-slate-700">
+                    <span className="inline-block w-4 text-slate-400 text-sm">−</span>
                     {assumptions.propertyManagementRate > 0
                       ? `CMA property mgmt fee (${(assumptions.propertyManagementRate * 100).toFixed(0)}%)`
                       : 'CMA property mgmt fee'}
