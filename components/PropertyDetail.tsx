@@ -1335,9 +1335,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
 
             // ── Cash mode ──────────────────────────────────────────
             const computeCagr = (gain: number) => {
-              const total = metrics.totalCashInvested + gain
-              if (total <= 0 || metrics.totalCashInvested <= 0) return null
-              return Math.pow(total / metrics.totalCashInvested, 1 / 5) - 1
+              const total = totalCashRequired + gain
+              if (total <= 0 || totalCashRequired <= 0) return null
+              return Math.pow(total / totalCashRequired, 1 / 5) - 1
             }
             const cagrCon = computeCagr(tenYrRent + eq.conservative)
             const cagrExp = computeCagr(tenYrRent + eq.expected)
@@ -1357,10 +1357,10 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
 
             return (
               <>
-                <Section title="5-Year Return Projection">
+                <Section title="20-Year Return Projection">
                   <div className="py-2 space-y-4">
                     <p className="text-xs text-slate-500 leading-relaxed">
-                      Cumulative gain over time — rental income plus appreciation under three growth scenarios. Dashed line marks your total cash invested.
+                      Cumulative gain over 20 years — net rental cash flow plus compounded appreciation under three scenarios. Dashed line marks total cash committed at acquisition (including $20k reserve).
                     </p>
 
                     <ResponsiveContainer width="100%" height={200}>
@@ -1369,7 +1369,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                         <XAxis dataKey="yr" tickFormatter={(v) => v === 0 ? 'Now' : `Yr ${v}`} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                         <YAxis tickFormatter={abbr} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={48} />
                         <Tooltip formatter={(v, name) => [fmtCurrency(v as number), name]} labelFormatter={(l) => l === 0 ? 'Today' : `Year ${l}`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }} />
-                        <ReferenceLine y={metrics.totalCashInvested} stroke="#cbd5e1" strokeDasharray="5 3" label={{ value: 'Invested', position: 'insideTopRight', fontSize: 9, fill: '#94a3b8', dy: -4 }} />
+                        <ReferenceLine y={totalCashRequired} stroke="#cbd5e1" strokeDasharray="5 3" label={{ value: 'Invested', position: 'insideTopRight', fontSize: 9, fill: '#94a3b8', dy: -4 }} />
                         <ReferenceLine x={5} stroke="#94a3b8" strokeWidth={1} strokeDasharray="3 3" label={{ value: 'Yr 5', position: 'insideTopRight', fontSize: 9, fill: '#94a3b8', dx: 2, dy: 4 }} />
                         <Line dataKey="rent" name="Cash flow only" stroke="#cbd5e1" strokeWidth={1.5} dot={false} strokeDasharray="4 3" />
                         <Line dataKey="con" name="+ 1%/yr appreciation" stroke="#93c5fd" strokeWidth={1.5} dot={false} />
