@@ -102,6 +102,12 @@ export default function DocumentsClient({ documents }: { documents: Document[] }
   const [query, setQuery] = useState('')
   const [focusText, setFocusText] = useState('')
   const contentRef = useRef<HTMLDivElement>(null)
+  const mainRef = useRef<HTMLElement>(null)
+
+  // Scroll to top whenever the selected document changes
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0 })
+  }, [selectedSlug])
 
   const isSearching = query.trim().length > 0
 
@@ -229,7 +235,7 @@ export default function DocumentsClient({ documents }: { documents: Document[] }
         </aside>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto bg-white print:overflow-visible">
+        <main ref={mainRef} className="flex-1 overflow-y-auto bg-white print:overflow-visible">
           {isSearching ? (
             /* ── Search results ── */
             <div className="max-w-3xl mx-auto px-8 py-10">
