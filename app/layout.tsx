@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Carrie Me Away – Investment Finder',
-  description: 'Cash-flow townhome and condo investment analysis',
+  title: 'CMA Investments',
+  description: 'CMA Investments property analysis and finder',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

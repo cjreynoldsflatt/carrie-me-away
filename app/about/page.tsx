@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ChevronLeft, Heart } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'About — Carrie Me Away',
+  title: 'About — CMA Investments',
   description: 'Mother-son real estate investors looking for condos, townhomes, and multifamily properties to invest in, care for, and pass on.',
 }
 
