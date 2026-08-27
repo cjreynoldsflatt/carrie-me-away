@@ -1683,7 +1683,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                                 </div>
                                 <div className="flex justify-between text-xs">
                                   <span className="text-slate-500">Vesting period</span>
-                                  <span className="font-semibold tabular-nums text-slate-700">{CMA_I.vestingYears} years · {(CMA_I.annualNonforfeitablePct * 100).toFixed(1)}pp/yr</span>
+                                  <span className="font-semibold tabular-nums text-slate-700">{CMA_I.vestingYears} years · {(CMA_I.annualNonforfeitablePct * 100).toFixed(1)}%/yr</span>
                                 </div>
                               </div>
                               <p className="text-[10px] text-slate-400 leading-relaxed pt-0.5">
