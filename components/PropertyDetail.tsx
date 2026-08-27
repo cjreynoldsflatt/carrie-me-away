@@ -1325,7 +1325,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             const cagrExp = computeCagr(tenYrRent + eq.expected)
             const cagrStr = computeCagr(tenYrRent + eq.strong)
 
-            const chartData = Array.from({ length: 6 }, (_, yr) => {
+            const chartData = Array.from({ length: 21 }, (_, yr) => {
               const rent = Math.round(metrics.netAnnualIncome * yr)
               const gain = (rate: number) => yr === 0 ? 0 : Math.round(listing.price * (Math.pow(1 + rate, yr) - 1))
               return {
@@ -1352,6 +1352,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                         <YAxis tickFormatter={abbr} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={48} />
                         <Tooltip formatter={(v, name) => [fmtCurrency(v as number), name]} labelFormatter={(l) => l === 0 ? 'Today' : `Year ${l}`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }} />
                         <ReferenceLine y={metrics.totalCashInvested} stroke="#cbd5e1" strokeDasharray="5 3" label={{ value: 'Invested', position: 'insideTopRight', fontSize: 9, fill: '#94a3b8', dy: -4 }} />
+                        <ReferenceLine x={5} stroke="#94a3b8" strokeWidth={1} strokeDasharray="3 3" label={{ value: 'Yr 5', position: 'insideTopRight', fontSize: 9, fill: '#94a3b8', dx: 2, dy: 4 }} />
                         <Line dataKey="rent" name="Cash flow only" stroke="#cbd5e1" strokeWidth={1.5} dot={false} strokeDasharray="4 3" />
                         <Line dataKey="con" name="+ 1%/yr appreciation" stroke="#93c5fd" strokeWidth={1.5} dot={false} />
                         <Line dataKey="exp" name={`+ ${(listing.appreciationRate * 100).toFixed(1)}%/yr appreciation`} stroke="#2563eb" strokeWidth={2.5} dot={false} />
