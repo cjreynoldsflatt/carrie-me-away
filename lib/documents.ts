@@ -118,5 +118,17 @@ export function getDocuments(): Document[] {
     updatedAt: 'August 25, 2026',
     content: readDoc('16-cma-data-ai-and-api-strategy.md'),
   },
+  {
+    slug: 'cma-leasing-and-marketing-playbook',
+    title: '17 — CMA Leasing & Marketing Playbook',
+    updatedAt: '2026-08-26',
+    content: readDoc('17-cma-leasing-and-marketing-playbook.md'),
+  },
+  {
+    slug: 'cma-wear-tear-and-security-deposit-guide',
+    title: '18 — CMA Wear, Tear & Security Deposit Guide',
+    updatedAt: '2026-08-26',
+    content: readDoc('18-cma-wear-tear-and-security-deposit-guide.md'),
+  },
 ]
 }
