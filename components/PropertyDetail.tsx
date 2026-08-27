@@ -239,9 +239,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   )
   const [superCostInput, setSuperCostInput] = useState(listing?.superAnnualCost ?? 1449)
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
-  // Quarterly distribution assumptions
-  const [reserveRetentionPct, setReserveRetentionPct] = useState(0.15)
-  const [cameronVestingYears, setCameronVestingYears] = useState(0)
+  // Operating reserve assumptions
+  const [reserveMonths, setReserveMonths] = useState(6)
+  const [currentReserveInput, setCurrentReserveInput] = useState(0)
 
   useEffect(() => {
     const dbRepairs = listing?.repairs ?? 20000
@@ -323,14 +323,22 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const annualDebtService = ccapMonthlyPayment * 12
   const cmaCashFlowAnnual = metrics.netAnnualIncome - annualDebtService
 
-  // Quarterly distribution waterfall (cash purchase mode)
+  // Operating reserve (target-balance model — not a % of cash flow)
+  const monthlyCarryingCosts = Math.round(
+    (propertyTaxInput + metrics.insuranceAnnual + annualHOA + managementCost + LLC_ANNUAL_COST) / 12
+    + ccapMonthlyPayment
+  )
+  const reserveTarget = monthlyCarryingCosts * reserveMonths
+  const reserveShortfall = Math.max(reserveTarget - currentReserveInput, 0)
+  const reserveFundedPct = reserveTarget > 0 ? Math.min(currentReserveInput / reserveTarget, 1) : 1
+  const reserveFullyFunded = reserveShortfall === 0
+
+  // Quarterly distribution waterfall
   const quarterlyNetCashFlow = Math.round(metrics.netAnnualIncome / 4)
-  const quarterlyRetained = Math.round(quarterlyNetCashFlow * reserveRetentionPct)
-  const quarterlyDistributable = quarterlyNetCashFlow - quarterlyRetained
-  const cameronCurrentVestedPct = (cameronVestingYears / CMA_I.vestingYears) * CMA_I.cameronResidualPct
+  const quarterlyReserveContribution = Math.min(quarterlyNetCashFlow, reserveShortfall)
+  const quarterlyDistributable = Math.max(quarterlyNetCashFlow - quarterlyReserveContribution, 0)
   const carrieQuarterly = Math.round(quarterlyDistributable * CMA_I.carrieResidualPct)
-  const cameronCurrentQuarterly = Math.round(quarterlyDistributable * cameronCurrentVestedPct)
-  const cameronFullVestedQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
+  const cameronQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
   const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== originalRent
   const repairsIsEdited = repairsInput !== (listing.repairs ?? 20000)
 
@@ -1283,23 +1291,18 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       </p>
                       <div className="space-y-2">
                         {([
-                          { name: 'Carrie Reynolds-Flatt', pct: CMA_I.carrieResidualPct, fullPct: null as number | null, isCameron: false },
-                          { name: 'Cameron Reynolds-Flatt', pct: cameronCurrentVestedPct, fullPct: CMA_I.cameronResidualPct as number | null, isCameron: true },
-                        ]).map(({ name, pct, fullPct, isCameron }) => {
+                          { name: 'Carrie Reynolds-Flatt', pct: CMA_I.carrieResidualPct, label: '51% residual interest' },
+                          { name: 'Cameron Reynolds-Flatt', pct: CMA_I.cameronResidualPct, label: '49% service-based interest' },
+                        ]).map(({ name, pct, label }) => {
                           const partnerCash = Math.round(cumCashFlow10CCAP * pct)
                           const partnerEquity = Math.round(cmaEquity10 * pct)
                           const partnerNet = Math.round(cmaTotalGain10 * pct)
                           const partnerQuarterly = Math.round(cmaCashFlowAnnual * pct / 4)
-                          const partnerNetFull = fullPct ? Math.round(cmaTotalGain10 * fullPct) : null
                           return (
                             <div key={name} className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
                               <div className="flex items-start justify-between">
                                 <div className="text-sm font-semibold text-slate-800">{name}</div>
-                                <div className="text-xs text-slate-400 text-right">
-                                  {isCameron
-                                    ? `Service interest · ${cameronVestingYears}/5 yrs`
-                                    : '51% residual interest'}
-                                </div>
+                                <div className="text-xs text-slate-400 text-right">{label}</div>
                               </div>
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-500">5-yr rental cash flow</span>
@@ -1319,9 +1322,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                                   </div>
                                   <div className={cn('text-xs tabular-nums', partnerQuarterly >= 0 ? 'text-emerald-600' : 'text-red-500')}>
                                     {fmtCurrency(partnerQuarterly)}/qtr est.
-                                    {isCameron && partnerNetFull != null && partnerNetFull !== partnerNet && (
-                                      <span className="text-slate-400 ml-1">({fmtCurrency(partnerNetFull)} at full vesting)</span>
-                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1482,15 +1482,13 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   const carrieResidualSale = Math.round(residualGain * CMA_I.carrieResidualPct)
                   const cameronResidualSale = Math.round(residualGain * CMA_I.cameronResidualPct)
 
-                  // Rental distributions: 51% Carrie / Cameron based on vesting
+                  // Rental distributions: 51% Carrie / 49% Cameron (always full %; reverse vesting is informational only)
                   const carrieRentalDist = Math.round(tenYrRent * CMA_I.carrieResidualPct)
-                  const cameronRentalDistVested = Math.round(tenYrRent * cameronCurrentVestedPct)
-                  const cameronRentalDistFull = Math.round(tenYrRent * CMA_I.cameronResidualPct)
+                  const cameronRentalDist = Math.round(tenYrRent * CMA_I.cameronResidualPct)
 
                   // Member totals
                   const carrieTotalBenefit = capitalDeployed + carrieResidualSale + carrieRentalDist
-                  const cameronBenefitVested = cameronResidualSale + cameronRentalDistVested
-                  const cameronBenefitFull = cameronResidualSale + cameronRentalDistFull
+                  const cameronBenefit = cameronResidualSale + cameronRentalDist
 
                   return (
                     <>
@@ -1527,12 +1525,20 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                               <span className="font-semibold text-slate-700">Service-Based Profits Interest</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-slate-500">Maximum interest (fully vested)</span>
+                              <span className="text-slate-500">Economic interest</span>
                               <span className="font-semibold text-slate-700">49%</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-slate-500">Currently vested ({cameronVestingYears} / 5 yrs)</span>
-                              <span className="font-semibold text-slate-700">{(cameronCurrentVestedPct * 100).toFixed(1)}%</span>
+                              <span className="text-slate-500">Structure</span>
+                              <span className="font-semibold text-slate-700">5-year reverse vesting</span>
+                            </div>
+                            <div className="flex justify-between border-t border-slate-200 pt-1.5">
+                              <span className="text-slate-500">Currently nonforfeitable</span>
+                              <span className="font-semibold text-slate-700">{(vesting.nonforfeitablePct * 100).toFixed(1)}%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Still subject to forfeiture</span>
+                              <span className="font-semibold text-amber-600">{(vesting.forfeitablePct * 100).toFixed(1)}%</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-slate-400">Capital contributed</span>
@@ -1586,27 +1592,89 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       <Section title="CMA-I Member Economics">
                         <div className="py-2 space-y-4">
 
-                          {/* Card A: Quarterly Distribution Estimate */}
+                          {/* Card A: Property Operating Reserve */}
                           <div>
-                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Quarterly Distribution Estimate</div>
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Property Operating Reserve</div>
+                            <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-2 text-xs mb-3">
+                              {/* Reserve months selector */}
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Target ({reserveMonths} months of carrying costs)</span>
+                                <div className="flex gap-1">
+                                  {[3, 6, 9, 12].map((m) => (
+                                    <button
+                                      key={m}
+                                      onClick={() => setReserveMonths(m)}
+                                      className={cn(
+                                        'w-7 h-6 rounded text-[10px] font-semibold transition-colors',
+                                        reserveMonths === m ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                                      )}
+                                    >{m}</button>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">Monthly carrying costs</span>
+                                <span className="font-semibold text-slate-700 tabular-nums">{fmtCurrency(monthlyCarryingCosts)}/mo</span>
+                              </div>
+                              <div className="flex justify-between border-t border-slate-200 pt-1.5">
+                                <span className="text-slate-600 font-medium">Reserve target</span>
+                                <span className="font-semibold text-slate-800 tabular-nums">{fmtCurrency(reserveTarget)}</span>
+                              </div>
+                              {/* Current reserve input */}
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Current reserve balance</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-slate-400 text-[10px]">$</span>
+                                  <input
+                                    type="number"
+                                    value={currentReserveInput === 0 ? '' : currentReserveInput}
+                                    placeholder="0"
+                                    onChange={(e) => setCurrentReserveInput(Math.max(0, Number(e.target.value) || 0))}
+                                    className="w-24 text-right text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded px-2 py-0.5 focus:outline-none focus:border-slate-400 tabular-nums"
+                                  />
+                                </div>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">Reserve shortfall</span>
+                                <span className={cn('font-semibold tabular-nums', reserveShortfall > 0 ? 'text-amber-600' : 'text-emerald-700')}>
+                                  {reserveFullyFunded ? 'None' : `−${fmtCurrency(reserveShortfall)}`}
+                                </span>
+                              </div>
+                              {/* Status bar */}
+                              <div className="pt-0.5">
+                                <div className="flex justify-between text-[10px] text-slate-400 mb-1">
+                                  <span>{reserveFullyFunded ? 'Fully Funded' : `${(reserveFundedPct * 100).toFixed(0)}% funded`}</span>
+                                  <span>{reserveTarget > 0 ? `${fmtCurrency(currentReserveInput)} / ${fmtCurrency(reserveTarget)}` : '—'}</span>
+                                </div>
+                                <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                  <div
+                                    className={cn('h-full rounded-full transition-all', reserveFullyFunded ? 'bg-emerald-500' : 'bg-amber-400')}
+                                    style={{ width: `${(reserveFundedPct * 100).toFixed(0)}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Card B: Quarterly Distribution Estimate */}
+                          <div>
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Estimated Quarterly Distribution</div>
                             {/* Cash flow waterfall */}
                             <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5 text-xs mb-3">
                               <div className="flex justify-between">
                                 <span className="text-slate-600">Quarterly net cash flow</span>
                                 <span className={cn('font-semibold tabular-nums', quarterlyNetCashFlow >= 0 ? 'text-slate-800' : 'text-red-600')}>{fmtCurrency(quarterlyNetCashFlow)}</span>
                               </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-slate-500">Cash retained by CMA-I ({(reserveRetentionPct * 100).toFixed(0)}%)</span>
-                                <span className="font-semibold tabular-nums text-slate-500">−{fmtCurrency(quarterlyRetained)}</span>
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">Reserve contribution this quarter</span>
+                                <span className="font-semibold tabular-nums text-slate-500">
+                                  {quarterlyReserveContribution > 0 ? `−${fmtCurrency(quarterlyReserveContribution)}` : 'None (fully funded)'}
+                                </span>
                               </div>
                               <div className="flex justify-between font-semibold border-t border-slate-200 pt-1.5">
-                                <span className="text-slate-700">Cash available for distribution</span>
+                                <span className="text-slate-700">Quarterly distributable cash</span>
                                 <span className={cn('tabular-nums', quarterlyDistributable >= 0 ? 'text-emerald-700' : 'text-red-600')}>{fmtCurrency(quarterlyDistributable)}</span>
                               </div>
-                            </div>
-                            {/* Retention slider */}
-                            <div className="mb-3">
-                              <InlineSlider value={reserveRetentionPct} onChange={setReserveRetentionPct} min={0} max={0.5} step={0.05} format={(v) => `Retain ${(v * 100).toFixed(0)}% for reserves`} />
                             </div>
                             {/* Member payouts */}
                             <div className="space-y-2">
@@ -1624,44 +1692,20 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                                 </div>
                               </div>
                               {/* Cameron */}
-                              <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <div className="text-sm font-semibold text-slate-800">Cameron Reynolds-Flatt</div>
-                                    <div className="text-xs text-slate-400">Service-Based Profits Interest</div>
-                                  </div>
+                              <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
+                                <div>
+                                  <div className="text-sm font-semibold text-slate-800">Cameron Reynolds-Flatt</div>
+                                  <div className="text-xs text-slate-400">49% of distributable cash</div>
                                 </div>
-                                {/* Vesting selector */}
-                                <div className="flex items-center justify-between pt-0.5">
-                                  <span className="text-xs text-slate-500">Years of service completed</span>
-                                  <div className="flex gap-1">
-                                    {[0,1,2,3,4,5].map((y) => (
-                                      <button
-                                        key={y}
-                                        onClick={() => setCameronVestingYears(y)}
-                                        className={cn(
-                                          'w-6 h-6 rounded text-[10px] font-semibold transition-colors',
-                                          cameronVestingYears === y ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-                                        )}
-                                      >{y}</button>
-                                    ))}
+                                <div className="text-right">
+                                  <div className={cn('text-base font-bold tabular-nums', cameronQuarterly >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {fmtCurrency(cameronQuarterly)}/qtr
                                   </div>
-                                </div>
-                                <div className="space-y-1 pt-0.5">
-                                  <div className="flex justify-between text-xs">
-                                    <span className="text-slate-500">Current ({(cameronCurrentVestedPct * 100).toFixed(1)}% vested)</span>
-                                    <span className={cn('font-semibold tabular-nums', cameronCurrentQuarterly >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                      {fmtCurrency(cameronCurrentQuarterly)}/qtr
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400">At full vesting (49%)</span>
-                                    <span className="text-slate-400 tabular-nums">{fmtCurrency(cameronFullVestedQuarterly)}/qtr</span>
-                                  </div>
+                                  <div className="text-xs text-slate-400 tabular-nums">{fmtCurrency(Math.round(cameronQuarterly / 3))}/mo equiv</div>
                                 </div>
                               </div>
                             </div>
-                            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">Distributions are quarterly estimates based on projected net cash flow. Security deposits are excluded from all cash flow and return calculations.</p>
+                            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">Distributions are quarterly estimates based on projected net cash flow. Tenant security deposits are held separately and excluded from investment cash flow and operating reserves.</p>
                           </div>
 
                           {/* Card B: Sale waterfall */}
@@ -1733,31 +1777,24 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                               <div className="rounded-lg border border-slate-200 px-3 py-2.5 space-y-1.5">
                                 <div className="flex items-start justify-between">
                                   <div className="text-sm font-bold text-slate-800">Cameron Reynolds-Flatt</div>
-                                  <div className="text-[10px] text-slate-400 text-right">Service-Based Profits Interest<br />{cameronVestingYears} / 5 yrs vested</div>
+                                  <div className="text-[10px] text-slate-400 text-right">Service-Based Profits Interest<br />49% economic interest</div>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                  <span className="text-slate-500">49% of residual sale gain (at full vesting)</span>
+                                  <span className="text-slate-500">49% of residual sale gain</span>
                                   <span className={cn('font-semibold tabular-nums', cameronResidualSale >= 0 ? 'text-emerald-700' : 'text-red-600')}>
                                     {cameronResidualSale >= 0 ? '+' : ''}{fmtCurrency(cameronResidualSale)}
                                   </span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                  <span className="text-slate-500">Rental distributions — current vesting ({(cameronCurrentVestedPct * 100).toFixed(1)}%)</span>
-                                  <span className={cn('font-semibold tabular-nums', cameronRentalDistVested >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                    +{fmtCurrency(cameronRentalDistVested)}
+                                  <span className="text-slate-500">49% of rental distributions (5 yr)</span>
+                                  <span className={cn('font-semibold tabular-nums', cameronRentalDist >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    +{fmtCurrency(cameronRentalDist)}
                                   </span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                  <span className="text-slate-400">Rental distributions — at full vesting (49%)</span>
-                                  <span className="text-slate-400 tabular-nums">+{fmtCurrency(cameronRentalDistFull)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm border-t border-slate-100 pt-1.5">
                                   <span className="font-semibold text-slate-700">Total projected benefit</span>
-                                  <div className="text-right">
-                                    <div className={cn('font-bold tabular-nums', cameronBenefitVested >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                      {cameronBenefitVested >= 0 ? '+' : ''}{fmtCurrency(cameronBenefitVested)}
-                                    </div>
-                                    <div className="text-xs text-slate-400">{fmtCurrency(cameronBenefitFull)} at full vesting</div>
+                                  <div className={cn('font-bold tabular-nums', cameronBenefit >= 0 ? 'text-emerald-700' : 'text-red-600')}>
+                                    {cameronBenefit >= 0 ? '+' : ''}{fmtCurrency(cameronBenefit)}
                                   </div>
                                 </div>
                               </div>
