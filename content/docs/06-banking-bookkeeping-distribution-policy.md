@@ -1,336 +1,309 @@
 # 06 — Banking, Bookkeeping & Distribution Policy
 
+**Status:** Final internal operating policy  
+**Version:** 2026-08-26.5
+**Last reviewed:** 2026-08-26
+**Document owner:** CMA-I / CMA-PM  
+**Supersedes:** All earlier versions of Doc 06  
+**Related documents:** 02, 03, 05, 08, 19, 21, 23
+
 ## Purpose
 
-This policy explains how CMA handles:
+This is the source-of-truth policy for CMA-I and CMA-PM banking, property subledgers, reserves, capital tracking, Member Loans, and distributions.
 
-- banking;
-- property bookkeeping;
-- capital;
-- reserves;
-- distributions;
-- Cameron's reverse-vested Service-Based Profits Interest.
+Member governance and reverse vesting are controlled by Docs 02 and 09 and are not restated here beyond what is needed for bookkeeping.
 
----
+## 1. Account Structure
 
-# 1. Primary Accounts
+### CMA-I Operating Account
 
-CMA generally uses:
+Use for:
 
-1. **CMA-I Operating Account**
-2. **CMA-PM Operating Account**
-3. **CMA-PM Security Deposit Account**
+- member capital and Member Loans to CMA-I;
+- acquisitions and capital funding;
+- sale and refinance proceeds received from subsidiaries;
+- CMA-I expenses;
+- member tax, profit, and capital distributions.
 
----
+### CMA-PM Operating Account
 
-# 2. Property Cash Flow
+Use for:
+
+- tenant rent and reimbursements;
+- property operating funds;
+- property expenses and vendors;
+- property reserve cash;
+- CMA-PM-level expenses;
+- approved transfers to CMA-I.
+
+Bluevine may be used for operating banking.
+
+### CMA-PM Security Deposit Account
+
+Use only for tenant security deposits and legally permitted deposit activity.
+
+For Maryland properties, use an interest-bearing, security-deposit-only account at a federally insured financial institution with a branch located in Maryland, unless another lawful holding method is approved.
+
+Bluevine is not the assumed Maryland security-deposit bank.
+
+## 2. Entity and Property Identification
+
+Every transaction must identify:
+
+- legal entity;
+- property / Property LLC, if applicable;
+- tenant or vendor;
+- transaction type;
+- income, expense, asset, liability, capital, loan, distribution, or transfer category;
+- supporting document.
+
+One bank account may contain cash attributable to multiple properties, but the books must show each property's balance separately.
+
+## 3. Property Cash Flow
 
 ```text
-Rent
- ↓
-CMA-PM Operating
- ↓
-Property expenses
- ↓
-$20K property reserve
- ↓
-Excess cash
- ↓
-CMA-I
+Rent and tenant receipts
+    -> CMA-PM Operating Account
+    -> pay property expenses and obligations
+    -> maintain / restore approved property reserve
+    -> transfer excess property cash to CMA-I
 ```
 
----
+A transfer to CMA-I is not automatically a member distribution.
 
-# 3. Centralized Banking
+## 4. Property Reserve
 
-CMA-PM may use centralized banking for multiple properties.
+Each rental property maintains a target equal to the greater of:
 
-Every transaction must remain attributable to the proper property.
+- $20,000; or
+- approximately nine months of unavoidable carrying costs.
 
----
+CMA-I may increase the target toward 12 months based on:
 
-# 4. Property Reserve
+- HOA, taxes, insurance, debt service, and owner-paid utilities;
+- age of major systems;
+- vacancy or turnover risk;
+- known property condition;
+- lender or insurer requirements;
+- concentration or market risk.
 
-Each property should generally maintain:
+The property reserve is a cash-liquidity target. It is separate from annual underwriting assumptions for vacancy, maintenance, CapEx, and turnover.
 
-## $20,000
+## 5. CMA-PM Working Capital
 
-as an operating reserve.
+CMA-PM maintains a separate company working-capital target of:
 
----
+## $5,000
 
-# 5. Security Deposits
+This is not attributed to a specific property reserve. It covers CMA-PM software, filing fees, chargebacks, banking timing, and company-level operating needs.
 
-Security deposits remain separate from ordinary operating cash and are not profit or revenue.
+## 6. Security-Deposit Accounting
 
----
+For every deposit, track:
 
-# 6. CMA-I Member Economics
+- tenant;
+- Property LLC and address;
+- amount and receipt date;
+- deposit date and bank account;
+- required interest;
+- deductions;
+- refund or transfer date;
+- supporting notices and invoices.
 
-### Governance
+The aggregate bank balance must equal or exceed the security-deposit liabilities CMA-PM administers, subject to legally permitted activity.
 
-Carrie: **51%**
+Reconcile the deposit bank to the deposit subledger monthly.
 
-Cameron: **49%**
+## 7. Capital Definitions
 
-### Initial Capital
+### Unrecovered Contributed Capital
 
-Carrie: **approximately $500,000**
+Tracked by member at CMA-I under Doc 02.
 
-Cameron: **$0**
+### Attributed Property Capital
 
-### Residual Profits
+The portion assigned to a specific property subledger. It may include approved acquisition equity, closing costs, initial reserve funding, capital improvements, debt principal funded from CMA-I capital, and operating shortfalls expressly designated as capital.
 
-Carrie: **51%**
+### Member Loan
 
-Cameron: **49% from the Grant Date**, subject to reverse vesting.
+An advance documented as debt, not capital.
 
----
+Formal tax capital accounts and outside tax basis are separate from these contractual/internal records.
 
-# 7. Reverse Vesting Record
+## 8. Funding Classification
 
-Cameron receives the full:
+Every new member advance must be classified before or promptly after funding as:
 
-## 49% Service-Based Profits Interest
+- capital contribution; or
+- Member Loan.
 
-at grant.
+Unless both members designate an emergency or short-term advance as capital, it defaults to a Member Loan.
 
-The portion becoming nonforfeitable is:
+Do not use a generic “owner transfer” category when the actual purpose is known.
 
-| Completed Service | Nonforfeitable | Forfeitable |
-|---|---:|---:|
-| Grant | 0.0% | 49.0% |
-| Year 1 | 9.8% | 39.2% |
-| Year 2 | 19.6% | 29.4% |
-| Year 3 | 29.4% | 19.6% |
-| Year 4 | 39.2% | 9.8% |
-| Year 5 | 49.0% | 0.0% |
+## 9. Member Loans
 
----
+Maintain a loan schedule with:
 
-# 8. Current Profit Distributions During Vesting
+- lender member;
+- borrower entity;
+- principal;
+- funding date;
+- interest rate;
+- accrued interest;
+- maturity;
+- payments;
+- purpose;
+- subordination.
 
-Reverse vesting does not reduce Cameron's ordinary current residual distribution percentage.
+Subject to outside creditors, law, and required reserves, applicable Member Loans are repaid before capital returns and residual member distributions.
 
-Before any forfeiture:
+## 10. Ordinary Distributable Cash
 
-### Carrie
+CMA-I may consider ordinary distributions quarterly.
 
-## 51%
+Before approving a distribution, confirm:
 
-### Cameron
+- current expenses and debt are paid or provided for;
+- property reserves meet target or have an approved restoration plan;
+- CMA-PM working capital meets target;
+- deposit liabilities are fully reconciled;
+- anticipated tax distributions are considered;
+- lender and legal restrictions are satisfied;
+- approved acquisitions and capital projects are funded.
 
-## 49%
+Ordinary residual distributions follow the current cap table maintained under Docs 02 and 09.
 
-from the Grant Date.
+## 11. Tax Distributions
 
-Example:
+By January 31, the CPA should recommend an Assumed Tax Rate for the year. If none is established, the internal planning default is 40%.
 
-CMA-I distributes:
-
-## $20,000
-
-### Carrie
-
-51% = **$10,200**
-
-### Cameron
-
-49% = **$9,800**
-
----
-
-# 9. If Cameron Forfeits an Unvested Portion
-
-If Cameron voluntarily stops providing the required services before full vesting:
-
-- Cameron keeps the nonforfeitable percentage;
-- Cameron loses the remaining forfeitable percentage;
-- future residual distributions adjust after the forfeiture.
-
-Example after Year 3:
-
-Cameron's nonforfeitable interest:
-
-## 29.4%
-
-Remaining forfeitable interest:
-
-## 19.6%
-
-If Cameron stops services at that point, his future residual interest becomes 29.4%.
-
----
-
-# 10. Profit Distribution vs. Return of Capital
-
-## Profit Distribution
-
-Does not automatically reduce unrecovered capital.
-
-## Return of Capital
-
-Reduces the contributing member's unrecovered capital balance.
-
----
-
-# 11. Initial Capital Record
-
-| Member | Contributed | Returned | Unrecovered |
-|---|---:|---:|---:|
-| Carrie | $500,000 | $0 | $500,000 |
-| Cameron | $0 | $0 | $0 |
-
----
-
-# 12. Future Capital
-
-Future contributions remain attributable to whoever contributes them.
-
----
-
-# 13. Property Capital Sub-Ledgers
-
-Example:
-
-| Use of Carrie's Capital | Amount |
-|---|---:|
-| Flamingo | $200,000 |
-| Manatee | $175,000 |
-| Undeployed cash | $125,000 |
-| **Total** | **$500,000** |
-
----
-
-# 14. Property Sale Waterfall
+Target tax distribution:
 
 ```text
-Net sale proceeds
-      ↓
-Debts / costs / obligations
-      ↓
-Return applicable contributed capital
-      ↓
-Residual appreciation
-      ↓
-Applicable profits-interest split
+member's allocated taxable income
+× Assumed Tax Rate
+- prior tax distributions for that tax year
+= target tax distribution
 ```
 
----
+Tax distributions are subject to available cash, restrictions, and reserves and are generally treated as advances against later distributions.
 
-# 15. Property Sale Example
-
-Carrie's capital associated with Flamingo:
-
-## $200,000
-
-Net proceeds:
-
-## $325,000
-
-Residual appreciation:
-
-## $125,000
-
-Assuming no forfeiture:
-
-### Carrie
-
-$200,000 capital  
-+ $63,750 residual
-
-## $263,750
-
-### Cameron
-
-## $61,250
-
----
-
-# 16. Reinvestment
-
-If Carrie's capital remains inside CMA-I and is reinvested, it remains unrecovered.
-
----
-
-# 17. Tax Distributions
-
-CMA-I may make a separate annual tax distribution.
-
-### Target Date
+Target payment date:
 
 ## March 15
 
----
+A later true-up may be approved after final K-1 information is available.
 
-# 18. Tax Capital Accounts
+## 12. Capital-Transaction Waterfall
 
-Tax capital accounts are separate from unrecovered contributed capital.
+For a sale, distributed refinance, liquidation, or other approved capital transaction:
 
----
+```text
+1. outside debt / taxes / transaction costs / required reserves
+2. applicable Member Loans and accrued interest
+3. return Attributed Property Capital to contributing members
+4. other Company-level capital return if approved
+5. residual value under current residual percentages
+```
 
-# 19. Tax Allocations
+If net proceeds do not satisfy applicable capital, there is no residual distribution. Unpaid capital remains unrecovered at CMA-I until later return, final liquidation, or an approved write-off.
 
-Tax allocations should reflect the actual economic arrangement, including Cameron's full profits interest and any later forfeiture.
+## 13. Refinance Proceeds
 
----
+Refinance proceeds are not automatically profit or return of capital.
 
-# 20. Cameron's Compensation
+The approving resolution must state whether proceeds are:
 
-Cameron's Service-Based Profits Interest is intended to be his primary compensation.
+- retained or reinvested;
+- used to repay debt or Member Loans;
+- distributed as return of capital;
+- distributed as residual cash;
+- used for another approved purpose.
 
-Cameron initially receives:
+Unrecovered capital is reduced only by a payment expressly recorded as return of capital.
 
-## No salary or guaranteed annual payment.
+## 14. Shared and Company-Level Expenses
 
----
+- Property-specific costs are charged to the property.
+- CMA-I company costs remain at CMA-I unless reasonably allocated.
+- CMA-PM company costs remain at CMA-PM unless reimbursable under Doc 05.
+- Shared property costs use a documented, consistently applied allocation method.
 
-# 21. Cameron's Death
+## 15. Reimbursements
 
-If Cameron dies before full vesting:
+A member or representative who personally pays an authorized company expense submits:
 
-- the remaining forfeitable portion immediately becomes nonforfeitable;
-- Cameron is treated as owning the full 49%;
-- his interest passes to Jay Flatt.
+- receipt or invoice;
+- business purpose;
+- entity/property;
+- payment date;
+- reimbursement request.
 
----
+A reimbursement is not a member distribution.
 
-# 22. Carrie's Death
+## 16. Monthly Close
 
-Carrie's interest and unrecovered capital rights pass to Jay Flatt.
+At least monthly:
 
----
+- reconcile CMA-I accounts;
+- reconcile CMA-PM operating and deposit accounts;
+- reconcile property cash subledgers;
+- match intercompany transfers;
+- review deposit liabilities;
+- review reserve balances;
+- categorize uncoded transactions;
+- attach material receipts/invoices;
+- review open receivables and payables.
 
-# 23. Annual Member Statement
+## 17. Quarterly Review
 
-Each year CMA-I should prepare an internal statement showing:
+Quarterly:
+
+- assess distribution capacity;
+- review property and CMA-PM reserves;
+- review Member Loans and capital;
+- review delinquency and open maintenance;
+- review upcoming leases, insurance, licenses, and capital projects;
+- prepare any required resolutions under Doc 23.
+
+## 18. Year-End Close
+
+Prepare schedules for:
+
+- property income and expenses;
+- fixed assets and depreciation support;
+- member contributions and capital returns;
+- Member Loans;
+- residual and tax distributions;
+- intercompany balances;
+- debt;
+- deposit liabilities;
+- vendor 1099 review;
+- CPA tax package.
+
+## 19. Annual Member Statement
+
+CMA-I provides an internal annual statement showing:
 
 | Item | Carrie | Cameron |
 |---|---:|---:|
-| Contributions | $___ | $___ |
+| Capital contributed | $___ | $___ |
 | Capital returned | $___ | $___ |
 | Unrecovered capital | $___ | $___ |
-| Residual profits interest | 51% | 49% |
-| Nonforfeitable portion | N/A | ___% |
-| Forfeitable portion | N/A | ___% |
+| Member Loans | $___ | $___ |
+| Current residual interest | ___% | ___% |
 | Ordinary distributions | $___ | $___ |
 | Tax distributions | $___ | $___ |
 
----
+This is not necessarily the same as tax capital or outside basis.
 
-# 24. Core Rules
+## 20. Internal Controls
 
-1. **Carrie's initial capital is approximately $500,000.**
-2. **Cameron initially contributes $0 cash.**
-3. **Cameron receives the full 49% Service-Based Profits Interest at grant.**
-4. **Ordinary residual distributions are generally 51/49 from Day 1.**
-5. **Reverse vesting determines what Cameron permanently keeps, not his current distribution percentage.**
-6. **9.8 percentage points become nonforfeitable each year.**
-7. **If Cameron stops working, the still-forfeitable portion is lost.**
-8. **If Cameron dies or becomes permanently disabled, the remaining portion immediately becomes fully nonforfeitable.**
-9. **Carrie's existing capital remains separately protected.**
-10. **Profit distributions and returns of capital must be separately tracked.**
-11. **Future capital remains attributable to whoever contributes it.**
-12. **Tax capital accounts are separate from unrecovered capital.**
-13. **No personal commingling.**
-14. **Property bookkeeping remains property-specific.**
+- No personal commingling.
+- No unsupported cash withdrawal.
+- No splitting transactions to avoid approval limits.
+- No security-deposit use for operations.
+- No unclassified member funding.
+- Preserve material records under Doc 22.
+- Use written resolutions for acquisitions, sales, loans, capital, distributions, bank authority, and other material decisions.

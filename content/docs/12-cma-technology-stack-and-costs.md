@@ -1,275 +1,194 @@
 # 12 — CMA Technology Stack & Cost Plan
 
-## Purpose
+**Status:** Final internal planning document; verify prices before purchase  
+**Version:** 2026-08-26.5
+**Last reviewed:** 2026-08-26
+**Document owner:** CMA-PM  
+**Supersedes:** All earlier versions of Doc 12  
+**Related documents:** 11, 16, 22
 
-This document lists the technology and infrastructure CMA-PM needs to operate professionally without unnecessary software overlap.
+## 1. Domain Strategy
 
-Prices change. Verify current pricing before purchasing.
+### Primary operating domain
 
-## 1. Business Infrastructure
+## `cmapropertymanagement.com`
 
-| Need | Preferred Tool | Initial Plan | Approx. Cost |
-|---|---|---|---:|
-| Business mailing address | Stable | Business address plan | ~$49/month |
-| Registered agent | Maryland resident agent or Stable add-on | As needed | Variable |
-| Domain | Domain registrar | 1 domain | ~$15–$25/year |
-| Business email/files | Google Workspace | Business Starter | ~$7/user/month |
-| Business phone | Google Voice | Starter | ~$10/user/month |
+Suggested addresses:
 
-Suggested business identity:
+- `rentals@cmapropertymanagement.com`
+- `maintenance@cmapropertymanagement.com`
+- `accounting@cmapropertymanagement.com`
+- `cameron@cmapropertymanagement.com`
 
-```text
-CMA Property Management LLC
-[Stable Business Address]
-[Google Voice Number]
-rentals@[CMA DOMAIN]
-```
+Use aliases/groups where possible rather than buying a separate paid mailbox for each address.
 
-## 2. Banking
+### Defensive domain
+
+## `cmainvestments.com`
+
+Hold this domain for CMA-I. No separate website or mailbox is initially required.
+
+## 2. Business Address and Registered Agent
+
+### Stable
+
+Preferred use:
+
+- permanent business street address;
+- mail scanning and digital mailbox;
+- forwarding / shredding;
+- registered-agent service as a separate add-on.
+
+Current planning assumptions:
+
+| Item | Planning cost |
+|---|---:|
+| Stable Grow, annual-billing equivalent | $49/month |
+| Stable registered-agent add-on | $25/month per address |
+| Physical forwarding / special actions | variable |
+
+Confirm that the selected Maryland address and registered-agent add-on meet formation, banking, licensing, and service-of-process needs.
+
+## 3. Google
+
+| Service | Plan | Planning cost |
+|---|---|---:|
+| Google Workspace | Business Starter, one user | $7/month |
+| Google Voice | Starter | $10/month |
+
+Workspace provides the primary business email, Drive, Docs, and Calendar.
+
+## 4. Banking
 
 ### Bluevine
 
-Initial structure:
+Use for CMA-I and CMA-PM operating banking if approved.
 
-```text
-CMA-PM Business Checking
-├── Operating Account
-└── Security Deposit Account
-```
+Current Standard-plan planning assumptions:
 
-Use Bluevine primarily as the bank, not necessarily as the tenant-facing rent platform.
+- $0 monthly fee;
+- up to five subaccounts;
+- standard ACH and invoicing features;
+- payment-processing fees apply to invoice/card/ACH-direct-debit collection.
 
-Approximate base platform cost:
+Do not use Bluevine as the Maryland security-deposit bank unless the exact structure is confirmed compliant. Budget separately for the Maryland-branch deposit account if the chosen bank charges fees.
 
-**$0/month on Standard**, subject to current Bluevine terms.
+## 5. DoorLoop
 
-## 3. Property Management Platform
+Preferred property-management platform.
 
-### Preferred: DoorLoop
+Current published planning costs:
 
-Use for:
-- listings;
-- applications;
-- screening;
-- leases;
-- e-signatures;
-- rent collection;
-- tenant portal;
-- maintenance;
-- messaging;
-- vendor records;
-- reports.
-
-### Initial Recommendation
-
-Start with the lowest DoorLoop plan that provides the operational features CMA actually needs.
-
-Do not upgrade solely for API access until CMA is ready to build a live integration.
-
-Approximate current pricing previously reviewed:
-
-| DoorLoop Tier | Approx. Monthly Cost* | Best For |
+| Plan | Approximate starting cost | CMA use |
 |---|---:|---|
-| Starter | ~$69/month | Initial CMA portfolio |
-| Pro | ~$149/month | More advanced operations |
-| Premium | ~$209/month | API / advanced integrations |
+| Starter | $69/month, typically billed yearly | initial portfolio |
+| Pro | $149/month | advanced workflows/accounting |
+| Premium | $209/month | API, Zapier, free e-sign/incoming ACH, advanced access |
 
-*Pricing may require annual billing and may change.
+Additional screening, e-signature, payment, website, or onboarding fees may apply by plan.
 
-Possible transaction fees may apply for e-signatures on lower tiers, screening, card payments, ACH depending on plan, and optional services.
+Start with the lowest plan that supports the actual workflow. Do not buy Premium solely to preserve a hypothetical future API.
 
-## 4. Maintenance Marketplace / Optional Warranty
+## 6. Super
 
-### Super
+Super is a property-level maintenance/protection choice, not a required CMA-PM software subscription.
 
-Recommended role:
+The CMA property-analysis app currently uses:
 
-**Supplemental maintenance marketplace and optional property-specific warranty layer.**
+## $1,449 per property per year
 
-CMA-PM should continue to receive and track tenant maintenance requests in DoorLoop first.
+as a conservative high-cost modeling assumption when Super coverage is enabled.
 
-```text
-Tenant
-   |
-DoorLoop
-   |
-CMA-PM triage
-   |
-Super or CMA Vendor
-```
+This is a CMA modeling assumption, not a verified universal current top-plan price. Confirm the actual property quote, service-call fees, caps, exclusions, and market availability.
 
-Use Super for supported on-demand repair and maintenance categories when its pricing, availability, and response time are competitive. Paid home-system / appliance coverage should be evaluated separately for each property rather than treated as a required portfolio-wide subscription.
+## 7. AI Tools
 
-Approximate pricing previously reviewed:
+| Tool | Planning plan | Cost |
+|---|---|---:|
+| ChatGPT | Plus | $20/month |
+| Claude | Pro annual equivalent | about $17/month |
+| Claude | Pro monthly | $20/month |
 
-| Super Option | Approx. Cost | CMA Use |
-|---|---:|---|
-| Maintenance marketplace/access | $0-variable | Initial vendor option |
-| Simple coverage | ~$525/property/year | Optional |
-| Signature coverage | ~$849/property/year | Optional |
-| Lux coverage | ~$1,449/property/year | Optional |
+API usage for either provider is separate from chat subscriptions.
 
-Verify current pricing, coverage, service-call fees, exclusions, caps, and availability for each property before purchase.
+Use ChatGPT primarily for research, policy, analysis, and drafting. Use Claude primarily for coding, UI, and integrations, while allowing overlap.
 
+## 8. CMA App and Hosting
 
-## 5. AI Tools
+Initial planning range:
 
-### ChatGPT
+## $0–$25/month
 
-Recommended:
+Potential future costs:
 
-**ChatGPT Plus** initially.
+- hosting and database;
+- maps/listing data;
+- AI API usage;
+- email/SMS;
+- monitoring and backups;
+- DoorLoop API plan;
+- bank/accounting integrations.
 
-Approximate cost:
+The app should focus on Property Analysis, reserves, capital, owner economics, and intelligence rather than rebuilding tenant operations already handled by DoorLoop.
 
-**$20/month**
+## 9. Lean Fixed Monthly Stack
 
-Use for:
-- CMA strategy;
-- research;
-- drafting;
-- document review;
-- property comparisons;
-- operating procedures;
-- workflow design.
-
-### Claude
-
-Recommended:
-
-**Claude Pro**
-
-Approximate cost:
-
-**$17–$20/month equivalent**
-
-Use for:
-- CMA custom app development;
-- coding;
-- UI iteration;
-- automation;
-- API integration;
-- debugging.
-
-## 6. CMA Custom App
-
-Purpose:
-
-```text
-CMA App
-├── Property Analysis
-├── Deal Comparison
-├── Property-Level Bookkeeping
-├── Operating Reserves
-├── CMA-I Capital Tracking
-├── 51/49 Residual Economics
-├── Portfolio Reporting
-└── Future AI Tools
-```
-
-Use the term **Property Analysis** in the UI instead of “underwriting” if clearer.
-
-Initial hosting/API costs:
-
-**$0–$25/month** depending on architecture.
-
-## 7. Document Storage
-
-Use **Google Drive** through Google Workspace.
-
-Recommended structure:
-
-```text
-CMA
-├── Corporate
-│   ├── CMA-I
-│   └── CMA-PM
-├── Properties
-│   ├── Flamingo
-│   │   ├── Acquisition
-│   │   ├── Lease
-│   │   ├── Tenant
-│   │   ├── Inspections
-│   │   ├── Maintenance
-│   │   ├── HOA
-│   │   ├── Insurance
-│   │   └── Accounting
-│   └── [Next Property]
-└── Vendors
-```
-
-DoorLoop can hold operational records while Google Drive remains the long-term company archive.
-
-## 8. Recommended Lean Monthly Cost
-
-Approximate fixed monthly software cost at startup:
-
-| Service | Approx. Monthly |
+| Service | Monthly planning amount |
 |---|---:|
-| Stable | $49 |
+| Stable Grow | $49 |
+| Stable registered agent | $25 |
 | Google Workspace | $7 |
 | Google Voice | $10 |
-| Bluevine | $0 |
+| Two domains | $3–$5 |
+| Bluevine Standard | $0 |
 | DoorLoop Starter | $69 |
-| Super maintenance access | $0-variable |
 | ChatGPT Plus | $20 |
-| Claude Pro | ~$17–$20 |
-| Domain equivalent | ~$2 |
+| Claude Pro | $17–$20 |
 | CMA app hosting | $0–$25 |
-| **Estimated Total** | **~$174–$202/month** |
+| **Estimated company technology total** | **about $200–$230/month** |
 
-Approximate annual fixed software spend:
+This excludes:
 
-## ~$2,100–$2,425/year
+- Maryland security-deposit bank fees;
+- screening and payment transaction fees;
+- Super property coverage;
+- insurance;
+- CPA, legal, and bookkeeping;
+- LLC filing fees;
+- repairs and vendors.
 
-before registered-agent fees, insurance, CPA/bookkeeping, Property LLC fees, screening transaction fees, rent payment processing, maintenance/repairs, utilities, vendor services, and any optional Super warranty premiums.
+## 10. Avoided Duplicate Tools
 
-A paid Super warranty, if selected, should be treated as a **property-level operating cost**, not a required CMA-PM software subscription.
+If DoorLoop works as expected, CMA likely does not need separate paid subscriptions for:
 
-## 9. Tools We Probably Do Not Need Separately
-
-If DoorLoop performs well, CMA likely does not need separate paid subscriptions for:
 - Avail;
 - TurboTenant;
 - RentRedi;
-- SmartMove as a standalone workflow;
-- DocuSign;
-- separate maintenance software;
-- separate tenant messaging software;
-- Bluevine recurring rent invoicing.
+- standalone SmartMove workflow;
+- DocuSign for ordinary leases;
+- separate maintenance-ticket software;
+- Bluevine invoices as the primary rent system.
 
-## 10. Upgrade Triggers
+## 11. Upgrade Triggers
 
-Upgrade software only when there is a specific need.
+Upgrade only when a measured need exists:
 
-### DoorLoop Premium
-Consider when:
-- API access becomes necessary;
-- CMA builds live AI integrations;
-- higher-tier payment economics justify the cost;
-- advanced automation saves enough time.
+- unit count or user roles outgrow the plan;
+- manual work exceeds the subscription cost;
+- live API integration is ready to build;
+- payment economics improve on a higher plan;
+- accounting/reporting needs justify it;
+- security or continuity requirements increase.
 
-### Google Workspace
-Add users only when another person needs a true separate inbox/account.
+## 12. Annual Review
 
-Use aliases where appropriate.
+Each year compare:
 
-### Bluevine
-Upgrade only when sub-account limits, payment features, or banking needs justify it.
-
-## 11. Annual Technology Review
-
-Once per year, compare:
-- total software cost;
-- transaction fees;
-- duplicate functionality;
-- unused subscriptions;
-- API needs;
-- number of properties;
-- time saved;
+- actual fixed and transaction costs;
+- unused tools;
+- overlapping functions;
+- data export and ownership;
 - tenant experience;
-- bookkeeping quality.
-
-The goal is not to use the most software.
-
-The goal is to use the smallest stack that makes CMA-PM professional, reliable, and scalable.
+- time saved;
+- API and AI needs;
+- vendor price changes.

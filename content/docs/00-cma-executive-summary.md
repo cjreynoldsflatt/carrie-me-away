@@ -2,727 +2,201 @@
 
 ## Purpose
 
-This document is the highest-level overview of how the CMA real-estate system is structured and operated.
+This is the shortest map of the CMA system. It summarizes the structure and points to the document that controls each topic. It is not intended to replace an operating agreement, agency agreement, lease, tax schedule, or applicable law.
 
-It is intended to help a member, attorney, CPA, lender, advisor, or future operator quickly understand:
-
-- what each entity does;
-- who controls what;
-- how money flows;
-- how properties are owned;
-- how rentals are managed;
-- how banking is structured;
-- how technology supports operations;
-- how the rest of the CMA document set fits together.
-
-This document is a summary only. If there is a conflict between this summary and a controlling operating agreement, contract, lease, tax document, or applicable law, the controlling document or law governs.
-
----
-
-# 1. CMA at a Glance
+## 1. Entity Structure
 
 ```text
-CMA-I
-├── owns Property LLCs
-├── owns CMA-PM
-└── holds member governance and economics
-
-Property LLC
-└── owns the rental property / is the landlord
-
-CMA-PM
-├── tenant-facing manager / agent
-├── leasing administration
-├── rent administration
-├── maintenance coordination
-├── bookkeeping workflows
-└── security deposit administration
+Carrie Reynolds-Flatt              Cameron Reynolds-Flatt
+Capital Partner                    Operating Partner
+           \                           /
+            \                         /
+                  CMA-I
+        CMA Investments LLC
+            Maryland parent
+                  |
+       +----------+-----------+
+       |                      |
+   Property LLCs            CMA-PM
+   one per house       property manager / agent
+       |                      |
+   own property        tenant operations
+   are landlord        rent / maintenance / leasing
 ```
 
----
+- **CMA-I** owns CMA-PM and each Property LLC.
+- **Each Property LLC** generally owns one rental and is the landlord.
+- **CMA-PM** manages commonly owned properties as written agent of the applicable Property LLC.
 
-# 2. Core Entities
 
-## CMA Investments LLC
 
-Short name: **CMA-I**
+## 2. Member Structure
 
-Role:
-- parent holding / investment company;
-- owns CMA-PM;
-- owns the Property LLCs;
-- receives member capital;
-- deploys capital into acquisitions;
-- receives excess property cash;
-- receives sale / refinance proceeds;
-- makes owner distributions;
-- tracks member economics.
 
-## CMA Property Management LLC
+| Topic                                  | Carrie                 | Cameron                            |
+| -------------------------------------- | ---------------------- | ---------------------------------- |
+| Governance                             | 51%                    | 49%                                |
+| Initial cash capital                   | approximately $500,000 | $0                                 |
+| Residual economics from the Grant Date | 51%                    | 49% Service-Based Profits Interest |
 
-Short name: **CMA-PM**
 
-Role:
-- manager / agent for the Property LLCs;
-- tenant-facing operating company;
-- leasing administration;
-- rent collection administration;
-- maintenance coordination;
-- vendor coordination;
-- tenant communication;
-- property-level bookkeeping workflows;
-- security deposit administration.
+Carrie's contributed capital remains separately attributable to Carrie. Cameron does not receive a share of that existing capital merely because he has a 49% profits interest.
 
-CMA-PM does **not** own the rental houses.
+Cameron receives the full 49% Service-Based Profits Interest from Day 1 while substantially performing the duties in Doc 09. Reverse vesting determines how much of that already-granted 49% becomes permanently nonforfeitable over five years.
 
-Initial internal management fee: **$0** unless CMA later changes it.
+## 3. Reverse Vesting
 
-## Property LLCs
 
-Each rental property is generally held in its own Property LLC.
+| Completed service | Cameron's current interest while performing | Nonforfeitable | Still forfeitable |
+| ----------------- | ------------------------------------------- | -------------- | ----------------- |
+| Grant Date        | 49.0%                                       | 0.0%           | 49.0%             |
+| Year 1            | 49.0%                                       | 9.8%           | 39.2%             |
+| Year 2            | 49.0%                                       | 19.6%          | 29.4%             |
+| Year 3            | 49.0%                                       | 29.4%          | 19.6%             |
+| Year 4            | 49.0%                                       | 39.2%          | 9.8%              |
+| Year 5            | 49.0%                                       | 49.0%          | 0.0%              |
+
+
+If Cameron voluntarily stops performing or is terminated for Cause before Year 5, the remaining forfeitable portion is reallocated to Carrie. Cameron keeps his nonforfeitable residual interest. His 49% governance interest remains unchanged unless the members amend the governance arrangement.
+
+Death, permanent disability, termination without Cause, a qualifying constructive termination, or a qualifying sale of substantially all CMA-I assets accelerates the remaining forfeitable portion under Doc 09.
+
+## 4. Money Flow
 
 ```text
-CMA-I
-├── Flamingo Properties LLC
-├── Manatee Properties LLC
-├── Heron Properties LLC
-└── CMA-PM
+Member capital
+    -> CMA-I Operating Account
+    -> Property LLC acquisition / capital funding
+
+Tenant rent
+    -> DoorLoop
+    -> CMA-PM Operating Account
+    -> property expenses and reserve
+    -> excess property cash to CMA-I
+
+Tenant security deposit
+    -> separate CMA-PM Security Deposit Account
+       at a Maryland-branch, federally insured institution
 ```
 
-Each Property LLC:
-- owns the house;
-- is the landlord;
-- signs the lease as landlord;
-- appoints CMA-PM as manager / agent.
+Bluevine may be used for CMA-I and CMA-PM operating banking. It is not the assumed Maryland security-deposit bank.
 
----
+Each property maintains an operating reserve equal to the greater of:
 
-# 3. Member Governance
+- $20,000; or
+- approximately nine months of unavoidable carrying costs.
 
-| Member | Governance |
-|---|---:|
-| Carrie | 51% |
-| Cameron | 49% |
+CMA-PM also maintains a separate company working-capital target of $5,000.
 
-Ordinary business decisions are governed by majority rule.
+## 5. Operating Profit vs. Capital Transactions
 
-Because Carrie holds 51%, she controls ordinary business disagreements.
+Ordinary distributable rental profit is generally divided under the current residual percentages, initially 51% Carrie / 49% Cameron.
 
-Certain fundamental decisions require approval of both Carrie and Cameron, including material changes to:
-- governance percentages;
-- admission of new members;
-- Carrie's capital rights;
-- Cameron's Service-Based Profits Interest;
-- reverse vesting;
-- intended 51/49 residual economics;
-- capital hurdle rights;
-- succession;
-- mergers;
-- voluntary dissolution;
-- sale of substantially all assets;
-- fundamental operating-agreement provisions.
-
----
-
-# 4. Capital
-
-| Member | Initial Capital |
-|---|---:|
-| Carrie | Approximately $500,000 |
-| Cameron | $0 |
-
-Carrie's contributed capital remains economically attributable to Carrie and is protected by a capital hurdle.
-
-Cameron does not receive a claim on Carrie's existing contributed capital merely because he holds a profits interest.
-
----
-
-# 5. Cameron's Service-Based Profits Interest
-
-Cameron receives a **49% Service-Based Profits Interest** in exchange for substantial ongoing operating services.
-
-Responsibilities include:
-- sourcing properties;
-- property analysis;
-- acquisition due diligence;
-- negotiations;
-- closing coordination;
-- renovation oversight;
-- building and maintaining CMA tools;
-- CMA-PM operations;
-- vendor oversight;
-- outside property-manager oversight;
-- bookkeeping/reporting workflows;
-- compliance coordination;
-- hold / refinance / sell analysis;
-- portfolio strategy;
-- entity / banking / administrative coordination.
-
-Cameron initially receives no salary or guaranteed annual payment.
-
-The profits interest is intended to be his primary compensation.
-
----
-
-# 6. Reverse Vesting
-
-Cameron receives the full 49% Service-Based Profits Interest from the Grant Date.
-
-He generally participates in 49% of residual profits and distributions from Day 1 while continuing to perform the required services.
-
-The interest is subject to five-year reverse vesting.
-
-| Completed Year | Nonforfeitable | Still Forfeitable |
-|---|---:|---:|
-| Grant Date | 0.0% | 49.0% |
-| Year 1 | 9.8% | 39.2% |
-| Year 2 | 19.6% | 29.4% |
-| Year 3 | 29.4% | 19.6% |
-| Year 4 | 39.2% | 9.8% |
-| Year 5 | 49.0% | 0.0% |
-
-Reverse vesting affects what Cameron permanently keeps. It does **not** reduce his current 49% residual distribution share while the full interest remains outstanding.
-
-If Cameron voluntarily stops performing before full vesting:
-- he keeps the nonforfeitable portion;
-- he forfeits the remaining forfeitable portion;
-- there is no automatic forced buyback of the retained portion.
-
-Death or permanent disability accelerates the remaining forfeitable portion to fully nonforfeitable.
-
----
-
-# 7. Residual Economics
-
-| Member | Residual Economics |
-|---|---:|
-| Carrie | 51% |
-| Cameron | 49% |
-
-This applies to residual rental profits, appreciation, sale gain, and other residual company economics after applicable obligations and capital rights are respected.
-
-There is no preferred return to Carrie.
-
----
-
-# 8. Capital Hurdle
-
-Carrie's existing contributed capital is not simply split 51/49.
-
-General sale waterfall:
+Capital transactions follow a separate waterfall:
 
 ```text
-Sale / Refinance Proceeds
-        ↓
-Debts / Costs / Taxes / Obligations
-        ↓
-Return Applicable Unrecovered Capital
-        ↓
-Split Residual Economics 51% / 49%
+Net capital proceeds
+    -> outside debt / transaction obligations
+    -> applicable member loans
+    -> return attributed unrecovered member capital
+    -> remaining residual value under current residual percentages
 ```
 
-Example:
+The exact capital formula is controlled by Docs 02, 06, and 21.
+
+## 6. Decision-Making
+
+- Carrie controls ordinary decisions through 51% governance.
+- Fundamental decisions require both members.
+- If a fundamental-decision deadlock persists, the members use the negotiation and mediation procedure in Doc 02. The status quo continues unless immediate action is required to preserve people, property, legal compliance, or material company value.
+
+
+
+## 7. Succession
+
+- If Carrie dies, her CMA-I interest and capital rights pass to Jay Flatt.
+- If Cameron dies, his remaining forfeitable profits interest first becomes fully nonforfeitable, then his CMA-I interest passes to Jay Flatt.
+- Jay is admitted as a substitute member when the legal transfer is effective and the required evidence is delivered.
+- If Jay cannot take the interest, the deceased member's controlling estate documents and applicable law govern.
+
+
+
+## 8. Tenant and Property Operations
 
 ```text
-Carrie capital associated with property: $200,000
-Net sale proceeds: $325,000
-
-Return capital to Carrie: $200,000
-
-Residual: $125,000
-Carrie 51%: $63,750
-Cameron 49%: $61,250
-```
-
----
-
-# 9. Banking Structure
-
-## CMA-I Operating Account
-Use for:
-- member capital;
-- acquisitions;
-- excess property cash;
-- sale / refinance proceeds;
-- owner distributions;
-- CMA-I expenses.
-
-## CMA-PM Operating Account
-Use for:
-- tenant rent;
-- property operating expenses;
-- repairs;
-- vendors;
-- HOA;
-- insurance;
-- owner-paid utilities;
-- property reserves;
-- permitted transfers to CMA-I.
-
-## CMA-PM Security Deposit Account
-Use only for:
-- tenant security deposits;
-- lawful refunds;
-- lawful deductions / transfers when permitted.
-
-Security deposits are liabilities, not rent revenue.
-
-Each deposit must be tracked by tenant, property, Property LLC, amount, date received, date returned, and deductions if any.
-
----
-
-# 10. Property Reserves
-
-Current working reserve target:
-
-## $20,000 per rental property
-
-Preferred working rule:
-
-## Minimum $20,000 or approximately 9–12 months of unavoidable carrying costs
-
-Increase when the property has unusually high HOA, property taxes, insurance, debt service, fixed owner-paid utilities, or other unavoidable costs.
-
-This cash reserve is separate from modeled annual vacancy, maintenance, CapEx, and turnover reserves.
-
----
-
-# 11. Property Analysis
-
-The CMA custom app is the primary tool for analyzing potential investments.
-
-Preferred UI term: **Property Analysis**
-
-The app should evaluate:
-- purchase price;
-- closing costs;
-- expected rent;
-- taxes;
-- HOA;
-- insurance;
-- maintenance;
-- vacancy;
-- CapEx;
-- turnover;
-- management assumptions;
-- Super coverage / maintenance protection if used;
-- net cash flow;
-- yield;
-- cash-on-cash return;
-- 10-year return;
-- stress scenarios;
-- sale assumptions;
-- CMA-I capital deployment;
-- member economics.
-
----
-
-# 12. Business Infrastructure
-
-```text
-Stable
-→ business mailing address
-
-Google Workspace
-→ email / Drive / Calendar / Docs
-
-Google Voice
-→ business phone
-
-Bluevine
-→ banking
-
 DoorLoop
-→ tenant/property operations
+-> listings, applications, screening, leases, rent, tenant records,
+   messaging, and material maintenance history
 
 Super
-→ maintenance marketplace / optional warranty
+-> direct-to-tenant routine eligible maintenance and optional protection
 
-CMA App
-→ property analysis / bookkeeping / reserves / economics
-
-ChatGPT + Claude
-→ AI / research / software development
+CMA-PM
+-> oversight, exceptions, emergencies, compliance, vendors, and records
 ```
 
----
+Tenants may contact Super directly for eligible routine issues. CMA-PM handles emergencies, denied coverage, major repairs, repeat issues, approvals, and unresolved service problems.
+
+## 9. Business Infrastructure
+
+
+| Need                                                | Primary system                                           |
+| --------------------------------------------------- | -------------------------------------------------------- |
+| Primary public domain                               | `cmapropertymanagement.com`                              |
+| Defensive CMA-I domain                              | `cmainvestments.com`                                     |
+| Business address / mail scanning / registered agent | Stable, with registered-agent add-on verified separately |
+| Email / files / calendar                            | Google Workspace                                         |
+| Business phone                                      | Google Voice                                             |
+| Operating banking                                   | Bluevine or another approved bank                        |
+| Tenant operations                                   | DoorLoop                                                 |
+| Routine maintenance option                          | Super                                                    |
+| Investment and owner intelligence                   | CMA custom app                                           |
+| AI / research / development                         | ChatGPT and Claude                                       |
+
+
+
+
+## 10. Source-of-Truth Map
+
+
+| Topic                                               | Controlling CMA document |
+| --------------------------------------------------- | ------------------------ |
+| CMA-I governance, capital, distributions, transfers | Doc 02                   |
+| CMA-PM entity governance                            | Doc 03                   |
+| Property LLC governance                             | Doc 04                   |
+| Property LLC to CMA-PM authority                    | Doc 05                   |
+| Banking, reserves, bookkeeping, distributions       | Doc 06                   |
+| Maryland acquisition / rental compliance            | Doc 07                   |
+| Plain-English capital and succession examples       | Doc 08                   |
+| Cameron's services and reverse vesting              | Doc 09                   |
+| Lease checklist                                     | Doc 10                   |
+| Self-management workflow                            | Doc 11                   |
+| Technology and costs                                | Doc 12                   |
+| Screening and applicant selection                   | Doc 13                   |
+| Property setup and Tenant Home Guide                | Doc 14                   |
+| Maintenance and vendor operations                   | Doc 15                   |
+| Data / AI / API architecture                        | Doc 16                   |
+| Leasing, marketing, and rent review                 | Doc 17                   |
+| Wear, damage, and security-deposit deductions       | Doc 18                   |
+| Annual compliance calendar                          | Doc 19                   |
+| Insurance and claims                                | Doc 20                   |
+| Tax and capital implementation                      | Doc 21                   |
+| Privacy and business continuity                     | Doc 22                   |
+| Signable company resolutions                        | Doc 23                   |
+
+
+
+
+## 11. Implementation Status
+
+The architecture now accounts for the major legal, tax, financial, operational, insurance, privacy, and continuity categories. Before execution or first use, CMA-I and CMA-PM still need to:
+
+1. complete Maryland formations and resident-agent setup;
+2. select the Maryland-compliant security-deposit bank;
+3. complete the current Maryland property-management / rent-collection compliance review and filing path;
+4. have Docs 02, 03, 04, 05, and 09 reviewed and finalized for signature;
+5. have the CPA finalize the profits-interest grant, Section 704(b) allocations, Section 1061 review, and capital schedules;
+6. obtain insurance quotes and approve coverage limits;
+7. configure DoorLoop, Google Workspace, Stable, Google Voice, Bluevine, and backup access;
+8. complete exact-address rental and HOA compliance before leasing any property.
 
-# 13. DoorLoop
-
-DoorLoop is the preferred operational property-management platform.
-
-Use DoorLoop for:
-- listings;
-- applications;
-- screening;
-- lease generation;
-- e-signatures;
-- tenant portal;
-- rent collection;
-- tenant messaging;
-- maintenance requests;
-- vendor coordination;
-- operational records;
-- reports.
-
-DoorLoop should become the tenant-operations system of record.
-
----
-
-# 14. Super
-
-Super is an optional supplemental maintenance layer.
-
-Use Super when useful for:
-- maintenance marketplace services;
-- handyman work;
-- plumbing;
-- HVAC;
-- pest control;
-- cleaning;
-- supported repair categories;
-- optional home-system / appliance protection.
-
-DoorLoop remains the maintenance system of record.
-
-```text
-Tenant
-   ↓
-DoorLoop Maintenance Request
-   ↓
-CMA-PM Triage
-   ↓
-Super or Preferred CMA Vendor
-   ↓
-Work Completed
-   ↓
-Record Closed in DoorLoop
-```
-
-CMA should still maintain direct emergency relationships with:
-- plumber;
-- HVAC;
-- electrician;
-- locksmith;
-- restoration company.
-
-For property analysis, CMA currently models the high Super estimate:
-
-## $1,449 per property / year
-
-as a property-level operating expense when enabled.
-
----
-
-# 15. Leasing
-
-The actual tenant lease should be created in DoorLoop.
-
-CMA's internal lease document is:
-
-## 10 — CMA Lease Requirements & Addenda
-
-```text
-DoorLoop Maryland Lease
-        +
-CMA Required Terms
-        +
-Property-Specific Addenda
-        ↓
-Final Lease
-        ↓
-E-Sign
-```
-
-The lease should identify:
-
-**Landlord:** applicable Property LLC
-
-**Manager / Agent:** CMA Property Management LLC
-
----
-
-# 16. Tenant Screening
-
-CMA-PM should use objective, written screening criteria.
-
-```text
-Application
-    ↓
-Applicant Authorization
-    ↓
-Credit / Rental / Eviction / Identity Screening
-    ↓
-Income Review
-    ↓
-Prior Landlord Verification
-    ↓
-Apply CMA Criteria
-    ↓
-Approve / Conditional / Deny
-```
-
-Avoid subjective screening based on appearance, clothing, car cleanliness, personality, “gut feeling,” or protected characteristics.
-
----
-
-# 17. Leasing & Marketing
-
-```text
-Set Market Rent
-      ↓
-Prepare Property
-      ↓
-Professional Photos
-      ↓
-Create Listing
-      ↓
-Publish / Syndicate
-      ↓
-Handle Leads
-      ↓
-Scheduled Showings
-      ↓
-Application
-      ↓
-Screening
-      ↓
-Approval
-      ↓
-Lease
-      ↓
-Move-In
-```
-
-Pricing should rely on recent comparable rentals rather than mortgage payment or intuition.
-
-Use approximately 3–5 strong rental comparables where practical, comparing similar property type, bedrooms/bathrooms, square footage, upgrades, parking, amenities, and location.
-
----
-
-# 18. Maintenance
-
-```text
-Tenant submits DoorLoop request
-      ↓
-CMA-PM reviews
-      ↓
-Emergency?
-  ├── Yes → immediate response
-  └── No
-       ↓
-Check Super / CMA Vendor
-       ↓
-Schedule
-       ↓
-Complete Work
-       ↓
-Attach Invoice
-       ↓
-Tag Expense to Property
-       ↓
-Close Request
-```
-
----
-
-# 19. Bookkeeping
-
-CMA-PM may use centralized bank accounts, but every transaction must be assigned to the correct property.
-
-Minimum fields:
-- date;
-- Property LLC;
-- property;
-- tenant/vendor;
-- category;
-- amount;
-- payment method;
-- receipt/invoice;
-- notes.
-
-CMA's custom tool should remain the preferred internal system for property-level performance, reserves, CMA-I capital, owner economics, and portfolio reporting.
-
----
-
-# 20. Digital Records
-
-Preferred long-term archive: **Google Drive**
-
-```text
-CMA
-├── Corporate
-│   ├── CMA-I
-│   └── CMA-PM
-├── Properties
-│   ├── Flamingo
-│   │   ├── Acquisition
-│   │   ├── Lease
-│   │   ├── Tenant
-│   │   ├── Inspections
-│   │   ├── Maintenance
-│   │   ├── HOA
-│   │   ├── Insurance
-│   │   └── Accounting
-│   └── [Next Property]
-└── Vendors
-```
-
-DoorLoop is the operational system.
-
-Google Drive is the durable company archive.
-
----
-
-# 21. AI & API Strategy
-
-Near term:
-- use DoorLoop normally;
-- keep property IDs clean;
-- use exports when needed;
-- maintain CMA records separately;
-- do not pay for API access before there is a real need.
-
-Future:
-
-```text
-DoorLoop API
-      ↓
-CMA App
-      ↓
-AI / Reporting
-```
-
-Potential AI functions:
-- summarize property history;
-- flag delinquency;
-- identify open maintenance issues;
-- compare actual expenses to projected expenses;
-- flag reserve shortfalls;
-- identify upcoming lease expirations;
-- summarize vendor activity;
-- compare property performance.
-
-AI should initially summarize, analyze, flag, draft, and recommend.
-
-Human review should remain required before high-impact actions.
-
----
-
-# 22. Succession
-
-## If Carrie dies
-
-Her CMA-I interest, including governance, residual, and capital rights, passes to:
-
-**Jay Flatt**
-
-## If Cameron dies
-
-His remaining reverse-vested 49% accelerates to fully nonforfeitable.
-
-His full CMA-I interest then passes to:
-
-**Jay Flatt**
-
-Cameron's permanent disability also accelerates the remaining forfeitable portion to fully nonforfeitable.
-
-Controlling estate documents and applicable law govern actual transfer mechanics.
-
----
-
-# 23. Current Technology Cost Direction
-
-| Service | Approx. Monthly |
-|---|---:|
-| Stable | $49 |
-| Google Workspace | $7 |
-| Google Voice | $10 |
-| Bluevine | $0 |
-| DoorLoop Starter | ~$69 |
-| ChatGPT Plus | $20 |
-| Claude Pro | ~$17–$20 |
-| Domain equivalent | ~$2 |
-| CMA app hosting | $0–$25 |
-| **Estimated Total** | **~$174–$202/month** |
-
-Super paid warranty coverage is treated as a property-level operating expense if selected, not a required CMA-PM software subscription.
-
----
-
-# 24. CMA Document Map
-
-## Corporate / Ownership
-
-**00 — CMA Executive Summary**  
-High-level map of the entire CMA system.
-
-**01 — How CMA-I Works**  
-Plain-English explanation of CMA-I ownership, governance, capital, economics, and operations.
-
-**02 — CMA Investments Operating Agreement**  
-Formal CMA-I governance and economic terms.
-
-**03 — CMA Property Management Operating Agreement**  
-Formal CMA-PM governance and purpose.
-
-**04 — Property LLC Operating Agreement Template**  
-Template for each property-owning LLC.
-
-**05 — Property Management Agency Agreement Template**  
-Agreement appointing CMA-PM as manager / agent for a Property LLC.
-
-**06 — Banking, Bookkeeping & Distribution Policy**  
-How money, accounts, records, reserves, and distributions work.
-
-**07 — Maryland Property Acquisition & Compliance Playbook**  
-Exact-address compliance review for Maryland acquisitions and rentals.
-
-**08 — Capital, Tax & Succession Plan**  
-Capital rights, tax structure, succession, and related planning.
-
-**09 — Cameron Service Profits Interest Agreement**  
-Cameron's 49% Service-Based Profits Interest and reverse vesting.
-
-## Leasing / Property Management
-
-**10 — CMA Lease Requirements & Addenda**  
-Internal checklist for the lease DoorLoop generates.
-
-**11 — CMA-PM Self-Management Strategy**  
-How CMA-PM self-manages the rental portfolio.
-
-**12 — CMA Technology Stack & Cost Plan**  
-Software, infrastructure, and operating costs.
-
-**13 — CMA Tenant Screening & Leasing Policy**  
-Objective tenant screening and leasing standards.
-
-**14 — CMA Property Onboarding & Tenant Home Guide**  
-Property setup, move-in, move-out, and tenant operating information.
-
-**15 — CMA Maintenance, Vendor & Inspection Playbook**  
-Repairs, Super, vendors, inspections, and recurring maintenance.
-
-**16 — CMA Data, AI & API Strategy**  
-How DoorLoop, the CMA app, Google Drive, ChatGPT, Claude, and future APIs fit together.
-
----
-
-# 25. Overall Operating Philosophy
-
-## Fewer systems, clearly defined.
-
-Use:
-- Property LLCs for ownership;
-- CMA-PM for tenant operations;
-- Bluevine for banking;
-- DoorLoop for property-management operations;
-- Super as a supplemental maintenance option;
-- Google Workspace for business identity and records;
-- the CMA app for investment and owner intelligence;
-- AI for support, analysis, and automation.
-
-Avoid duplicating workflows across multiple tools unless there is a clear operational reason.
-
-The system should remain simple enough to operate with a small portfolio while being structured well enough to scale.

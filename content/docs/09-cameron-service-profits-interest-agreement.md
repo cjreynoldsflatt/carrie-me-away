@@ -1,136 +1,145 @@
 # 09 — Cameron Service & Profits Interest Agreement
 
-## Purpose
+**Status:** Final consolidated legal/tax draft — not yet adopted; professional review required  
+**Version:** 2026-08-26.5
+**Effective Date / Grant Date:** [GRANT DATE]  
+**Last reviewed:** 2026-08-26
+**Supersedes:** All prior drafts of Doc 09  
+**Document Owner:** CMA-I  
+**Approved By:** Pending execution by CMA-I and Cameron
 
-This Agreement defines the substantial services Cameron Reynolds-Flatt provides to CMA-I in exchange for a:
+## Agreement
 
-## 49% Service-Based Profits Interest
+This Service & Profits Interest Agreement (the **Agreement**) is entered into between:
 
-subject to five-year reverse vesting.
+- **CMA Investments LLC** (**CMA-I** or the **Company**); and
+- **Cameron Reynolds-Flatt** (**Cameron**).
 
----
-
-# 1. Parties
-
-This Agreement is between:
-
-## CMA Investments LLC
-
-and
-
-## Cameron Reynolds-Flatt
+This Agreement is executed with and incorporated into the CMA-I Operating Agreement.
 
 ---
 
-# 2. Grant of Profits Interest
+# 1. Grant
 
-Effective:
-
-## [GRANT DATE]
-
-CMA-I grants Cameron:
+Effective on the Grant Date, CMA-I grants Cameron:
 
 ## A 49% Service-Based Profits Interest
 
-in exchange for substantial ongoing services.
+The interest is granted in exchange for substantial ongoing services.
 
-Cameron is intended to participate in the full 49% of future residual profits and growth from the Grant Date, subject to the forfeiture provisions below.
-
----
-
-# 3. No Existing Capital Interest
-
-Carrie's expected initial contribution is approximately:
-
-## $500,000
-
-Cameron's Service-Based Profits Interest gives Cameron no right to that existing capital.
-
-If CMA-I immediately liquidated after the grant:
-
-### Carrie
-
-## Approximately $500,000
-
-### Cameron
-
-## $0
-
-from Carrie's existing capital.
+Cameron is intended to hold and participate in the full 49% of future residual profits and growth from the Grant Date, subject to the reverse-vesting, forfeiture, transfer, and tax provisions below.
 
 ---
 
-# 4. Cameron's Operating Role
+# 2. No Existing Capital Interest
 
-Cameron serves as CMA-I's principal Operating Partner.
+Cameron's Service-Based Profits Interest does not give him a claim on Carrie's existing contributed capital.
 
-His responsibilities may include:
+Immediately before and after the grant, the intended result is that Cameron would receive $0 from Carrie's preexisting capital if CMA-I sold all assets at fair market value, paid liabilities, and liquidated at that time.
 
-- sourcing properties;
-- underwriting investments;
-- negotiating acquisitions;
-- coordinating due diligence;
-- overseeing closings;
-- managing renovations;
-- establishing and maintaining CMA-PM systems;
-- overseeing vendors;
-- overseeing outside property managers;
-- maintaining reporting systems;
-- coordinating bookkeeping workflows;
-- coordinating compliance;
-- analyzing hold/refinance/sell decisions;
-- maintaining investment tools;
-- other substantial operating work.
+Carrie's actual funded capital and protected capital/liquidation hurdle must be recorded before or as part of a documented contemporaneous Grant Date closing.
 
 ---
 
-# 5. Service Standard
+# 3. Cameron's Required Operating Role
 
-Cameron shall perform his responsibilities:
+Cameron is CMA-I's principal Operating Partner.
+
+Cameron is responsible for personally performing or meaningfully overseeing the following functions as reasonably required by CMA-I's size and activity:
+
+## Property Sourcing and Analysis
+
+- identify potential acquisitions;
+- maintain acquisition criteria;
+- perform or oversee property analysis, rent analysis, and stress testing;
+- compare opportunities and recommend whether to proceed.
+
+## Acquisition and Closing
+
+- coordinate offers, negotiations, inspections, due diligence, financing, insurance, entity setup, and closing;
+- maintain acquisition records and the CMA app data.
+
+## Renovation and Capital Projects
+
+- define scope;
+- obtain and compare bids;
+- coordinate vendors;
+- monitor budget, schedule, quality, and completion.
+
+## CMA-PM Operations
+
+- establish and maintain systems for leasing, DoorLoop, rent, maintenance, vendors, tenant communication, security-deposit administration, and property reporting;
+- oversee Super and any outside property manager;
+- ensure material issues are escalated.
+
+## Bookkeeping and Reporting Coordination
+
+- maintain or oversee property tagging, reserves, capital deployment, intercompany transfers, source documents, and owner reporting;
+- coordinate with bookkeepers and tax professionals.
+
+## Compliance and Risk Coordination
+
+- maintain the compliance calendar;
+- coordinate licenses, lead, safety, HOA, insurance, tenant, vendor, and data/privacy workflows;
+- escalate legal, tax, insurance, and compliance matters to qualified professionals.
+
+## Portfolio Strategy
+
+- analyze hold, improve, refinance, sell, and reinvest decisions;
+- maintain actual-vs-projected performance reporting;
+- support annual portfolio reviews.
+
+## Technology and CMA Intellectual Property
+
+- develop, maintain, or oversee the CMA app, data structure, automation, documentation, and operating tools;
+- maintain reasonable security, backups, and continuity documentation.
+
+## General Administration
+
+- coordinate entities, banking, software, records, lenders, insurers, brokers, professionals, and other operational matters reasonably assigned under the CMA-I Operating Agreement.
+
+The required role is responsibility-based, not measured by a fixed number of weekly hours.
+
+---
+
+# 4. Service Standard
+
+Cameron will perform or oversee the required role:
 
 - in good faith;
-- on an ongoing basis;
 - with reasonable care;
-- with the level of involvement reasonably necessary for CMA-I's size and activity.
+- on an ongoing basis;
+- within granted authority;
+- with the level of effort reasonably required by the portfolio at the time;
+- in a manner reasonably intended to advance CMA-I's interests.
 
-No fixed weekly-hour requirement applies.
+Cameron is not required to guarantee investment performance or personally perform work better suited to licensed or specialized professionals.
 
 ---
 
-# 6. Delegation
+# 5. Delegation
 
-Cameron may appropriately delegate work to:
+Cameron may delegate appropriate tasks to:
 
 - CMA-PM;
-- outside property managers;
-- contractors;
-- vendors;
-- accountants;
-- attorneys;
-- brokers;
-- other professionals.
+- DoorLoop, Super, and other approved platforms;
+- an outside property manager;
+- contractors and vendors;
+- accountants, attorneys, brokers, lenders, insurers, and other professionals.
 
-Delegation does not by itself constitute cessation of services if Cameron remains meaningfully responsible for operating oversight.
+Delegation does not constitute cessation of services if Cameron continues meaningfully overseeing the applicable function.
+
+Automation, reduced deal activity, or a temporary lower workload does not by itself mean Cameron stopped performing.
 
 ---
 
-# 7. Reverse Vesting
+# 6. Reverse Vesting
 
-Cameron receives the full:
+Cameron receives the full 49% Service-Based Profits Interest on the Grant Date.
 
-## 49%
+The interest becomes nonforfeitable in five annual installments:
 
-profits interest on the Grant Date.
-
-However, the interest is subject to five-year reverse vesting.
-
-Each completed year causes:
-
-## 9.8 percentage points
-
-to become nonforfeitable.
-
-| Completed Service | Nonforfeitable | Forfeitable |
+| Completed Service | Nonforfeitable | Still Forfeitable |
 |---|---:|---:|
 | Grant Date | 0.0% | 49.0% |
 | Year 1 | 9.8% | 39.2% |
@@ -139,303 +148,305 @@ to become nonforfeitable.
 | Year 4 | 39.2% | 9.8% |
 | Year 5 | 49.0% | 0.0% |
 
----
-
-# 8. Meaning of Reverse Vesting
-
-Reverse vesting means:
-
-> Cameron owns and participates in the full 49% Service-Based Profits Interest from the Grant Date, but the still-forfeitable portion may be lost if Cameron stops providing the required services before it becomes nonforfeitable.
+Each installment becomes nonforfeitable on the applicable Grant Date anniversary if Cameron has continued performing through that date, unless an acceleration or forfeiture event applies.
 
 ---
 
-# 9. Current Distributions During Vesting
+# 7. Current Economic Participation
 
-Unless Cameron has forfeited a portion of his interest, Cameron generally participates in:
+Before a valid forfeiture, Cameron participates in the full 49% from the Grant Date.
 
-## 49% of residual profits and distributions
+The annual vesting table does not describe the percentage Cameron currently owns or receives. It describes the portion of the already-granted 49% that he permanently keeps if service ends early.
 
-from the Grant Date.
+Ordinary residual economics before a forfeiture are generally:
 
-Carrie generally participates in:
-
-## 51%
-
-Example:
-
-Residual distribution:
-
-## $10,000
-
-### Carrie
-
-## $5,100
-
-### Cameron
-
-## $4,900
+- Carrie: 51%
+- Cameron: 49%
 
 ---
 
-# 10. Vesting Anniversary
+# 8. Definitions
 
-Each 9.8 percentage-point installment becomes nonforfeitable on the applicable anniversary of the Grant Date if Cameron has continued performing the required services.
+## Voluntary Resignation
 
----
+Cameron voluntarily resigns when he provides clear written notice that he is ending the Operating Partner role and does not withdraw the notice before its effective date with CMA-I's consent.
 
-# 11. Voluntary Cessation of Services
+A temporary leave, reduced availability, disagreement, or request to modify duties is not automatically a resignation.
 
-If Cameron voluntarily stops providing the required services before five years:
+## Cause
 
-### Cameron keeps
+**Cause** means one or more of the following, established under the procedure in Section 12:
 
-the nonforfeitable portion.
+- fraud, embezzlement, theft, or intentional misuse of Company property;
+- willful misconduct that causes or is reasonably likely to cause material harm to CMA-I;
+- knowing material violation of law in connection with the role;
+- conviction or plea concerning a felony involving dishonesty or material harm to the Company;
+- intentional abandonment of substantially all required responsibilities for 30 consecutive days without approved leave or reasonable explanation;
+- material breach of this Agreement that remains uncured after written notice and the applicable cure period.
 
-### Cameron forfeits
+Ordinary negligence, business disagreement, a poor investment outcome, or a good-faith difference in judgment is not Cause.
 
-the remaining forfeitable portion.
+## Permanent Disability
 
----
+**Permanent Disability** means a physical or mental condition that prevents Cameron from performing the substantial responsibilities of the role and is reasonably expected, based on a qualified medical professional's written opinion, to continue for at least 12 months or result in death.
 
-# 12. Future Economics After Forfeiture
+Medical information should be limited to what is reasonably necessary and handled under Doc 22.
 
-After forfeiture, Cameron's future residual participation is limited to the portion he permanently retained.
+## Material Reduction or Prevention
 
-Example:
+A **Material Reduction or Prevention** occurs when CMA-I or Carrie, without Cameron's written consent:
 
-If Cameron stops after Year 3:
+- removes substantial core responsibilities;
+- denies access reasonably necessary to perform;
+- transfers the operating role to another person in a way that materially displaces Cameron;
+- directs Cameron not to perform substantially all agreed services;
+- otherwise materially prevents performance for more than 30 days after written notice.
 
-### Permanent Cameron interest
-
-## 29.4%
-
-### Forfeited
-
-## 19.6%
-
----
-
-# 13. No Automatic Buyback
-
-CMA-I does not automatically have the right to force Cameron to sell his nonforfeitable interest merely because Cameron stops providing services.
+Reasonable delegation, ordinary governance decisions, or portfolio changes are not automatically a Material Reduction or Prevention.
 
 ---
 
-# 14. Death of Cameron
+# 9. Forfeiture Events
 
-If Cameron dies before full vesting:
+The still-forfeitable portion may be forfeited only if:
 
-## All remaining forfeitable portions immediately become nonforfeitable.
+- Cameron voluntarily resigns before full vesting; or
+- CMA-I terminates Cameron for Cause.
 
-Cameron is therefore treated as holding the full:
+On a valid forfeiture:
 
-## 49%
+- Cameron retains the nonforfeitable residual percentage;
+- the remaining forfeitable residual percentage is forfeited;
+- the forfeited percentage automatically becomes Carrie's residual percentage;
+- Cameron's 49% governance interest remains unchanged;
+- the Company adopts a written forfeiture resolution and updates all ledgers.
 
-immediately before succession.
-
-The interest then passes to:
-
-## Jay Flatt
-
-subject to applicable law and controlling estate documents.
-
----
-
-# 15. Permanent Disability
-
-If Cameron becomes permanently disabled and cannot reasonably perform his operating responsibilities:
-
-## All remaining forfeitable portions immediately become nonforfeitable.
+No cash payment is required for the forfeited portion.
 
 ---
 
-# 16. Temporary Leave
+# 10. Acceleration Events
 
-Temporary illness, injury, vacation, family leave, or reduced availability does not automatically cause forfeiture.
+All remaining forfeitable portions immediately become nonforfeitable upon:
 
----
-
-# 17. Reduced Workload
-
-Cameron does not fail the service requirement merely because:
-
-- outside managers perform more work;
-- systems become automated;
-- acquisitions slow temporarily;
-- the portfolio requires fewer hours.
-
-The question is whether Cameron continues meaningfully serving as Operating Partner.
+- Cameron's death;
+- Cameron's Permanent Disability;
+- termination by CMA-I without Cause;
+- a Material Reduction or Prevention not cured within 30 days after Cameron's written notice;
+- a sale of substantially all CMA-I assets or merger that terminates Cameron's role, unless Cameron receives equivalent rights in the successor arrangement;
+- another acceleration approved by both members.
 
 ---
 
-# 18. Performance Concerns
+# 11. Temporary Leave and Reduced Workload
 
-If Carrie believes Cameron has materially stopped performing his required responsibilities, Carrie should provide written notice describing the concern.
+Temporary illness, injury, vacation, family leave, caregiving leave, portfolio inactivity, automation, or reduced hours does not automatically stop vesting if Cameron remains committed to the role and reasonably resumes or continues oversight.
 
-Cameron should generally have:
-
-## 30 days
-
-to correct a curable service failure.
+The members may document an approved leave and any agreed vesting treatment.
 
 ---
 
-# 19. Ordinary Business Disagreement
+# 12. Performance Notice, Cure, and Dispute Procedure
 
-A disagreement over strategy, acquisitions, property management, vendors, spending, or business judgment does not by itself constitute cessation of services.
+A disputed forfeiture may not be imposed solely by one member's assertion.
 
----
+## Notice
 
-# 20. No Salary Initially
+A member alleging material nonperformance or Cause must provide written notice stating:
 
-Cameron's profits interest is intended to be his primary compensation.
+- the specific conduct;
+- the affected duty;
+- supporting facts;
+- whether the matter is curable;
+- the proposed cure.
 
-Cameron initially receives:
+## Cure
 
-## No salary
+Cameron has 30 days to cure a curable issue, or a longer reasonable period if the cure has begun and cannot reasonably be completed within 30 days.
 
-and:
+Fraud, theft, or other conduct not reasonably curable does not require a cure period.
 
-## No guaranteed annual payment.
+## Decision
 
----
+If the members agree, they sign a written resolution stating the outcome and effective date.
 
-# 21. Future Compensation
+If they disagree:
 
-Additional compensation may later be approved by both members.
+1. they participate in confidential mediation in Maryland;
+2. if unresolved within 30 days after mediation begins, the dispute is finally determined by one neutral arbitrator in Maryland;
+3. the disputed portion remains outstanding until written agreement or final decision;
+4. the prevailing outcome determines the effective date and required accounting adjustments.
 
-Additional compensation does not automatically alter Cameron's 49% profits interest, reverse vesting, governance rights, or Carrie's capital rights.
-
----
-
-# 22. Expense Reimbursement
-
-Legitimate company expenses personally paid by Cameron may be reimbursed.
-
-Expense reimbursement does not affect vesting.
-
----
-
-# 23. Capital Rights Remain Separate
-
-Cameron's 49% profits interest does not reduce Carrie's unrecovered contributed capital.
+The Company may suspend Cameron's access during a good-faith safety, fraud, or data-security investigation without automatically causing forfeiture or acceleration, provided the dispute process proceeds promptly.
 
 ---
 
-# 24. Future Cameron Capital
+# 13. Effective Date and Accounting After Forfeiture
 
-If Cameron later contributes cash, that contribution creates separate capital rights and does not merge into his Service-Based Profits Interest.
+The effective date of a valid forfeiture is:
 
----
+- the effective date of an undisputed voluntary resignation;
+- the date stated in a signed resolution; or
+- the date determined in the final dispute decision.
 
-# 25. Intended Tax Treatment
+Through the effective date, tax allocations and distributions use the pre-forfeiture residual percentages, subject to tax law and the CPA's closing-of-the-books method.
 
-The parties intend Cameron's interest to be treated as a genuine partnership profits interest granted for substantial services.
+After the effective date, the adjusted residual percentages control.
 
-The intended characteristics include:
-
-- no current claim to Carrie's existing capital;
-- participation in future residual economics;
-- substantial ongoing services;
-- full profits-interest treatment from the Grant Date;
-- genuine reverse vesting;
-- real forfeiture risk;
-- no guaranteed return.
+A forfeiture does not transfer or reduce contributed capital.
 
 ---
 
-# 26. Treatment as Partner
+# 14. Governance Remains Separate
 
-CMA-I intends to treat Cameron consistently as a partner from the applicable Grant Date to the extent required for the intended profits-interest treatment.
+Cameron's 49% governance interest is not subject to reverse vesting.
 
----
+A valid forfeiture does not automatically reduce:
 
-# 27. Transfer Restriction
+- his 49% governance;
+- his access to member records;
+- his approval right over Fundamental Decisions.
 
-Cameron may not voluntarily transfer the Service-Based Profits Interest during the first:
-
-## Two Years
-
-following the Grant Date, except as permitted under applicable law and CMA-I's governing documents.
+Governance changes require a signed amendment approved by both members.
 
 ---
 
-# 28. Annual Service Confirmation
+# 15. No Automatic Buyback of Retained Interest
 
-At least annually, CMA-I should document that Cameron continued to provide substantial operating services.
+CMA-I and Carrie have no automatic right to force Cameron to sell the nonforfeitable interest merely because his service ends.
 
-The record may summarize:
-
-- acquisitions reviewed;
-- acquisitions completed;
-- renovations;
-- property oversight;
-- vendor work;
-- compliance;
-- systems built or maintained;
-- portfolio decisions.
+Transfer and buyout rules are governed by Doc 02.
 
 ---
 
-# 29. Annual Reverse-Vesting Record
+# 16. Death and Succession
 
-Each year CMA-I should document:
+On Cameron's death:
 
-- total 49% granted interest;
+1. all remaining forfeitable portions accelerate;
+2. Cameron is treated as holding the full 49% immediately before transfer;
+3. the interest is intended to pass to **Jay Flatt** under the controlling estate documents and law;
+4. Jay is admitted as a substitute member under Doc 02 when the transfer becomes legally effective and reasonable evidence is provided.
+
+If Jay cannot take the interest, the controlling estate documents and law determine the successor.
+
+---
+
+# 17. Compensation and Reimbursement
+
+The profits interest is intended to be Cameron's primary compensation for the covered services.
+
+Cameron initially receives no salary or guaranteed annual payment.
+
+Additional compensation requires both members' written approval and does not automatically change vesting, governance, residual percentages, or capital rights.
+
+Cameron may be reimbursed for documented Company expenses.
+
+---
+
+# 18. Intellectual Property and Work Product
+
+## Preexisting Cameron Materials
+
+Software, code, templates, designs, methods, know-how, or other materials Cameron created before the Grant Date or outside the scope of the CMA role remain Cameron's property unless separately assigned in writing.
+
+Cameron grants CMA-I and its wholly owned subsidiaries a perpetual, royalty-free, nonexclusive license to use, modify, and maintain preexisting Cameron materials that are incorporated into CMA systems and reasonably necessary for continued Company operation.
+
+## CMA-Specific Work Product
+
+Software, code, designs, data models, documentation, workflows, domains, content, and other work created specifically for CMA-I or CMA-PM after the Grant Date as part of the required services and using Company time, data, or resources are owned by CMA-I upon creation, subject to Cameron's retained general skills, experience, and preexisting materials.
+
+Cameron will reasonably cooperate in documenting ownership and transferring administrator access.
+
+## Open-Source and Third-Party Materials
+
+Open-source and third-party materials remain subject to their licenses and terms.
+
+---
+
+# 19. Confidentiality
+
+Cameron will protect nonpublic Company, tenant, applicant, financial, vendor, tax, and technical information and use it only for authorized Company purposes.
+
+This obligation survives service separation, subject to legal disclosure requirements and Cameron's right to retain records needed to protect his member rights.
+
+---
+
+# 20. Tax Treatment and Grant Conditions
+
+The parties intend the interest to be a genuine partnership profits interest for substantial services.
+
+Before or at grant:
+
+- Carrie's protected capital/liquidation hurdle is fixed;
+- Cameron has $0 current liquidation value from Carrie's existing capital;
+- existing appreciated assets are valued or book-up treatment is considered;
+- the tax/valuation memo addresses Sections 704(b), 2701, 1061, and the applicable profits-interest guidance;
+- the protective Section 83(b) decision is made within 30 days;
+- Cameron is treated as a partner from the Grant Date;
+- the Company and members do not deduct the interest's value as compensation.
+
+This Agreement expresses intended treatment but does not guarantee a tax result without correct implementation.
+
+---
+
+# 21. Initial Two-Year Transfer Restriction
+
+For two years after the Grant Date, Cameron may not voluntarily sell, gift, assign, pledge, or otherwise transfer the interest except as permitted in Doc 02.
+
+The restriction does not prevent ownership, distributions, tax allocations, vesting, or succession at death.
+
+---
+
+# 22. Annual Confirmation
+
+At least annually, CMA-I will document:
+
+- Cameron's continued service status;
+- material services performed;
+- total granted percentage;
 - nonforfeitable percentage;
-- still-forfeitable percentage.
+- forfeitable percentage;
+- approved leave or acceleration;
+- whether any dispute or forfeiture exists.
 
-Example after Year 3:
-
-```text
-Total profits interest       49.0%
-Nonforfeitable               29.4%
-Still forfeitable            19.6%
-```
+The annual confirmation does not create a forfeiture that otherwise fails the required procedure.
 
 ---
 
-# 30. Amendments
+# 23. Notices
 
-Material changes to the 49% interest, five-year vesting, 9.8% annual installments, service obligations, forfeiture, death acceleration, or disability acceleration require approval from:
+Notices under this Agreement must be written and sent to the current recorded addresses or approved emails of CMA-I and Cameron.
 
-## Carrie and Cameron
-
----
-
-# 31. Core Rules
-
-1. **Cameron receives the full 49% Service-Based Profits Interest from the Grant Date.**
-2. **Cameron generally receives 49% of residual profits from Day 1.**
-3. **The full 49% is subject to five-year reverse vesting.**
-4. **9.8 percentage points become nonforfeitable each year.**
-5. **Reverse vesting controls what Cameron permanently keeps.**
-6. **It does not reduce Cameron's normal current 49% distribution percentage.**
-7. **Cameron's interest does not include Carrie's existing $500,000 capital.**
-8. **Cameron initially receives no salary or guaranteed annual payment.**
-9. **If Cameron voluntarily stops working, he keeps the nonforfeitable portion and forfeits the remainder.**
-10. **No automatic forced buyback applies to the retained portion.**
-11. **If Cameron dies, the remaining forfeitable portion immediately becomes nonforfeitable and the full 49% passes to Jay Flatt.**
-12. **If Cameron becomes permanently disabled, the remaining portion immediately becomes fully nonforfeitable.**
-13. **Cameron may delegate appropriate work while continuing to operate and oversee the business.**
-14. **A disagreement with Carrie does not by itself trigger forfeiture.**
-15. **CMA-I should document Cameron's continued services and reverse-vesting status annually.**
+Notices of performance failure, resignation, termination, forfeiture, acceleration, amendment, or dispute must use a method providing delivery confirmation.
 
 ---
 
-# 32. Signatures
+# 24. Amendments
 
-### CMA Investments LLC
+Any material change to the grant, vesting, service duties, forfeiture, acceleration, governance separation, IP rights, or tax intent requires Carrie and Cameron's written approval.
 
-By: ______________________________
+---
 
-Title: ___________________________
+# 25. Miscellaneous
 
+- **Governing Law:** Maryland.
+- **Dispute Procedure:** Section 12 controls service/forfeiture disputes; other disputes follow Doc 02.
+- **Severability:** Invalid provisions are modified to the minimum extent necessary.
+- **Counterparts / E-Signatures:** Permitted.
+- **Entire Agreement:** This Agreement and Doc 02 govern the covered grant and services.
+
+---
+
+# 26. Signatures
+
+## CMA Investments LLC
+
+By: ______________________________  
+Name / Title: ____________________  
 Date: ____________________________
 
+## Cameron Reynolds-Flatt
 
-### Cameron Reynolds-Flatt
-
-Signature: ______________________________
-
-Date: __________________
+Signature: ______________________________  
+Date: _________________________________

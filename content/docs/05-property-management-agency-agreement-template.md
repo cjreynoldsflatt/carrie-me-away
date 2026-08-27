@@ -1,84 +1,120 @@
 # 05 — Property Management & Agency Agreement Template
 
+**Status:** Final consolidated legal template — complete property-specific review required before use  
+**Version:** 2026-08-26.5
+**Effective Date:** [EFFECTIVE DATE]  
+**Last reviewed:** 2026-08-26
+**Supersedes:** All prior drafts of Doc 05  
+**Document Owner:** Property LLC and CMA-PM  
+**Approved By:** Pending execution by both entities
+
 ## Property Management & Agency Agreement
 
-This Property Management & Agency Agreement is entered into between:
+This Property Management & Agency Agreement (the **Agreement**) is entered into as of **[DATE]** between:
 
-**[PROPERTY LLC NAME]**, referred to as the **Owner** or **Landlord**
+**[PROPERTY LLC NAME]**, a **[STATE]** limited liability company (**Owner** or **Landlord**), and
 
-and
+**CMA Property Management LLC**, a Maryland limited liability company (**CMA-PM** or **Manager**).
 
-**CMA Property Management LLC**, referred to as **CMA-PM** or the **Manager**.
-
----
-
-# 1. Property
-
-This Agreement applies to:
+The Agreement concerns the residential property located at:
 
 ## [PROPERTY ADDRESS]
 
-The Property is owned by:
+---
 
-## [PROPERTY LLC NAME]
+# 1. Appointment and Relationship
 
-The Owner is the legal landlord.
+Owner appoints Manager as its authorized property manager and agent for the Property, and Manager accepts the appointment.
 
-CMA-PM acts only as the Owner's authorized property manager and agent.
+Owner remains:
+
+- legal owner of the Property;
+- landlord under each lease;
+- principal responsible for property-level obligations.
+
+Manager does not acquire any ownership interest in the Property, Owner, or CMA-I by performing services.
+
+Owner and Manager are separate legal entities.
 
 ---
 
-# 2. Relationship of the Parties
+# 2. Common Ownership and Maryland Compliance
 
-The Owner and CMA-PM are separate legal entities.
+Owner and Manager are intended to be under common ownership through CMA-I.
 
-CMA-PM does not own the Property and does not become the landlord merely by managing the Property.
+Before Manager collects rent or tenant debt:
 
----
+- the parties will confirm the common-ownership relationship;
+- Manager will complete any filing required for the Maryland common-ownership collection-agency exemption;
+- required local rental licenses and registrations will be confirmed;
+- proof will be retained in the compliance file.
 
-# 3. Appointment of CMA-PM
-
-The Owner appoints:
-
-## CMA Property Management LLC
-
-as its authorized property manager and agent for the Property.
+Manager will not use this Agreement to manage unrelated third-party property without a fresh brokerage, collection-agency, insurance, and tax review.
 
 ---
 
-# 4. Management Authority
+# 3. Term
 
-Subject to this Agreement, CMA-PM may perform ordinary property-management activities including:
+This Agreement begins on **[DATE]** and continues until terminated under this Agreement.
 
-- advertising;
-- tenant screening;
-- lease administration;
-- rent collection;
-- tenant communication;
-- repairs and maintenance;
-- vendor hiring;
-- property expense payment;
-- security-deposit administration;
-- recordkeeping;
-- move-in and move-out administration;
-- insurance administration;
-- outside property-manager oversight.
+Either party may terminate without cause on **30 days' written notice**.
 
----
+Either party may terminate immediately for:
 
-# 5. Lease Administration
+- material uncured breach;
+- fraud or willful misconduct;
+- loss of required authority or license;
+- sale or transfer of the Property, subject to transition obligations;
+- dissolution of Owner or Manager;
+- another event making continued performance unlawful.
 
-CMA-PM may prepare or coordinate lease documents, communicate approved lease terms, execute leases when authorized, collect rent, and administer renewals and notices.
-
-The lease should identify:
-
-## [PROPERTY LLC NAME]
-
-as the landlord.
+Obligations concerning records, funds, deposits, indemnification, confidentiality, and final accounting survive termination as necessary.
 
 ---
 
-# 6. Lease Signature
+# 4. Manager's General Authority
+
+Subject to this Agreement, Owner's written policies, spending limits, and applicable law, Manager may:
+
+- advertise and show the Property;
+- administer applications and objective screening;
+- prepare and route approved leases and addenda;
+- sign leases as Owner's authorized agent when the final form complies with CMA requirements;
+- collect rent and lawful tenant charges;
+- communicate with tenants and applicants;
+- issue routine notices and correspondence;
+- coordinate move-in, renewals, delinquency, move-out, and turnover;
+- coordinate repairs, maintenance, vendors, and inspections;
+- pay authorized Property expenses from Property-attributable funds;
+- administer security deposits;
+- coordinate insurance, licensing, lead, HOA, and other compliance;
+- maintain books, tenant records, and reports;
+- engage approved outside managers or professionals;
+- perform other ordinary management activities reasonably necessary for the Property.
+
+Manager has no authority to transfer title, mortgage the Property, admit an owner, change CMA-I member rights, or take another Fundamental Decision without the approval required at CMA-I.
+
+---
+
+# 5. Lease Authority
+
+Manager may use DoorLoop or another approved Maryland lease platform.
+
+The lease must identify Owner as landlord and Manager as authorized agent.
+
+Manager may negotiate and approve ordinary lease terms within the approved listing, screening, lease, and rent-review policies.
+
+Manager must obtain Owner approval before:
+
+- reducing rent below the approved range;
+- granting a material rent concession;
+- agreeing to an unusual lease term;
+- waiving a material lease requirement;
+- granting an early-termination buyout not already approved;
+- materially modifying the standard CMA addenda;
+- settling a material tenant claim.
+
+Manager may sign substantially as follows:
 
 ```text
 [PROPERTY LLC NAME]
@@ -88,344 +124,364 @@ By: CMA Property Management LLC
 Its Authorized Property Manager and Agent
 
 By: ______________________________
-Authorized Representative
+Name / Title: ____________________
 ```
 
 ---
 
-# 7. Rent Collection
+# 6. Applications, Screening, and Fair Housing
 
-CMA-PM may collect rent and other authorized tenant payments on behalf of the Owner.
+Manager will administer applications under Doc 13 and applicable law.
 
-Rent may be deposited into:
+Manager will:
 
-## CMA-PM Operating Account
+- apply the same written criteria to similarly situated applicants;
+- use the approved application queue and selection rule;
+- maintain required consumer-report and adverse-action records;
+- follow reasonable-accommodation and assistance-animal procedures;
+- avoid unlawful discrimination;
+- collect only lawful application or screening fees;
+- retain screening records under the approved retention policy.
 
-CMA-PM shall maintain records identifying the amounts attributable to this Property.
-
----
-
-# 8. Property-Specific Bookkeeping
-
-CMA-PM shall maintain separate ledger records for this Property.
-
-### Core Rule
-
-> **Banking may be centralized, but bookkeeping must remain property-specific.**
+Owner will not direct Manager to use an unlawful criterion.
 
 ---
 
-# 9. Property Operating Reserve
+# 7. Rent Collection and Tenant Ledger
 
-The Owner should generally maintain access to a minimum operating reserve of:
+Manager may collect rent and authorized tenant payments through DoorLoop or another approved system.
 
-## $20,000
+Payments will settle into the CMA-PM Operating Account or another approved account.
 
-for the Property.
+Manager will maintain a tenant ledger showing:
 
----
+- rent charges;
+- payments;
+- lawful fees;
+- credits;
+- balances;
+- payment dates;
+- property attribution.
 
-# 10. Reserve Replenishment
-
-If the Property's reserve falls below:
-
-## $20,000
-
-future cash generated by the Property should generally replenish the reserve before excess property cash is transferred to CMA-I.
-
----
-
-# 11. Property Expenses
-
-CMA-PM may pay ordinary Property expenses from funds attributable to the Property.
+Manager will not use Property money for personal or unrelated purposes.
 
 ---
 
-# 12. Ordinary Spending Authority
+# 8. Security Deposits
 
-CMA-PM may approve ordinary Property expenses up to:
+Manager may receive and administer security deposits as Owner's agent.
+
+For Maryland properties, actual deposit funds must be placed within the legally required time into a qualifying interest-bearing, security-deposit-only account at a federally insured institution with a Maryland branch.
+
+Manager will maintain records by tenant and Owner, including:
+
+- amount and receipt date;
+- required receipt / lease language;
+- applicable interest records;
+- account held;
+- transfer on sale where required;
+- deductions;
+- itemization;
+- return date.
+
+Security deposits are liabilities and are not available for operations or owner distributions.
+
+Owner remains responsible to the extent Maryland law places nondelegable liability on the landlord.
+
+---
+
+# 9. Property Operating Funds and Owner Funding
+
+Owner will maintain the approved Property reserve under Doc 06.
+
+Manager is not required to use its own company money or any individual's personal money to fund Property obligations.
+
+If Property-attributable funds are insufficient, Manager will notify Owner of the amount and reason.
+
+Owner should fund a nonemergency shortfall within **5 business days** after written request or another agreed period.
+
+For an emergency, Manager may use granted emergency authority and request reimbursement or additional funding promptly.
+
+If Owner does not provide funds, Manager may postpone nonemergency work, disclose the risk, and take only the actions legally required or reasonably necessary to prevent immediate harm.
+
+---
+
+# 10. Property Reserve
+
+The initial reserve target is the greater of:
+
+- $20,000; or
+- approximately 9 months of unavoidable carrying costs.
+
+The target may increase toward 12 months based on Property risk.
+
+Manager will track reserve amounts separately for this Property.
+
+---
+
+# 11. Spending Authority
+
+Unless Owner approves another written limit, Manager may approve ordinary Property expenses up to:
 
 ## $2,500 per occurrence
 
-without separate approval, unless CMA-I establishes a different limit.
+Transactions may not be split to avoid the limit.
+
+Manager may exceed the limit for an emergency reasonably involving:
+
+- health or safety;
+- active or imminent property damage;
+- essential utilities or systems;
+- legal or licensing compliance;
+- insurance protection;
+- substantial immediate financial loss.
+
+Manager will document the emergency and notify Owner promptly.
 
 ---
 
-# 13. Emergency Authority
+# 12. Maintenance, Super, and Vendors
 
-CMA-PM may approve an expense above the ordinary spending limit when reasonably necessary to protect tenant health or safety, prevent substantial property damage, comply with law, restore essential systems, or prevent substantial immediate financial loss.
+Routine Super-eligible requests may be submitted by tenants directly to Super under the Tenant Home Guide.
 
----
+Manager remains the escalation point for:
 
-# 14. Vendors and Contractors
+- emergencies;
+- denied or delayed Super requests;
+- major repairs;
+- recurring problems;
+- approval-required work;
+- insurance, habitability, HOA, or compliance issues.
 
-CMA-PM may retain vendors and contractors for ordinary Property needs.
+Manager may retain vendors under Doc 15 and will apply reasonable controls concerning:
 
----
-
-# 15. Outside Property Managers
-
-CMA-PM may retain or oversee an outside property-management company if approved under CMA-I's governance rules.
-
----
-
-# 16. Security Deposits
-
-CMA-PM may administer tenant security deposits on behalf of the Owner.
-
-Security deposits are not rent, income, CMA-PM revenue, or distributable operating cash.
-
----
-
-# 17. Security Deposit Account
-
-Security deposits may be held through:
-
-## CMA-PM Security Deposit Account
+- W-9s;
+- licenses;
+- insurance certificates;
+- written scope and estimate;
+- access and keys;
+- invoices;
+- lien waivers for material projects;
+- year-end reporting.
 
 ---
 
-# 18. Insurance Administration
+# 13. Inspections and Access
 
-The Owner should maintain landlord/property insurance for the Property.
+Manager may coordinate lawful inspections for move-in, move-out, maintenance, insurance, licensing, compliance, showings, and Property condition.
 
-The named insured should generally be:
+Manager will comply with the lease and applicable notice requirements except for lawful emergency entry.
 
-## [PROPERTY LLC NAME]
-
----
-
-# 19. Utilities
-
-CMA-PM may coordinate Property utilities as authorized by the Owner.
+Material conditions should be documented with notes and photos.
 
 ---
 
-# 20. Maintenance and Repairs
+# 14. Utilities, HOA, and Compliance
 
-CMA-PM may coordinate ordinary maintenance and repairs.
+Manager may coordinate Owner-paid utilities, HOA matters, rental licenses, lead obligations, smoke/CO requirements, Tenant Bill of Rights delivery, and other ordinary compliance.
 
----
+Owner will provide required governing documents, funding, and cooperation.
 
-# 21. Property Inspections
-
-CMA-PM may coordinate reasonable inspections associated with move-in, move-out, repairs, maintenance, insurance, licensing, compliance, and property condition.
+Manager does not guarantee that a governmental body, HOA, or insurer will approve the Property.
 
 ---
 
-# 22. Tenant Communication
+# 15. Insurance and Claims
 
-CMA-PM may communicate with tenants regarding rent, maintenance, repairs, lease matters, notices, inspections, access, renewals, move-in, move-out, and other ordinary tenancy matters.
+Owner will maintain appropriate landlord/property insurance with Owner generally named as insured.
 
----
+Manager may assist with applications, renewals, claims, and incident records.
 
-# 23. Legal and Compliance Administration
+Manager may not settle a material claim, admit liability, or execute a material release without Owner approval unless immediate action is legally required.
 
-CMA-PM may coordinate ordinary compliance matters for the Property.
+Owner should provide Manager evidence of current coverage and relevant endorsements.
 
----
-
-# 24. Maryland Tenants' Bill of Rights
-
-For Maryland residential properties, CMA-PM should provide the current Maryland Tenants' Bill of Rights when required.
+Manager will maintain its own company-level coverage as approved under Doc 20.
 
 ---
 
-# 25. Move-In Administration
+# 16. Legal Notices, Collections, and Court Proceedings
 
-CMA-PM may coordinate lease documents, disclosures, security deposits, first rent, move-in condition records, access transfer, and required tenant notices.
+Manager may send routine notices using approved forms and procedures.
 
----
+Manager may engage Maryland counsel or a licensed service provider when authorized.
 
-# 26. Move-Out Administration
+Manager may not:
 
-CMA-PM may coordinate notice of move-out, access, inspection, condition documentation, final charges, security-deposit accounting, and key return.
+- file or settle material litigation;
+- consent to judgment;
+- waive substantial claims;
+- agree to a material payment plan;
+- compromise a security-deposit dispute above **$[THRESHOLD]**;
 
----
+without Owner approval, except where delay would waive rights or violate law.
 
-# 27. Excess Property Cash
-
-After providing for operating expenses, debt obligations, reserve requirements, and anticipated near-term expenses, CMA-PM may transfer excess cash attributable to the Property to:
-
-## CMA-I
-
----
-
-# 28. Capital Contributions and Property Funding
-
-Property funding generally comes from:
-
-## CMA-I
-
-Member-level capital rights are tracked at CMA-I.
+Owner is responsible for approved legal fees and court costs attributable to the Property.
 
 ---
 
-# 29. Cameron's Service-Based Profits Interest
+# 17. Records and Reporting
 
-Cameron's Service-Based Profits Interest exists at the:
+Manager will maintain Property records in DoorLoop, Google Drive, the CMA app, or another approved system.
 
-## CMA-I level
+Manager will provide or make available:
 
-and not at the Property LLC or CMA-PM level.
+- monthly income and expense information;
+- rent and delinquency records;
+- maintenance status;
+- reserve balance;
+- security-deposit liability;
+- material compliance issues;
+- annual operating summary.
 
----
+Unless the systems provide continuous access, the monthly report should generally be available by the **15th day after month-end**.
 
-# 30. CMA-I Governance
+Owner may inspect records on reasonable notice.
 
-CMA-I currently operates with:
-
-### Carrie Reynolds-Flatt
-
-## 51% governance rights
-
-### Cameron Reynolds-Flatt
-
-## 49% governance rights
+Manager will retain records for the periods established in Docs 19 and 22.
 
 ---
 
-# 31. Management Fee
+# 18. Excess Cash and Intercompany Transfers
 
-CMA-PM's initial internal management fee for managing properties ultimately owned by CMA-I is:
+After providing for expenses, debt, reserves, deposits, and anticipated near-term obligations, Manager may transfer excess Property cash to CMA-I.
+
+Each transfer will identify its purpose and Property attribution.
+
+Manager does not make direct owner distributions to Carrie or Cameron.
+
+---
+
+# 19. Management Fee and Reimbursement
+
+Initial internal management fee:
 
 ## $0
 
----
+A later fee requires written approval and amendment or resolution.
 
-# 32. CMA-PM Compensation
+Manager may be reimbursed for documented expenses incurred for the Property.
 
-CMA-PM may be reimbursed for legitimate expenses incurred on behalf of the Property.
-
----
-
-# 33. No Personal Guarantee
-
-Nothing in this Agreement requires Carrie, Cameron, or an authorized representative to personally guarantee any Property obligation.
+Manager will not retain Property funds as compensation without written authorization.
 
 ---
 
-# 34. No Ownership Interest Created
+# 20. No Personal Guarantee or Required Advance
 
-This Agreement does not give CMA-PM any ownership interest in the Property, the Owner, or CMA-I.
+Nothing in this Agreement requires any individual to personally guarantee Owner's obligations or advance personal funds.
 
----
-
-# 35. Separate Legal Entities
-
-The Owner, CMA-PM, and CMA-I are separate legal entities.
+Any guarantee or advance must be separately documented.
 
 ---
 
-# 36. Intercompany Transactions
+# 21. Confidentiality and Data Security
 
-Transactions among the Owner, CMA-PM, and CMA-I should be recorded according to their actual purpose.
+Manager will use reasonable controls for tenant, applicant, financial, and Property information under Docs 16 and 22.
 
----
-
-# 37. No Personal Commingling
-
-Property funds should not be used for personal expenses.
+Consumer reports, accommodation records, and sensitive identity information will be restricted to authorized users.
 
 ---
 
-# 38. Records and Reporting
+# 22. Limitation of Manager Authority and Liability
 
-CMA-PM shall maintain or cause to be maintained sufficient records for the Property.
+Manager is not liable for Owner's obligations solely because Manager acts as agent.
 
----
+Manager is not responsible for:
 
-# 39. Authority to Sign
+- latent Property defects not known to Manager;
+- tenant conduct not caused by Manager;
+- vendor failure despite reasonable selection and oversight;
+- governmental, HOA, lender, insurer, or utility action outside Manager's control;
+- losses caused by Owner's failure to fund, disclose, insure, or authorize necessary action.
 
-CMA-I may designate authorized representatives who may sign documents on behalf of CMA-PM.
-
----
-
-# 40. Term
-
-This Agreement begins on:
-
-## [EFFECTIVE DATE]
-
-and continues until terminated according to this Agreement.
+Nothing limits liability for Manager's fraud, willful misconduct, knowing violation of law, gross negligence where it cannot be limited, or action outside authority.
 
 ---
 
-# 41. Termination
+# 23. Indemnification
 
-The Owner may terminate CMA-PM's appointment according to CMA-I's governance requirements.
+To the extent permitted by law, Owner will indemnify Manager and its authorized representatives for claims arising from:
 
----
+- ownership or condition of the Property;
+- authorized management activities;
+- leases and tenant obligations;
+- Owner's instructions;
+- Owner's failure to fund or disclose material facts;
 
-# 42. Transition After Termination
+except to the extent caused by Manager's excluded misconduct under Section 22.
 
-Upon termination, CMA-PM should reasonably cooperate in transferring leases, tenant records, deposit records, vendor information, property records, keys, funds held for the Property, and other necessary management information.
-
----
-
-# 43. Assignment
-
-CMA-PM may not assign its management authority to an unrelated third party without appropriate approval from CMA-I.
+Manager will indemnify Owner for claims caused by Manager's fraud, willful misconduct, knowing violation of law, or unauthorized action.
 
 ---
 
-# 44. Compliance With Law
+# 24. Termination and Transition
 
-The parties intend to comply with applicable state law, local landlord-tenant law, rental licensing requirements, security-deposit requirements, housing requirements, and other applicable legal obligations.
+On termination, Manager will reasonably cooperate in transferring:
 
----
+- leases and tenant records;
+- deposit records and funds;
+- vendor information;
+- keys and access devices;
+- open work orders;
+- licenses and compliance records;
+- Property-attributable funds;
+- other necessary records.
 
-# 45. Limitation of Liability
+Manager may retain copies required for legal, tax, insurance, or record-retention purposes.
 
-To the fullest extent permitted by applicable law, CMA-PM shall not be personally responsible for obligations of the Owner merely because CMA-PM acts as manager.
-
----
-
-# 46. Indemnification
-
-To the extent permitted by applicable law, the Owner may indemnify CMA-PM and its authorized representatives for actions taken in good faith, within granted authority, and in the reasonable interest of the Property and Owner.
-
----
-
-# 47. Amendments
-
-This Agreement may be amended in writing by the Owner and CMA-PM.
+The parties will complete a final accounting within **30 days** after practical receipt of all closing information.
 
 ---
 
-# 48. Governing Law
+# 25. Assignment
 
-This Agreement shall be governed by the law applicable to:
+Manager may not assign this Agreement to an unrelated person without Owner approval.
 
-## [STATE OF PROPERTY]
-
----
-
-# 49. Entire Agreement
-
-This Agreement represents the property-management and agency agreement between the Owner and CMA-PM for the Property.
+Manager may retain vendors, software providers, Super, and approved outside managers without assigning the Agreement.
 
 ---
 
-# 50. Signatures
+# 26. Dispute Resolution
 
-## OWNER
+Because Owner and Manager are under common ownership, disputes should first be addressed under CMA-I's governance process.
+
+If unresolved, either party may seek mediation and then relief in a court of competent jurisdiction in the state where the Property is located, unless the parties sign another dispute-resolution agreement.
+
+---
+
+# 27. Notices
+
+Formal notices must be in writing and sent to the current recorded business address or approved email of each party.
+
+Notices of termination, material breach, legal claim, or security-deposit transfer should use a method providing delivery confirmation.
+
+---
+
+# 28. Miscellaneous
+
+- **Governing Law:** Law of the state where the Property is located.
+- **Entire Agreement:** This Agreement and signed amendments govern the management relationship.
+- **No Waiver:** A one-time failure to enforce is not a permanent waiver.
+- **Severability:** Invalid provisions are modified to the minimum extent necessary.
+- **Counterparts / E-Signatures:** Permitted.
+- **Independent Entity:** Manager is an independent legal entity and agent, not an employee of Owner.
+
+---
+
+# 29. Signatures
+
+## Owner
 
 **[PROPERTY LLC NAME]**
 
-By: ______________________________
-
-Title: ___________________________
-
+By: ______________________________  
+Name / Title: ____________________  
 Date: ____________________________
 
-
-## MANAGER
+## Manager
 
 **CMA Property Management LLC**
 
-By: ______________________________
-
-Title: ___________________________
-
+By: ______________________________  
+Name / Title: ____________________  
 Date: ____________________________

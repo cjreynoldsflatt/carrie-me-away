@@ -1,392 +1,89 @@
 # 01 — How CMA-I Works
 
+**Status:** Final plain-English operating overview draft  
+**Version:** 2026-08-26.5
+**Effective Date:** Not yet effective  
+**Last reviewed:** 2026-08-26
+**Supersedes:** All prior drafts of Doc 01  
+**Document Owner:** CMA-I  
+**Approved By:** Pending
+
 ## Purpose
 
-CMA Investments LLC (**CMA-I**) is a family-owned real estate investment company created to acquire, own, and operate long-term rental properties.
+This document explains the CMA-I structure in plain English. It is more detailed than Doc 00 but does not replace the signed agreements.
 
-The structure is designed around two different contributions:
+Primary operative documents:
 
-- **Carrie provides most of the investment capital.**
-- **Cameron provides substantial ongoing services to build and operate the business.**
-
-The goal is to:
-
-- protect capital contributed by either owner;
-- give Cameron a genuine service-based interest in future profits and growth;
-- separate liability between properties;
-- centralize property management and banking;
-- maintain clear property-level accounting;
-- build a repeatable structure that can grow over time.
+- Doc 02 — CMA-I Operating Agreement;
+- Doc 09 — Cameron Service & Profits Interest Agreement;
+- Doc 06 — Banking, Bookkeeping & Distribution Policy;
+- Doc 21 — Tax & Capital Implementation Schedule.
 
 ---
 
 # 1. Company Structure
 
 ```text
-                 CARRIE                     CAMERON
-            Capital Partner             Operating Partner
-                  │                           │
-                  └────────────┬──────────────┘
-                               ▼
-                  ┌────────────────────────────┐
-                  │    CMA INVESTMENTS LLC     │
-                  │           CMA-I            │
-                  │         Maryland           │
-                  │    Taxed as Partnership    │
-                  └─────────────┬──────────────┘
-                                │
-                          owns 100%
-                                │
-          ┌─────────────────────┼────────────────────────┐
-          │                     │                        │
-          ▼                     ▼                        ▼
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────────┐
-│ FLAMINGO         │  │ MANATEE          │  │ CMA PROPERTY         │
-│ PROPERTIES LLC   │  │ PROPERTIES LLC   │  │ MANAGEMENT LLC       │
-└────────┬─────────┘  └────────┬─────────┘  │ CMA-PM               │
-         │                     │             └──────────────────────┘
-         ▼                     ▼
-      House #1              House #2
+Carrie + Cameron
+       ↓
+CMA Investments LLC (CMA-I)
+├── Property LLC #1 → owns House #1
+├── Property LLC #2 → owns House #2
+├── future Property LLCs
+└── CMA Property Management LLC (CMA-PM)
 ```
 
-### The simple version
+Simple version:
 
-**CMA-I owns the companies.**
-
-**Each Property LLC owns one house.**
-
-**CMA-PM manages the houses.**
-
-Carrie and Cameron have different roles and different capital rights, but they participate in residual profits 51/49 from the start.
+- CMA-I owns the companies.
+- Each Property LLC owns one house and is the landlord.
+- CMA-PM manages the houses as agent.
 
 ---
 
 # 2. Carrie and Cameron Have Different Roles
 
-## Carrie
+## Carrie — Capital Partner
 
-Carrie is primarily the:
+- expected initial capital: approximately $500,000;
+- 51% governance;
+- 51% residual economics before any Cameron forfeiture;
+- contributed capital remains attributable to Carrie until returned.
 
-### Capital Partner
+## Cameron — Operating Partner
 
-She is expected to contribute approximately:
-
-## $500,000
-
-of initial investment capital.
-
-Her contributed capital remains economically attributable to her.
-
-Carrie holds:
-
-## 51% governance rights
-
-and:
-
-## 51% of residual profits and growth.
-
-## Cameron
-
-Cameron is primarily the:
-
-### Operating Partner
-
-He is expected to perform substantial ongoing services for CMA-I, including:
-
-- sourcing properties;
-- underwriting investments;
-- negotiating acquisitions;
-- coordinating inspections and closings;
-- overseeing renovations;
-- building and maintaining investment systems;
-- establishing CMA-PM operations;
-- overseeing vendors and outside property managers;
-- maintaining reporting and bookkeeping systems;
-- coordinating compliance;
-- helping determine whether properties should be held, improved, refinanced, or sold.
-
-Cameron receives a:
-
-## 49% Service-Based Profits Interest
-
-in exchange for these services.
-
-Cameron holds:
-
-## 49% governance rights
-
-and:
-
-## 49% of residual profits and growth from the Grant Date,
-
-subject to five-year reverse vesting.
+- expected initial cash capital: $0;
+- 49% governance;
+- 49% Service-Based Profits Interest from the Grant Date;
+- performs or oversees property sourcing, analysis, acquisitions, renovations, CMA-PM systems, vendors, reporting, compliance, portfolio strategy, and the CMA app;
+- initially receives no salary or guaranteed annual payment.
 
 ---
 
-# 3. Governance Rights vs. Economic Rights
-
-Governance rights, capital rights, and profits rights are separate concepts.
+# 3. Governance Is Not the Same as Capital
 
 ```text
-GOVERNANCE
+Governance
+Carrie 51% / Cameron 49%
 
-Carrie      51%
-Cameron     49%
+Initial Capital
+Carrie approximately $500,000 / Cameron $0
 
-INITIAL CAPITAL
-
-Carrie      ~$500,000
-Cameron     $0 initially
-
-RESIDUAL PROFITS / GROWTH
-
-Carrie      51%
-Cameron     49% from Day 1
-            subject to reverse vesting
+Residual Economics at Grant
+Carrie 51% / Cameron 49%
 ```
 
-Cameron's Service-Based Profits Interest does not give him ownership of Carrie's existing contributed capital.
+Cameron's 49% does not give him 49% of Carrie's existing capital.
 
 ---
 
-# 4. CMA-I
+# 4. Reverse Vesting
 
-CMA-I is the parent holding and investment company.
+Cameron receives the full 49% Service-Based Profits Interest on the Grant Date.
 
-It:
+As long as he substantially performs his agreed role, he keeps participating in the full 49% every year.
 
-- owns all Property LLCs;
-- owns CMA-PM;
-- receives investment capital;
-- funds acquisitions;
-- receives excess property cash;
-- tracks member capital;
-- makes owner distributions;
-- makes investment decisions.
-
-CMA-I generally does not directly own the rental houses.
-
----
-
-# 5. Property LLCs
-
-Each rental property should generally be owned by its own LLC.
-
-The Property LLC is the legal owner and landlord.
-
-CMA-I is the sole member of the Property LLC.
-
----
-
-# 6. Why One LLC Per Property
-
-Each property is separated into its own entity so property-specific obligations remain as separate as reasonably possible.
-
-Separate LLCs do not replace insurance.
-
----
-
-# 7. Property Insurance
-
-Each Property LLC should carry landlord/property insurance for the house it owns.
-
-### Named insured
-
-## The Property LLC
-
-CMA-PM may physically pay the premium, but the expense remains attributable to the applicable property.
-
----
-
-# 8. CMA-PM
-
-CMA Property Management LLC (**CMA-PM**) is owned:
-
-## 100% by CMA-I
-
-CMA-PM manages the houses but does not own them.
-
-CMA-PM initially charges:
-
-## $0 internal management fee
-
----
-
-# 9. Who Is the Landlord?
-
-The Property LLC is the landlord.
-
-CMA-PM acts as manager and agent.
-
----
-
-# 10. Property Management Authority
-
-Each Property LLC should formally appoint CMA-PM through:
-
-## 05 — Property Management & Agency Agreement
-
----
-
-# 11. The Three Bank Accounts
-
-CMA generally uses:
-
-1. **CMA-I Operating Account**
-2. **CMA-PM Operating Account**
-3. **CMA-PM Security Deposit Account**
-
----
-
-# 12. CMA-I Operating Account
-
-Used for:
-
-- capital contributions;
-- acquisitions;
-- sale or refinance proceeds;
-- CMA-I expenses;
-- owner distributions.
-
----
-
-# 13. CMA-PM Operating Account
-
-Used for:
-
-- rent collection;
-- property expenses;
-- property reserves;
-- vendors;
-- outside property managers.
-
----
-
-# 14. CMA-PM Security Deposit Account
-
-Security deposits are not:
-
-- rent;
-- profit;
-- CMA-PM revenue;
-- available operating cash.
-
----
-
-# 15. Centralized Banking, Property-Specific Accounting
-
-Property LLCs do not initially need separate ordinary checking accounts.
-
-CMA-PM may use centralized banking, but every transaction must remain attributable to the correct property.
-
-### Core Rule
-
-> **The bank account may be centralized. The accounting is property-specific.**
-
----
-
-# 16. Property Reserves
-
-Each rental property should generally maintain:
-
-## $20,000
-
-as an operating reserve.
-
----
-
-# 17. Basic Property Cash Flow
-
-```text
-Rent
- ↓
-CMA-PM Operating Account
- ↓
-Pay property expenses
- ↓
-Maintain / restore $20K reserve
- ↓
-Excess property cash
- ↓
-CMA-I
-```
-
----
-
-# 18. Owner Distributions
-
-CMA-I determines owner distributions after:
-
-- property expenses;
-- reserves;
-- company obligations;
-- expected tax needs.
-
-Ordinary owner distributions come from CMA-I.
-
----
-
-# 19. Cameron's Service-Based Profits Interest
-
-Cameron receives a:
-
-## 49% Service-Based Profits Interest
-
-from the Grant Date.
-
-It applies to future residual:
-
-- rental profits;
-- operating profits;
-- appreciation;
-- sale gains;
-- other growth.
-
-Cameron generally participates in:
-
-## 49% of residual profits and distributions from Day 1.
-
-The 49% interest is subject to reverse vesting.
-
----
-
-# 20. The Capital Hurdle
-
-Carrie's existing contributed capital sits ahead of Cameron's profits interest.
-
-If Carrie contributes:
-
-## $500,000
-
-and CMA-I immediately liquidates before profit or appreciation:
-
-### Carrie receives
-
-## $500,000
-
-### Cameron receives
-
-## $0
-
-from Carrie's existing capital.
-
----
-
-# 21. Reverse Vesting
-
-Cameron receives the full:
-
-## 49% Service-Based Profits Interest
-
-at the beginning.
-
-However, part of that interest remains subject to forfeiture during a five-year service period.
-
-Each completed year causes:
-
-## 9.8 percentage points
-
-to become nonforfeitable.
+The five-year schedule makes more of that 49% permanently nonforfeitable:
 
 | Completed Service | Nonforfeitable | Still Forfeitable |
 |---|---:|---:|
@@ -397,274 +94,199 @@ to become nonforfeitable.
 | Year 4 | 39.2% | 9.8% |
 | Year 5 | 49.0% | 0.0% |
 
-### Important
+If Cameron voluntarily resigns or is terminated for defined Cause before Year 5, the still-forfeitable part may be lost after the required process.
 
-Reverse vesting does **not** mean Cameron only receives 9.8%, 19.6%, or 29.4% of current profits.
+If he dies, becomes permanently disabled, is terminated without Cause, or is materially prevented from performing, the remaining portion accelerates.
 
-Cameron generally receives:
-
-## 49% of residual profits from the Grant Date.
-
-Vesting determines how much of the 49% Cameron keeps permanently if he stops providing the required services.
+Governance stays 51% / 49% unless both members sign an amendment.
 
 ---
 
-# 22. If Cameron Stops Performing Services
+# 5. Capital Hurdle
 
-If Cameron voluntarily stops performing the required services:
+If Carrie contributes $500,000 and CMA-I immediately liquidates before creating future value:
 
-- the nonforfeitable portion remains Cameron's;
-- the still-forfeitable portion is forfeited;
-- there is no automatic forced buyback of Cameron's nonforfeitable interest.
+- Carrie is entitled to the available $500,000;
+- Cameron receives $0 from that existing capital.
 
-Example after Year 3:
+The capital formula is maintained by member and property under Docs 02, 06, and 21.
 
-### Cameron permanently keeps
-
-## 29.4%
-
-### Still-forfeitable portion lost
-
-## 19.6%
-
-After forfeiture, future residual economics adjust accordingly.
+Property-Associated Capital generally includes capital actually deployed for purchase, approved acquisition costs, initial reserve, and capital improvements. It excludes member loans, third-party debt, operating expenses paid from rents, depreciation, and appreciation.
 
 ---
 
-# 23. Cameron's Death or Permanent Disability
+# 6. Ordinary Rental Profit
 
-If Cameron dies before the five-year period is complete:
+After property expenses, reserves, debt, Company obligations, and approved tax needs, residual rental cash may be distributed by CMA-I.
 
-## The entire remaining forfeitable portion immediately becomes nonforfeitable.
+Before any forfeiture:
 
-Cameron therefore holds the full:
+- Carrie receives 51%;
+- Cameron receives 49%.
 
-## 49%
-
-immediately before succession.
-
-His CMA-I interest then passes to:
-
-## Jay Flatt
-
-The same acceleration applies upon permanent disability.
+Carrie's capital is not repaid before every ordinary rental distribution.
 
 ---
 
-# 24. Residual Profits
+# 7. Property Sale
 
-From the Grant Date, residual profits are generally:
-
-### Carrie
-
-## 51%
-
-### Cameron
-
-## 49%
-
-while Cameron continues to satisfy his service obligations.
-
-If Cameron later forfeits an unvested portion, future residual percentages adjust to reflect that forfeiture.
-
----
-
-# 25. Property Capital Sub-Ledgers
-
-Example:
-
-| Use of Carrie's Capital | Amount |
-|---|---:|
-| Flamingo | $200,000 |
-| Manatee | $175,000 |
-| Undeployed CMA-I cash | $125,000 |
-| **Total** | **$500,000** |
-
----
-
-# 26. Property Sale Example
-
-Assume Carrie's capital associated with Flamingo is:
-
-## $200,000
-
-Net sale proceeds:
-
-## $325,000
+General waterfall:
 
 ```text
-$325,000
-    ↓
-Return Carrie's $200,000 capital
-    ↓
-$125,000 residual appreciation
-    ↓
-Carrie 51% / Cameron 49%
+Net sale proceeds
+      ↓
+Third-party debt / costs / taxes / reserves
+      ↓
+Property-specific member loans
+      ↓
+Return Property-Associated Capital
+      ↓
+Split residual value under current residual percentages
 ```
 
-### Carrie
+If proceeds are below the capital hurdle, all available capital-return proceeds go toward the contributors' property capital, and there is no residual gain to split.
 
-$200,000 capital return  
-+ $63,750 residual
-
-## $263,750 total
-
-### Cameron
-
-## $61,250
-
-Carrie's remaining unrecovered capital becomes approximately:
-
-## $300,000
-
-assuming no other capital has been returned.
+No member is automatically required to restore another member's loss.
 
 ---
 
-# 27. Future Capital Contributions
+# 8. Additional Funding
 
-Future capital remains attributable to whoever contributes it.
+Neither member is automatically required to put in more money.
 
-If Carrie contributes more, Carrie's protected capital balance increases.
+New funding must be documented as:
 
-If Cameron contributes cash later, Cameron receives separate corresponding capital rights.
+- capital; or
+- member loan.
 
----
+Emergency/short-term advances default to member loans unless both members approve capital treatment.
 
-# 28. Governance
-
-### Carrie
-
-## 51%
-
-### Cameron
-
-## 49%
-
-Ordinary decisions are controlled by majority approval.
+Declining to fund does not automatically dilute a member.
 
 ---
 
-# 29. Fundamental Decisions Require Both
+# 9. Ordinary vs Fundamental Decisions
 
-Both members must approve material changes to:
+## Ordinary Decisions
 
-- governance percentages;
-- capital rights;
-- Cameron's Service-Based Profits Interest;
-- reverse vesting;
-- 51/49 residual economics;
-- succession;
-- admission of new members;
-- merger;
-- dissolution;
-- sale of substantially all assets;
-- fundamental amendments.
+Carrie's 51% controls ordinary decisions, including individual acquisitions/sales, ordinary budgets, vendors, software, and routine distributions.
+
+## Fundamental Decisions
+
+Both members must approve material changes to governance, capital rights, Cameron's profits interest, succession, new members, merger, voluntary dissolution, sale of substantially all assets, and fundamental amendments.
+
+If a Fundamental Decision is deadlocked, the members meet, mediate, and preserve the status quo unless they later agree.
 
 ---
 
-# 30. Spending Authority
+# 10. Property LLCs
 
-Authorized representatives may independently approve ordinary expenses up to:
+Each house generally gets its own LLC.
 
-## $2,500 per occurrence
+The Property LLC:
 
-Emergency expenses may exceed this amount when reasonably necessary.
+- owns the house;
+- is named as landlord;
+- carries property insurance;
+- holds property-specific contracts and obligations;
+- appoints CMA-PM through Doc 05;
+- distributes excess cash only to CMA-I.
 
----
-
-# 31. Compensation for Cameron's Services
-
-Cameron's Service-Based Profits Interest is intended to be his primary compensation.
-
-Cameron initially receives:
-
-## No salary or guaranteed annual payment.
+Carrie and Cameron do not directly own each Property LLC; CMA-I is the sole member.
 
 ---
 
-# 32. Tax Structure
+# 11. CMA-PM
 
-CMA-I is intended to be taxed as a:
+CMA-PM:
 
-## Partnership
+- handles tenant operations;
+- uses DoorLoop;
+- administers rent and deposits;
+- coordinates maintenance and Super;
+- maintains property-level records;
+- does not own the houses.
 
-and generally files:
+Initial internal management fee: $0.
 
-## Form 1065
-
----
-
-# 33. Capital Accounts and Tax Allocations
-
-CMA-I should separately track:
-
-- contributed capital;
-- unrecovered capital;
-- Cameron's full 49% profits interest;
-- the forfeitable and nonforfeitable portions;
-- distributions;
-- tax allocations;
-- property depreciation and gain.
+CMA-PM must complete the Maryland common-ownership collection filing before collecting tenant debt and must not manage unrelated third-party property without a new licensing review.
 
 ---
 
-# 34. Annual Tax Distribution
+# 12. Banking
 
-CMA-I may make a separate annual tax distribution.
+- **CMA-I Operating:** capital, acquisitions, sale/refi proceeds, owner distributions.
+- **CMA-PM Operating:** rent and property operations.
+- **CMA-PM Security Deposit:** separate Maryland-compliant deposit account.
 
-### Target Date
+Bluevine may be used for operating banking but is not assumed to be the security-deposit bank.
 
-## March 15
-
----
-
-# 35. Succession
-
-## If Carrie Dies
-
-Carrie's interest passes to:
-
-## Jay Flatt
-
-## If Cameron Dies
-
-Cameron's full 49% interest first becomes nonforfeitable and then passes to:
-
-## Jay Flatt
+Banking may be centralized, but bookkeeping stays property-specific.
 
 ---
 
-# 36. Ownership Transfers
+# 13. Reserves
 
-Transfers remain subject to CMA-I's governing agreements and applicable restrictions.
+Property reserve target:
+
+## Greater of $20,000 or approximately 9 months of unavoidable carrying costs
+
+CMA-PM company working-capital target:
+
+## $5,000 initially
+
+Tenant deposits do not count toward either target.
 
 ---
 
-# 37. Registered Agents
+# 14. Distributions and Taxes
 
-CMA-I, CMA-PM, and each Property LLC should maintain required registered or resident agents.
+CMA-I may consider ordinary distributions quarterly.
+
+CMA-I may make a separate tax distribution targeted for March 15 under Doc 21.
+
+Taxable income, cash distributions, tax capital, outside basis, and contractual capital can all differ.
 
 ---
 
-# 38. Core Rules
+# 15. Succession
 
-1. **Carrie initially contributes approximately $500,000.**
-2. **Carrie's capital remains attributable to Carrie.**
-3. **Carrie has 51% governance.**
-4. **Cameron has 49% governance.**
-5. **Cameron receives the full 49% Service-Based Profits Interest from the Grant Date.**
-6. **Cameron generally receives 49% of residual profits from Day 1.**
-7. **The 49% is subject to five-year reverse vesting.**
-8. **9.8 percentage points become nonforfeitable each year.**
-9. **Reverse vesting controls forfeiture, not Cameron's current distribution percentage.**
-10. **Cameron receives no interest in Carrie's existing capital.**
-11. **If Cameron voluntarily stops working, he keeps the nonforfeitable portion and loses the remaining forfeitable portion.**
-12. **If Cameron dies or becomes permanently disabled, the remaining interest immediately becomes fully nonforfeitable.**
-13. **Once the five years are complete, Cameron's full 49% is permanently vested.**
-14. **Ordinary residual economics are 51% Carrie / 49% Cameron from the Grant Date.**
-15. **Future capital remains attributable to whoever contributes it.**
-16. **Carrie controls ordinary decisions through 51% governance.**
-17. **Fundamental decisions require both members.**
-18. **Cameron initially receives no salary or guaranteed annual payment.**
-19. **CMA-I, CMA-PM, and each Property LLC remain separate legal entities.**
+If Carrie dies, her interest is intended to pass to Jay Flatt.
+
+If Cameron dies, his remaining reverse-vested portion first accelerates, and his full interest is intended to pass to Jay Flatt.
+
+The lawful successor is admitted as a substitute member under Doc 02 when the transfer becomes effective.
+
+---
+
+# 16. Operating Tools
+
+- `cmapropertymanagement.com` — primary domain;
+- `cmainvestments.com` — defensive domain;
+- Stable — address, mail scanning, registered agent;
+- Google Workspace / Voice — email, files, phone;
+- Bluevine — operating bank;
+- DoorLoop — tenant operations;
+- Super — eligible routine maintenance;
+- CMA app — property analysis, actuals, reserves, capital, owner economics;
+- ChatGPT / Claude — support within data rules.
+
+---
+
+# 17. Core Rules
+
+1. CMA-I owns CMA-PM and the Property LLCs.
+2. Each Property LLC generally owns one house and is the landlord.
+3. CMA-PM is manager/agent, not owner.
+4. Carrie has 51% governance and Cameron 49%.
+5. Carrie contributes approximately $500,000 initially.
+6. Cameron receives the full 49% Service-Based Profits Interest from Day 1.
+7. Reverse vesting determines permanence, not current participation.
+8. Carrie's existing capital remains protected by the capital hurdle.
+9. Ordinary residual economics start 51% / 49%.
+10. Additional money is documented as capital or loan.
+11. Banking may be centralized; books remain property-specific.
+12. Security deposits stay in a separate Maryland-compliant account.
+13. Property reserves and CMA-PM working capital are separate.
+14. Fundamental decisions require both members.
+15. Signed agreements control over this explanation.

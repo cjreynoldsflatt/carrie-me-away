@@ -1,578 +1,292 @@
 # 07 — Maryland Property Acquisition & Compliance Playbook
 
+**Status:** Final internal compliance playbook; verify current law and exact-address requirements before use  
+**Version:** 2026-08-26.5
+**Last reviewed:** 2026-08-26
+**Document owner:** CMA-I / CMA-PM  
+**Supersedes:** All earlier versions of Doc 07  
+**Related documents:** 04, 05, 10, 13, 14, 19, 20, 21
+
 ## Purpose
 
-This playbook explains the basic acquisition and compliance steps for a Maryland rental property owned through the CMA structure.
+This playbook covers the acquisition-to-rental lifecycle for a Maryland property. County, municipal, HOA, and property-specific requirements must be checked by exact address.
 
-It focuses on Maryland statewide requirements, CMA entity setup, landlord and property-management structure, property-level compliance, and practical follow-up by exact property address.
+## 1. Initial Property Analysis
 
-Because county and municipal requirements vary, the exact property address must always be checked before leasing.
+Before an offer, review:
 
----
+- purchase price and closing costs;
+- realistic rent using recent comparable rentals;
+- taxes, HOA/condo, insurance, and utilities;
+- vacancy, maintenance, CapEx, turnover, management, and Super assumptions;
+- financing and lender restrictions;
+- reserve target;
+- condition and age of major systems;
+- local rental restrictions;
+- HOA/condo leasing restrictions;
+- expected return and stress cases.
 
-# 1. Evaluate the Property
+## 2. Exact-Address Compliance Check
 
-Before making an offer, review:
+Identify:
 
-- purchase price;
-- expected rent;
-- taxes;
-- HOA;
-- insurance;
-- utilities;
-- repairs;
-- maintenance;
-- financing;
-- expected cash flow;
-- expected reserve needs;
-- likely appreciation;
-- rental restrictions;
-- condition of major systems;
-- local rental requirements.
+- county and municipality;
+- zoning and lawful rental use;
+- rental license, registration, inspection, and occupancy requirements;
+- landlord registration;
+- local lease, notice, rent-increase, and tenant-protection rules;
+- lead status;
+- smoke and carbon-monoxide requirements;
+- HOA/condo requirements;
+- flood zone and environmental concerns.
 
----
+Record the source and verification date.
 
-# 2. Check the Exact Property Address
+## 3. Acquisition Entity
 
-Before acquisition, determine:
-
-- county;
-- municipality, if any;
-- zoning;
-- rental licensing requirements;
-- rental registration requirements;
-- rental inspection requirements;
-- occupancy requirements;
-- landlord-registration requirements;
-- local lease or notice requirements;
-- HOA or condominium rental restrictions.
-
-### Core Rule
-
-> **Every property gets an address-specific compliance check.**
-
----
-
-# 3. Confirm the Acquisition Entity
-
-Each rental property should generally be acquired through its own Property LLC.
-
-CMA-I owns 100% of the Property LLC.
-
----
-
-# 4. Form the Property LLC
+Each property should generally be acquired through its own Property LLC, wholly owned by CMA-I.
 
 Before closing:
 
-- choose the Property LLC name;
-- confirm name availability;
-- form the LLC in Maryland;
-- appoint the required Maryland resident agent;
-- obtain an EIN if needed;
-- adopt the Property LLC Operating Agreement;
-- confirm CMA-I as sole member;
-- establish appropriate company records.
-
-Use:
-
-## 04 — Property LLC Operating Agreement Template
-
----
-
-# 5. Take Title in the Property LLC
-
-The deed should generally show the purchaser as:
-
-## [PROPERTY LLC NAME]
-
-not Carrie or Cameron individually.
-
----
-
-# 6. Closing and Capital
-
-CMA-I generally provides acquisition funding to the Property LLC.
-
-Member-level capital attribution remains tracked at CMA-I.
-
-Carrie's initial CMA-I capital is currently expected to be approximately:
-
-## $500,000
-
----
-
-# 7. Fund the Property Reserve
-
-At acquisition, CMA-I should generally establish a:
-
-## $20,000 operating reserve
-
-for the property.
-
----
-
-# 8. Obtain Landlord Insurance
-
-Each Property LLC should obtain appropriate landlord/property insurance.
-
-The named insured should generally be:
-
-## The Property LLC
-
----
-
-# 9. Record the Year Built
-
-For every property, record:
-
-## Year Built
-
----
-
-# 10. Pre-1978 Maryland Rental Property
-
-For a Maryland rental property built before 1978, determine whether Maryland's lead-rental requirements apply.
-
-Before occupancy, check current requirements concerning:
-
-- MDE registration;
-- renewal;
-- lead inspection;
-- lead certification;
-- tenant notices;
-- required disclosures;
-- applicable exemptions.
-
----
-
-# 11. Federal Lead Disclosure
-
-For residential property built before 1978, also confirm applicable federal lead-based paint disclosure requirements.
-
----
-
-# 12. Smoke Alarm Requirements
-
-Before tenant occupancy, verify compliance with current Maryland smoke-alarm requirements.
-
----
-
-# 13. Carbon Monoxide Requirements
-
-Determine whether carbon monoxide alarms are required based on the property's systems and applicable law.
-
----
-
-# 14. Local Rental Approval
-
-Before leasing, determine whether the exact address requires:
-
-- rental license;
-- rental registration;
-- landlord registration;
-- inspection;
-- occupancy permit;
-- certificate;
-- fee;
-- renewal.
-
----
-
-# 15. HOA or Condominium Requirements
-
-If the property is subject to an HOA or condominium association, review leasing restrictions, minimum lease terms, rental caps, registration requirements, move-in procedures, fees, tenant rules, and required lease addenda.
-
----
-
-# 16. Appoint CMA-PM
-
-The Property LLC should appoint:
-
-## CMA Property Management LLC
-
-as property manager and agent.
-
-Use:
-
-## 05 — Property Management & Agency Agreement
-
----
-
-# 17. Confirm Management Authority
-
-Before CMA-PM signs a lease, collects rent, holds a security deposit, issues notices, pays expenses, or communicates as landlord's agent, make sure the agency relationship has been properly documented.
-
----
-
-# 18. Prepare the Maryland Lease
-
-Use a Maryland-compliant residential lease adjusted for:
-
-- exact property;
-- exact county;
-- municipality;
-- HOA or condominium requirements;
-- utility responsibilities;
-- lead requirements;
-- security deposit;
-- current landlord-tenant law.
-
----
-
-# 19. Maryland Tenants' Bill of Rights
-
-For each new Maryland residential lease, provide the:
-
-## Current Maryland Tenants' Bill of Rights
-
-when required by current law.
-
----
-
-# 20. Security Deposit Amount
-
-Before collecting a security deposit, confirm the current Maryland maximum.
-
-As a general rule, ordinary Maryland residential security deposits are limited to:
-
-## One month's rent
-
-subject to statutory exceptions.
-
----
-
-# 21. Security Deposit Receipt and Records
-
-When a security deposit is received:
-
-- record the tenant;
-- record the property;
-- record the Property LLC;
-- record the amount;
-- record the date;
-- provide any required receipt or disclosure;
-- maintain required documentation.
-
----
-
-# 22. Security Deposit Account
-
-Security deposits should generally be deposited into:
-
-## CMA-PM Security Deposit Account
-
----
-
-# 23. Security Deposit Administration
-
-CMA-PM should follow current Maryland requirements relating to account handling, timing, receipts, interest, move-in rights, inspection rights, deductions, itemization, return, and notices.
-
----
-
-# 24. Tenant Screening
-
-CMA-PM may administer tenant screening using consistent criteria and applicable law.
-
----
-
-# 25. Fair Housing
-
-Rental advertising, screening, leasing, and management must comply with applicable fair-housing laws.
-
----
-
-# 26. Rent Collection Setup
-
-Before move-in:
-
-- establish tenant payment method;
-- identify the Property LLC;
-- route rent to CMA-PM;
-- establish property-specific bookkeeping.
-
----
-
-# 27. Rent Receipts
-
-CMA-PM should comply with current Maryland requirements concerning rent receipts.
-
----
-
-# 28. Late Fees
-
-Any late fee should comply with current Maryland law and be stated in the lease.
-
----
-
-# 29. Rent Increases
-
-Before increasing rent, check current requirements concerning notice period, form of notice, local restrictions, lease term, and renewal status.
-
----
-
-# 30. Lease Renewals and Terminations
-
-Before declining renewal, terminating tenancy, changing lease terms, converting to month-to-month, or issuing notice to vacate, check current Maryland and local requirements.
-
----
-
-# 31. Nonpayment and Eviction
-
-If a tenant does not pay rent or otherwise breaches the lease:
-
-- do not use self-help;
-- follow current Maryland procedures;
-- use the proper notices;
-- use the proper court process where required.
-
----
-
-# 32. Utilities
-
-Before leasing, document who is responsible for each utility.
-
----
-
-# 33. Before Tenant Move-In
-
-Before giving possession to the tenant, confirm:
-
-- lease is signed;
-- required disclosures are delivered;
-- current Tenants' Bill of Rights is provided where required;
-- security deposit is properly handled;
-- first rent payment is handled;
-- rental license or registration is complete where required;
-- lead compliance is complete where applicable;
-- smoke alarms are compliant;
-- carbon monoxide alarms are compliant where required;
-- required repairs are complete;
-- property is safe and habitable;
-- utilities are arranged;
-- keys or access are ready.
-
----
-
-# 34. Move-In Condition Records
-
-At move-in, create a reasonable record of property condition.
-
----
-
-# 35. During the Tenancy
-
-Maintain appropriate records of rent payments, maintenance requests, repairs, inspections, tenant notices, insurance, rental licenses, lead compliance, security deposit, and significant tenant communications.
-
----
-
-# 36. Repairs and Habitability
-
-Urgent issues involving health, safety, water, heat, electricity, structural damage, significant leaks, or essential systems should receive appropriate priority.
-
----
-
-# 37. Property Access
-
-Before entering an occupied rental property, confirm lease requirements, Maryland law, applicable local requirements, and emergency exceptions.
-
----
-
-# 38. Annual Compliance Check
-
-At least once each year, review:
-
-- rental license renewal;
-- rental registration renewal;
-- lead registration or certification;
-- insurance renewal;
-- smoke alarm status;
-- carbon monoxide alarm status;
-- HOA requirements;
-- security-deposit records;
-- lease forms;
-- current Tenants' Bill of Rights;
-- newly enacted state or local requirements.
-
----
-
-# 39. Move-Out Notice
-
-When a tenant plans to leave, confirm proper notice, move-out date, lease obligations, inspection rights, key return, utility responsibilities, and security-deposit process.
-
----
-
-# 40. Move-Out Inspection
-
-Follow current Maryland requirements concerning tenant rights to inspection.
-
----
-
-# 41. Security Deposit Deductions and Return
-
-At move-out:
-
-- identify lawful deductions;
-- document deductions;
-- provide required itemization;
-- calculate required interest;
-- return the remaining deposit within the legally required time.
-
----
-
-# 42. Selling a Tenant-Occupied Property
-
-Before selling a tenant-occupied property, determine:
-
-- whether the lease continues;
-- required notices;
-- tenant rights;
-- security-deposit transfer requirements;
-- possession obligations;
-- local tenant protections;
-- any current Maryland right-of-first-refusal or similar requirements that apply.
-
----
-
-# 43. Property Sale Approval
-
-An individual property sale is generally governed by CMA-I's ordinary governance rules unless it constitutes part of a sale of substantially all CMA-I assets.
-
-### Carrie
-
-## 51% governance rights
-
-### Cameron
-
-## 49% governance rights
-
----
-
-# 44. Sale Proceeds
-
-Net sale proceeds generally move:
-
-```text
-Property sale
-    ↓
-Property LLC
-    ↓
-CMA-I
-```
-
-At CMA-I, proceeds are handled according to contributed-capital rights, the capital hurdle, Cameron's Service-Based Profits Interest, and the applicable residual economic percentages.
-
----
-
-# 45. After Sale
-
-After a property is sold:
-
-- settle property bills;
-- reconcile CMA-PM records;
-- transfer or close tenant deposit obligations properly;
-- record final income and expenses;
-- reconcile the property reserve;
-- transfer remaining funds to CMA-I as appropriate;
-- maintain closing records;
-- update insurance;
-- update property and entity records.
-
----
-
-# 46. Property LLC After Sale
-
-After sale, CMA-I should decide whether to dissolve the Property LLC, retain it temporarily for final obligations, or reuse it only if appropriate under CMA-I policy.
-
-CMA's general preference is:
-
-## One Property LLC per property
-
----
-
-# 47. Maryland Acquisition Checklist
-
-Before buying:
-
-- [ ] Evaluate investment
-- [ ] Check exact county and municipality
-- [ ] Check zoning and rental restrictions
-- [ ] Check HOA or condominium rules
-- [ ] Form Property LLC
-- [ ] Confirm CMA-I as sole member
-- [ ] Confirm resident agent
-- [ ] Record year built
-- [ ] Review lead requirements
-- [ ] Review local rental licensing requirements
-- [ ] Obtain insurance quote
-- [ ] Confirm planned $20,000 reserve
-- [ ] Prepare for closing in Property LLC name
+- form the Property LLC;
+- appoint the resident/registered agent;
+- adopt Doc 04;
+- obtain EIN if needed;
+- authorize bank, contract, and closing signers;
+- adopt the acquisition resolution in Doc 23.
+
+## 4. Title and Survey Diligence
+
+Confirm:
+
+- correct purchaser entity;
+- title commitment and exceptions;
+- deed restrictions;
+- easements and encroachments;
+- survey or location drawing as appropriate;
+- existing liens and judgments;
+- parking and access rights;
+- legal description;
+- title-insurance coverage.
+
+## 5. Physical and Permit Diligence
+
+Review:
+
+- general inspection;
+- roof, HVAC, electrical, plumbing, structure, water heater, appliances;
+- sewer/septic and well where applicable;
+- moisture, mold, pests, drainage, and environmental issues;
+- permits for additions, finished basements, decks, electrical, plumbing, and other material work;
+- occupancy approvals;
+- expected immediate repairs and capital projects.
+
+## 6. HOA / Condominium Diligence
+
+Obtain and review:
+
+- declaration, bylaws, rules, and amendments;
+- rental caps or restrictions;
+- minimum lease term;
+- tenant registration and move-in procedures;
+- current dues and special assessments;
+- reserve study and financial statements;
+- meeting minutes;
+- pending litigation and insurance claims;
+- master insurance;
+- responsibility for exterior systems and utilities.
+
+## 7. Financing Diligence
+
+Confirm:
+
+- borrower and guarantor;
+- rate, term, amortization, prepayment, and recourse;
+- assignment of rents;
+- reserve requirements;
+- insurance requirements;
+- restrictions on transfers, distributions, additional debt, and management;
+- due-on-sale and change-of-control provisions.
+
+## 8. Insurance Before Closing
+
+Obtain a binder naming the Property LLC as insured and satisfying lender requirements.
+
+Review Doc 20 for:
+
+- replacement value;
+- landlord liability;
+- loss of rents;
+- water/sewer backup;
+- flood;
+- umbrella/excess;
+- deductibles;
+- exclusions.
+
+## 9. Closing and Funding
 
 At closing:
 
-- [ ] Title in Property LLC
-- [ ] Record CMA-I funding
-- [ ] Maintain closing statement
-- [ ] Activate landlord insurance
-- [ ] Fund property reserve
+- take title in the Property LLC;
+- document CMA-I funding as capital, loan, or reimbursement;
+- retain the settlement statement, deed, loan documents, title policy, survey, inspection reports, and insurance binder;
+- establish the property subledger;
+- fund the approved operating reserve;
+- provide the closing package to the CPA for basis and depreciation setup.
 
-Before leasing:
+## 10. Year Built and Lead Compliance
 
-- [ ] Appoint CMA-PM
-- [ ] Confirm agency authority
-- [ ] Complete rental license or registration
-- [ ] Complete lead requirements if applicable
-- [ ] Verify smoke alarms
-- [ ] Verify carbon monoxide alarms
-- [ ] Prepare current Maryland lease
-- [ ] Provide current Maryland Tenants' Bill of Rights where required
-- [ ] Establish rent collection
-- [ ] Establish security-deposit process
-- [ ] Document utility responsibilities
-- [ ] Complete move-in condition records
+Record the year built.
 
-During tenancy:
+For pre-1978 residential property, complete the current federal and Maryland lead review, including registration, inspection/certification, disclosures, educational materials, and change-of-occupancy requirements.
 
-- [ ] Maintain rent records
-- [ ] Maintain repair records
-- [ ] Maintain security-deposit records
-- [ ] Monitor reserve
-- [ ] Maintain insurance
-- [ ] Maintain licenses and registrations
-- [ ] Conduct annual compliance review
+Do not assume the seller's prior compliance automatically transfers or remains sufficient.
 
-At move-out:
+## 11. Smoke and Carbon Monoxide
 
-- [ ] Follow inspection requirements
-- [ ] Document condition
-- [ ] Calculate lawful deductions
-- [ ] Return security deposit on time
-- [ ] Update property records
+Before occupancy, verify current state and local requirements for:
 
----
+- alarm locations;
+- power source;
+- age/replacement;
+- interconnected alarms where required;
+- carbon-monoxide triggers and placement.
 
-# 48. Core Rules
+Document the check in Doc 14.
 
-1. **Each rental property generally gets its own Property LLC.**
-2. **The Property LLC owns the house and is the landlord.**
-3. **CMA-I owns the Property LLC.**
-4. **CMA-PM manages the property as agent.**
-5. **CMA-PM does not own the house.**
-6. **Form the Property LLC before closing when practical.**
-7. **Take title in the Property LLC's name.**
-8. **Check the exact property address for county and municipal requirements.**
-9. **Record the year built for every property.**
-10. **Pre-1978 properties require a lead-compliance review.**
-11. **Verify smoke and carbon monoxide requirements before occupancy.**
-12. **Obtain any required rental license, registration, inspection, or occupancy approval.**
-13. **Use a Maryland-compliant lease adjusted for the exact property location.**
-14. **Use the current Maryland Tenants' Bill of Rights when required.**
-15. **Security deposits remain separate from operating money.**
-16. **Use the CMA-PM Security Deposit Account for tenant deposits.**
-17. **Each property generally maintains a $20,000 operating reserve.**
-18. **Rent flows through CMA-PM with property-specific bookkeeping.**
-19. **Check current Maryland rules when handling rent increases, late fees, nonpayment, termination, and move-out.**
-20. **Conduct an annual compliance review for every rental property.**
-21. **Before selling a tenant-occupied property, check current tenant rights and notice requirements.**
-22. **Sale proceeds flow back to CMA-I before member-level economic allocations are made.**
-23. **CMA-I's 51/49 member structure does not change the fact that the Property LLC itself has only one member: CMA-I.**
+## 12. Local Rental Approval
+
+Before marketing or occupancy, obtain all required:
+
+- rental licenses;
+- registrations;
+- inspections;
+- occupancy approvals;
+- local fees;
+- landlord contact filings.
+
+Track renewals in Doc 19.
+
+## 13. Appointment of CMA-PM
+
+Before CMA-PM markets, leases, collects rent, or holds deposits:
+
+1. the Property LLC and CMA-PM execute Doc 05;
+2. the management and rent-collection legal path is confirmed under then-current Maryland law;
+3. any required filing, exemption documentation, or license is completed;
+4. proof is retained.
+
+The owner-agent brokerage exemption and collection-agency rules are separate issues and should not be conflated.
+
+## 14. Maryland Security-Deposit Bank
+
+Before accepting a Maryland deposit, establish the CMA-PM Security Deposit Account at a qualifying Maryland-branch institution.
+
+Confirm:
+
+- federal insurance;
+- Maryland branch;
+- deposit-only purpose;
+- interest-bearing structure;
+- authorized signers;
+- monthly reconciliation process.
+
+## 15. Leasing Package
+
+Before a new lease:
+
+- finalize property-specific screening criteria under Doc 13;
+- confirm lawful occupancy;
+- use the current Maryland lease workflow;
+- attach the current unmodified Maryland Tenants' Bill of Rights when required;
+- attach lead documents if applicable;
+- attach HOA/condo and property addenda;
+- confirm security-deposit, late-fee, rent-increase, notice, and entry terms against current law;
+- complete Doc 10 review.
+
+## 16. Occupied Property Acquisition
+
+If acquiring with a tenant:
+
+- obtain the complete lease and amendments;
+- verify rent, deposit, ledger, and tenant notices;
+- obtain deposit transfer and interest records;
+- identify pending maintenance, complaints, court matters, accommodations, pets/assistance animals, and HOA issues;
+- confirm seller representations in the purchase agreement;
+- send lawful ownership/management and payment instructions after closing.
+
+## 17. Before Move-In
+
+Use Doc 14 and confirm:
+
+- lease and addenda signed;
+- funds received and deposits banked properly;
+- license and lead compliance current;
+- safety devices working;
+- move-in photos and condition acknowledgment complete;
+- utilities and keys ready;
+- DoorLoop, Super, and CMA-PM instructions delivered.
+
+## 18. Annual Property Compliance
+
+Use Doc 19 to review:
+
+- entity good standing;
+- rental licensing and registration;
+- lead cycle;
+- smoke/CO;
+- HOA/condo;
+- insurance;
+- reserve target;
+- lease materials;
+- deposit reconciliation;
+- preventive maintenance.
+
+## 19. Rent Review
+
+Approximately 120 days before lease expiration:
+
+- review market rent;
+- review tenant performance and turnover economics;
+- choose renewal terms;
+- provide written notice within the current Maryland and local timing and delivery rules.
+
+For tenancies longer than one month, current Maryland law generally requires at least 90 days' written notice before a rent increase, with the statutory delivery method and any stricter local rules.
+
+## 20. Move-Out
+
+Follow current requirements for:
+
+- notice;
+- inspection rights;
+- move-out documentation;
+- ordinary wear vs. damage;
+- deposit interest, invoices, itemization, and return;
+- lead turnover inspection if applicable;
+- turnover readiness.
+
+Use Docs 14 and 18.
+
+## 21. Sale of a Tenant-Occupied Property
+
+Before marketing or contracting:
+
+- review the lease and tenant notice rights;
+- check Maryland and local tenant purchase/right-of-first-refusal requirements for the property;
+- address deposit transfer or return;
+- authorize the sale under CMA-I governance;
+- prepare debt, tax, Member Loan, and capital-hurdle schedules;
+- preserve tenant and compliance records.
+
+## 22. Current Maryland Legal Checkpoints
+
+As of the review date, the playbook accounts for these statewide checkpoints, subject to later change:
+
+- Real Property § 8-203: security-deposit amount, account, interest, inspection, deduction, and return rules;
+- Real Property § 8-209: written rent-increase notice and delivery;
+- Real Property § 8-213: application-fee disclosure/refund rules where applicable;
+- Business Occupations and Professions § 17-301: owner-agent real-estate licensing exemption;
+- Business Regulation § 7-102: current collection-agency exemptions and filing conditions;
+- State Government Title 20: Maryland fair-housing protections.
+
+Use the current statute and agency guidance when acting.

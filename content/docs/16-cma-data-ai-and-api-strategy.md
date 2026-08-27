@@ -1,177 +1,204 @@
 # 16 — CMA Data, AI & API Strategy
 
+**Status:** Final internal technology strategy; security and retention rules are controlled by Doc 22  
+**Version:** 2026-08-26.5  
+**Effective date:** [EFFECTIVE DATE]  
+**Last reviewed:** 2026-08-26  
+**Document owner:** CMA-I / CMA-PM  
+**Approved by:** Pending  
+**Related documents:** 06, 11, 12, 22
+
 ## Purpose
 
-This document defines how CMA can use property-management data in its own software and AI tools over time.
+This document defines the role of the CMA custom app, DoorLoop, banking data, APIs, and AI. Doc 22 controls access, privacy, retention, backup, and incident response.
 
-## 1. Principle
-
-Do not build custom software for tasks that a mature property-management platform already handles well.
-
-Use DoorLoop for tenant operations.
-
-Use the CMA app for investment intelligence and owner-level decision-making.
-
-## 2. System Roles
+## 1. System Boundaries
 
 ```text
 DoorLoop
-├── Properties
-├── Tenants
-├── Applications
-├── Leases
-├── Payments
-├── Maintenance
-├── Vendors
-└── Operational Records
+├── applicants and tenants
+├── leases and payments
+├── maintenance and vendors
+└── operating property records
 
 Bluevine
-├── Operating Bank Account
-└── Security Deposit Bank Account
+└── CMA-I / CMA-PM operating banking
+
+Maryland Security Deposit Bank
+└── CMA-PM security-deposit account and liability support
 
 CMA App
 ├── Property Analysis
-├── Deal Comparison
-├── Property Bookkeeping
-├── Reserves
-├── Capital Tracking
-├── 51/49 Economics
-├── Portfolio Reporting
-└── AI Layer
+├── deal comparison
+├── property subledgers
+├── reserves
+├── CMA-I capital and Member Loans
+├── member economics
+├── portfolio reporting
+└── AI-supported analysis
+
+Google Drive
+└── durable document archive
 ```
 
-## 3. Near-Term Strategy
+Do not rebuild tenant operations in the CMA app when DoorLoop already handles them well.
 
-Do not require API integration on Day 1.
+## 2. Stable Identifiers
 
-Start by:
-- operating DoorLoop normally;
-- maintaining CMA property IDs;
-- maintaining clean Property LLC names;
-- exporting records when needed;
-- storing executed documents in Google Drive;
-- keeping CMA's own property-analysis records separate.
-
-## 4. Future API Strategy
-
-When the portfolio is large enough to justify automation, consider DoorLoop's API-enabled tier.
-
-Potential data flows:
+Every property should have one internal identifier used across systems.
 
 ```text
-DoorLoop API
-      ↓
-CMA App
-      ↓
-AI / Reporting
+CMA-PROP-001
+Property name: Flamingo
+Property LLC: Flamingo Properties LLC
+DoorLoop ID: [ID]
+Bank / ledger tag: Flamingo
+Drive folder: /Properties/Flamingo
 ```
 
-Potential AI questions:
-- Which tenants are currently delinquent?
-- Which properties had the most maintenance expense this year?
-- Which recurring issues suggest a capital replacement?
-- Which leases expire in the next 90 days?
-- Which properties have open maintenance tickets older than 7 days?
-- Summarize the operating history for Flamingo.
-- Compare actual expenses against the original property analysis.
-- Which properties are below their operating reserve target?
+Also maintain stable IDs for:
 
-## 5. AI Actions
+- Property LLCs;
+- tenants;
+- leases;
+- vendors;
+- capital transactions;
+- Member Loans.
 
-Initially, AI should mostly:
+## 3. Near-Term Operating Model
+
+API integration is not required on Day 1.
+
+Initially:
+
+- use DoorLoop normally;
+- use exports for reconciliation and reporting;
+- archive executed documents in Google Drive;
+- maintain CMA-I capital, Member Loan, and residual-economics records in the CMA app or controlled accounting schedules;
+- keep the Maryland security-deposit liability ledger separate from rent revenue.
+
+## 4. Future API Model
+
+When automation is justified:
+
+```text
+DoorLoop / Bank / Accounting APIs
+              ↓
+           CMA App
+              ↓
+       Reporting and AI
+```
+
+Potential use cases:
+
+- delinquency summary;
+- lease expirations in the next 90 or 120 days;
+- open maintenance tickets;
+- actual versus projected property expenses;
+- reserve shortfalls;
+- vendor spend trends;
+- recurring repair patterns;
+- property and portfolio summaries.
+
+## 5. Human Review Boundary
+
+AI may:
+
 - summarize;
-- analyze;
+- compare;
 - flag;
 - draft;
 - recommend.
 
-Avoid allowing AI to automatically:
-- approve/deny tenants;
-- send legal notices;
+AI may not autonomously:
+
+- approve or deny an applicant;
+- send a legal notice;
+- execute a lease;
 - move security-deposit funds;
-- execute leases;
-- authorize large repairs;
-- change accounting records;
+- authorize a material repair;
+- change capital or tax records;
+- make a member distribution.
 
-without a human review step.
+A human with the required company authority must approve high-impact actions.
 
-## 6. Property IDs
+## 6. Data Quality and Reconciliation
 
-Every CMA system should use a stable internal property identifier.
+An integration should not be considered complete unless it addresses:
 
-Example:
+- duplicate records;
+- missing property IDs;
+- reversed or failed payments;
+- split transactions;
+- refunds and chargebacks;
+- security-deposit liabilities;
+- effective dates;
+- audit trail;
+- source-system timestamps.
 
-```text
-CMA-PROP-001
-Property Name: Flamingo
-Property LLC: Flamingo Properties LLC
-DoorLoop ID: [ID]
-Bluevine Ledger Tag: Flamingo
-Google Drive Folder: /Properties/Flamingo
-```
+Bank balances do not replace property subledgers.
 
-This makes future syncing much easier.
+## 7. Company Records and Exports
 
-## 7. Data Ownership
+CMA-I and CMA-PM should retain independent copies of critical records, including:
 
-CMA should retain independent copies of important records, including:
 - executed leases;
 - tenant notices;
-- move-in/out records;
-- material inspection records;
 - security-deposit accounting;
+- material inspection and maintenance records;
 - vendor invoices;
 - financial reports;
-- tax records.
+- tax and governance records.
 
-Do not rely on a single SaaS vendor as the only copy of critical company records.
+A SaaS platform should not be the only copy of a critical record.
 
-## 8. Google Drive Archive
-
-DoorLoop is the operational system.
-
-Google Drive is the durable document archive.
-
-Suggested automation later:
-
-```text
-Signed DoorLoop Lease
-      ↓
-Automatically copy PDF
-      ↓
-Google Drive / Properties / [Property] / Lease
-```
-
-## 9. ChatGPT + Claude Roles
+## 8. ChatGPT and Claude
 
 ### ChatGPT
-Best suited for:
-- operational strategy;
+
+Primary uses:
+
+- operating strategy;
 - research;
-- reviewing policy;
-- analyzing reports;
-- drafting communications;
-- summarizing property history;
-- portfolio reasoning.
+- policy drafting;
+- financial and portfolio reasoning;
+- document review;
+- report analysis.
 
 ### Claude
-Best suited for:
+
+Primary uses:
+
 - CMA app coding;
-- API integration;
 - UI implementation;
-- automation scripts;
-- software refactors.
+- API integration;
+- automation;
+- refactoring and debugging.
 
-Either tool may overlap. The distinction is operational convenience, not a legal requirement.
+The tools may overlap. API use is separate from consumer chat subscriptions.
 
-## 10. API Upgrade Trigger
+## 9. API Upgrade Trigger
 
-Pay for API access when at least one of these becomes true:
+Pay for live API access when one or more of these is true:
+
 - manual copying takes meaningful time each month;
-- CMA has enough units that operational dashboards matter;
-- AI needs live lease/payment/maintenance data;
-- automated bookkeeping reconciliation becomes valuable;
-- multiple people need synchronized systems;
-- the saved labor exceeds the added subscription cost.
+- the portfolio is large enough that live operational dashboards matter;
+- AI requires current payment, lease, or maintenance data;
+- automated reconciliation produces measurable value;
+- multiple operators require synchronized systems;
+- expected labor savings justify the subscription and implementation cost.
 
-Until then, keep the architecture API-ready without paying for unused capability.
+Until then, keep data models API-ready without paying for unused access.
+
+## 10. Security and Continuity
+
+Follow Doc 22 for:
+
+- MFA and password management;
+- sensitive-data handling;
+- AI data restrictions;
+- retention and deletion;
+- backups and exports;
+- backup-operator access;
+- data-incident response;
+- vendor offboarding.

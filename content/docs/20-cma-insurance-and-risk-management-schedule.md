@@ -1,70 +1,70 @@
 # 20 — CMA Insurance & Risk Management Schedule
 
-**Status:** Canonical planning draft  
-**Version:** 2026-08-26.2  
-**Last reviewed:** 2026-08-26
+**Status:** Final internal insurance schedule; coverage decisions require broker/carrier confirmation  
+**Version:** 2026-08-26.5  
+**Effective date:** [EFFECTIVE DATE]  
+**Last reviewed:** 2026-08-26  
+**Document owner:** CMA-I / CMA-PM  
+**Approved by:** Pending annual consent  
+**Related documents:** 04, 05, 07, 15, 19, 22, 23
 
 ## Purpose
 
-This document makes sure insurance and claims are deliberately reviewed rather than assumed to be covered.
+This document ensures insurance and claims are deliberately reviewed rather than assumed.
 
-## 1. Property Insurance Review
+## 1. Property LLC Coverage
 
-For every Property LLC, review and record the decision on:
+For each property, review and record the decision on:
 
 - landlord dwelling / property coverage;
 - landlord liability;
-- loss-of-rents / business-income coverage;
+- loss-of-rents or business-income coverage;
 - water / sewer backup;
-- service-line or equipment-breakdown coverage where useful;
-- flood coverage based on flood zone and actual risk;
-- ordinance / law coverage where useful;
-- umbrella / excess liability;
-- special endorsements required by HOA / condo or lender.
+- service-line or equipment-breakdown coverage;
+- flood coverage based on zone and actual exposure;
+- ordinance or law coverage;
+- umbrella or excess liability;
+- HOA, condo, or lender endorsements.
 
-The **Property LLC** should generally be the named insured for the rental property. Confirm lender mortgagee / loss-payee requirements and whether CMA-PM and/or CMA-I should be listed as additional insureds or otherwise recognized under the carrier's structure.
+The Property LLC should generally be the named insured. Confirm mortgagee / loss-payee requirements and whether CMA-PM or CMA-I should be listed as additional insureds, additional interests, or otherwise recognized.
 
-## 2. CMA-PM Company Coverage Review
+## 2. CMA-PM Company Coverage
 
-At least annually, obtain or review quotes for:
+At least annually, review quotes and the decision for:
 
 - commercial general liability;
-- professional liability / errors and omissions for property-management activity;
+- professional liability / E&O for property-management activity;
 - cyber / privacy coverage;
-- workers' compensation if employees are hired;
-- hired / non-owned auto if CMA's activities create that exposure;
-- umbrella / excess coverage.
+- workers' compensation if workers are hired;
+- hired and non-owned auto if applicable;
+- umbrella or excess liability.
 
-CMA may decide not to purchase every item, but record the decision and reason.
+CMA-PM may decline a coverage after review, but the decision and reason should be recorded.
 
 ## 3. Tenant Insurance
 
-For each property, decide whether the lease will require renter's insurance and record:
+For each property, decide whether the lease requires renter's insurance and record:
 
-- required liability limit;
-- proof-of-coverage timing;
+- liability limit;
+- proof timing;
 - renewal proof;
-- any permitted additional-interest language.
+- permitted additional-interest language.
 
-Do not treat renter's insurance as a substitute for landlord insurance.
+Renter's insurance is not a substitute for landlord insurance.
 
 ## 4. Vendor Insurance
 
-For material work, recurring vendors, or higher-risk trades, obtain a current certificate of insurance when appropriate.
+For material, recurring, or higher-risk work, obtain as appropriate:
 
-Preferred controls:
+- general liability;
+- workers' compensation;
+- commercial auto;
+- professional coverage;
+- license verification.
 
-- general liability appropriate to the job;
-- workers' compensation where required / applicable;
-- commercial auto when vehicles create material exposure;
-- professional coverage for professional services where relevant;
-- license verification for regulated trades.
+Use job-specific requirements rather than one assumed limit for every vendor.
 
-The required limits may vary by job. Use the insurer / broker and contract requirements rather than assuming one limit fits every vendor.
-
-## 5. Annual Insurance Schedule
-
-Maintain one row per policy:
+## 5. Policy Schedule
 
 | Policy | Entity / Property | Carrier | Policy # | Renewal | Limit | Deductible | Broker | Notes |
 |---|---|---|---|---|---:|---:|---|---|
@@ -74,27 +74,38 @@ Maintain one row per policy:
 | CMA-PM E&O | CMA-PM | | | | | | | |
 | Cyber | CMA-PM / CMA-I | | | | | | | |
 
-## 6. Incident / Claim Trigger
+## 6. Annual Review Questions
 
-Immediately escalate events involving:
+1. Has replacement cost changed?
+2. Has rent changed enough to revise loss-of-rents coverage?
+3. Has the property added a pool, trampoline, animal exposure, fireplace, or other hazard?
+4. Are lender and HOA requirements satisfied?
+5. Have claims changed underwriting?
+6. Are limits and deductibles still appropriate?
+7. Does the portfolio require larger company or umbrella limits?
+8. Are all correct legal entities named?
+
+## 7. Claim Triggers
+
+Escalate immediately:
 
 - bodily injury;
-- dog bite / animal injury;
-- fire / smoke;
-- major water loss / sewage;
-- major storm / structural damage;
-- mold / moisture with possible health or major property implications;
-- burglary / vandalism with material loss;
-- threatened claim / lawsuit;
+- animal injury;
+- fire or smoke;
+- major water loss or sewage;
+- storm or structural damage;
+- significant mold or moisture;
+- burglary or vandalism with material loss;
+- threatened claim or lawsuit;
 - fair-housing complaint;
-- data breach / privacy incident.
+- data or privacy incident.
 
-## 7. Claim Workflow
+## 8. Claim Workflow
 
 ```text
 Protect people
     ↓
-Stop further property damage when safe
+Stop further damage when safe
     ↓
 Document facts / photos / witnesses
     ↓
@@ -104,40 +115,38 @@ Notify insurer / broker when potentially covered
     ↓
 Preserve evidence and communications
     ↓
-Coordinate vendors / tenant communication
+Coordinate vendors and tenant communication
     ↓
-Legal / compliance escalation if needed
+Legal or compliance escalation if needed
     ↓
-Track claim to closure
+Track to closure
 ```
 
-Do not admit legal liability or promise that an insurer will pay a claim.
+Do not admit legal liability or promise that an insurer will pay.
 
-## 8. Claim File
+## 9. Claim File
 
-Store:
+Retain:
 
-- incident date/time;
+- incident date and time;
 - people involved;
 - factual description;
-- photos / video;
+- photos and video;
 - tenant and vendor communications;
-- police / fire report if any;
-- insurer claim number;
-- adjuster information;
-- estimates / invoices;
+- police or fire report;
+- claim number and adjuster;
+- estimates and invoices;
 - mitigation actions;
-- final settlement / denial;
-- post-incident corrective action.
+- settlement or denial;
+- corrective action.
 
-## 9. Renewal Review Questions
+## 10. Decision Record
 
-Before renewal:
+The annual consent under Doc 23 should identify:
 
-1. Has replacement cost changed?
-2. Has rent changed enough to adjust loss-of-rents coverage?
-3. Did the property add a pool, trampoline, dog exposure, fireplace, or other risk?
-4. Are HOA / lender insurance requirements satisfied?
-5. Have claims changed underwriting?
-6. Are deductibles still appropriate?
-7. Does CMA-PM need higher company-level limits as the portfolio grows?
+- coverage renewed;
+- coverage changed;
+- coverage declined;
+- limits and deductibles;
+- follow-up recommendations;
+- person responsible and due date.

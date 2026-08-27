@@ -1,466 +1,414 @@
 # 02 — CMA Investments LLC Operating Agreement
 
+**Status:** Final CMA working draft; attorney and CPA review required before execution  
+**Version:** 2026-08-26.5
+**Proposed effective date:** [EFFECTIVE DATE]  
+**Document owner:** CMA-I  
+**Supersedes:** All earlier versions of Doc 02  
+**Related documents:** 08, 09, 21, 23
+
 ## Operating Agreement of CMA Investments LLC
 
-This Operating Agreement governs **CMA Investments LLC (CMA-I)**, a Maryland limited liability company.
+This Operating Agreement (the **Agreement**) is entered into by **Carrie Reynolds-Flatt** and **Cameron Reynolds-Flatt** for **CMA Investments LLC**, a Maryland limited liability company (the **Company** or **CMA-I**).
 
----
+## 1. Formation, Name, Office, and Term
 
-# 1. Members
+1.1 **Formation.** The Company is organized under the Maryland Limited Liability Company Act.
+
+1.2 **Name.** The legal name is **CMA Investments LLC**.
+
+1.3 **Principal Office.** The principal office is [ADDRESS], or another location approved under this Agreement.
+
+1.4 **Resident Agent.** The Company's Maryland resident agent is [NAME / STABLE REGISTERED-AGENT INFORMATION].
+
+1.5 **Term.** The Company continues until dissolved under this Agreement or applicable law.
+
+## 2. Purpose
+
+The Company may:
+
+- acquire, own, finance, refinance, improve, operate, and sell real-estate investments;
+- form and own Property LLCs;
+- own CMA Property Management LLC (CMA-PM);
+- hold cash and other investments reasonably related to its business;
+- engage in any lawful activity approved under this Agreement.
+
+The Company generally holds rental real estate through separate Property LLCs rather than directly.
+
+## 3. Definitions
+
+For this Agreement:
+
+- **Attributed Property Capital** means the portion of a member's Unrecovered Contributed Capital assigned on the Company's subledger to a specific property or Property LLC under Section 10.
+- **Cause** has the meaning given in Doc 09.
+- **Fundamental Decision** means a matter listed in Section 7.
+- **Grant Date** means the effective date of Cameron's Service-Based Profits Interest stated in Doc 09 and the related grant resolution.
+- **Member Loan** means an advance documented as debt rather than capital.
+- **Nonforfeitable Interest** and **Forfeitable Interest** have the meanings in Doc 09.
+- **Residual Interest** means the right to share in residual profits and value after applicable obligations, Member Loans, and capital rights are satisfied.
+- **Service-Based Profits Interest** means Cameron's partnership profits interest described in this Agreement and Doc 09.
+- **Unrecovered Contributed Capital** means a member's capital contributions, as adjusted under Section 9, that have not been returned as capital.
+
+## 4. Members and Interests
 
 The members are:
 
-## Carrie Reynolds-Flatt
+| Member | Governance | Initial capital | Initial residual interest |
+|---|---:|---:|---:|
+| Carrie Reynolds-Flatt | 51% | approximately $500,000, as actually funded | 51% |
+| Cameron Reynolds-Flatt | 49% | $0 | 49% Service-Based Profits Interest |
 
-and
+Governance, contributed capital, tax capital, outside basis, and residual economics are separate concepts.
 
-## Cameron Reynolds-Flatt
+## 5. Member-Managed Company and Authority
 
-Carrie is primarily the Capital Partner.
+5.1 The Company is member-managed.
 
-Cameron is primarily the Operating Partner.
+5.2 Either member may perform ordinary administrative acts within approved policies, budgets, resolutions, and spending limits.
 
----
+5.3 No member may bind the Company to a Fundamental Decision without the approval required by Section 7.
 
-# 2. Governance
+5.4 Bank signing authority, contract authority, and subsidiary authority may be further defined by written resolution.
 
-### Carrie
+## 6. Ordinary Decisions
 
-## 51%
+Ordinary decisions are approved by holders of more than 50% of governance rights. Carrie therefore controls ordinary decisions when the members disagree.
 
-### Cameron
+Ordinary decisions include, unless they become Fundamental Decisions because of their scale or effect:
 
-## 49%
+- individual property acquisitions or sales;
+- ordinary financing and refinancing;
+- property budgets;
+- vendor and software selection;
+- ordinary distributions;
+- hiring professional advisers;
+- routine subsidiary management.
 
-Ordinary business decisions are determined by majority approval.
+## 7. Fundamental Decisions
 
-Certain fundamental actions require approval from both members.
+The following require written approval of both members:
 
----
+- changing governance percentages;
+- changing Carrie's capital rights or the capital hurdle;
+- changing Cameron's Service-Based Profits Interest, vesting, or acceleration rights;
+- changing the fully outstanding 51% / 49% residual arrangement;
+- admitting a new member;
+- approving an unrelated third-party transfer of voting rights;
+- merging, converting, or reorganizing the Company;
+- voluntarily dissolving the Company;
+- selling substantially all Company assets outside the ordinary property-by-property strategy;
+- materially changing succession rights;
+- materially changing tax classification;
+- amending this Section or another provision expressly requiring both members.
 
-# 3. Carrie's Initial Capital
+## 8. Fundamental-Decision Deadlock
 
-Carrie is expected to contribute approximately:
+8.1 The members first meet in good faith within 15 days after either member gives written notice of a deadlock.
 
-## $500,000
+8.2 If unresolved after 15 additional days, the members participate in confidential mediation with a mutually selected Maryland mediator. Mediation costs are paid by the Company.
 
-The actual contribution shall be recorded in CMA-I's books.
+8.3 Until resolved, the status quo continues. Either member may authorize only actions reasonably necessary to protect tenant safety, preserve property, maintain insurance, comply with law, avoid default, or prevent substantial immediate loss.
 
-Carrie's existing contributed capital remains economically attributable to Carrie.
+8.4 This Section does not force either member to sell an interest. If the deadlock creates material and continuing harm and mediation fails, either member may seek relief available under Maryland law.
 
----
+## 9. Capital Contributions and Unrecovered Capital
 
-# 4. Cameron's Initial Capital
+9.1 Carrie's initial capital is the amount actually transferred to the Company and documented as capital, expected to be approximately $500,000.
 
-Cameron's expected initial cash contribution is:
+9.2 Cameron's initial cash capital is $0.
 
-## $0
+9.3 Future capital remains attributable to the contributing member.
 
-Cameron's primary contribution is substantial ongoing service.
+9.4 A member's Unrecovered Contributed Capital equals:
 
----
+```text
+capital contributions designated in writing
++ later amounts expressly reclassified to capital
+- distributions expressly designated as return of capital
+= Unrecovered Contributed Capital
+```
 
-# 5. Cameron's Service-Based Profits Interest
+9.5 Ordinary profit distributions, depreciation, book losses, and tax allocations do not by themselves reduce the contractual Unrecovered Contributed Capital balance.
 
-Cameron is granted:
+9.6 Unrecovered Contributed Capital is not a debt of the Company. If Company assets are ultimately insufficient, the unpaid balance is an economic loss and does not create personal liability for another member.
 
-## A 49% Service-Based Profits Interest
+## 10. Property Capital Subledgers
 
-effective on:
+10.1 The Company maintains a subledger for each property showing the capital deployed to that investment.
 
-## [GRANT DATE]
+10.2 Attributed Property Capital may include, to the extent funded as capital:
 
-The interest is granted in exchange for substantial ongoing services.
+- purchase equity;
+- acquisition closing costs;
+- initial reserve funding;
+- capital improvements;
+- debt principal funded directly from CMA-I capital;
+- operating shortfalls expressly designated as capital;
+- other amounts approved by written resolution.
 
-The interest participates in future residual:
+10.3 Attributed Property Capital excludes:
 
-- operating profits;
-- rental profits;
-- appreciation;
-- sale gains;
-- other growth.
+- operating expenses paid from property operations;
+- Member Loans;
+- depreciation and noncash tax items;
+- amounts already returned as capital.
 
-The interest does not give Cameron any right to Carrie's existing contributed capital.
+10.4 Shared portfolio costs may be held at the CMA-I level or allocated among properties using a reasonable, consistently applied method approved by CMA-I.
 
----
+10.5 Property subledgers support transaction accounting but do not eliminate the member's Company-level Unrecovered Contributed Capital. A property-level shortfall may remain part of that member's Company-level capital hurdle until later capital proceeds are returned or the Company finally liquidates.
 
-# 6. Capital Hurdle
+## 11. Service-Based Profits Interest
 
-If Carrie contributes $500,000 and CMA-I immediately liquidates before profit or appreciation:
+11.1 On the Grant Date, Cameron receives the full 49% Service-Based Profits Interest in exchange for the binding services described in Doc 09.
 
-### Carrie is entitled economically to:
+11.2 The interest has no right to Carrie's pre-Grant-Date contributed capital. Immediately after the grant, an assumed sale and liquidation at fair market value must produce $0 of current liquidation proceeds for Cameron from that existing capital.
 
-## $500,000
+11.3 Doc 09 is executed concurrently and incorporated into this Agreement for the service, vesting, forfeiture, acceleration, intellectual-property, and related terms.
 
-### Cameron is entitled to:
+## 12. Reverse Vesting and Current Participation
 
-## $0
+12.1 Cameron holds and participates in the full 49% Service-Based Profits Interest from the Grant Date while substantially performing the required services.
 
-from Carrie's existing capital.
+12.2 Five-year reverse vesting makes 9.8 percentage points nonforfeitable on each anniversary, subject to Doc 09.
 
----
+12.3 A valid forfeiture changes Cameron's future residual economics but does not automatically change his 49% governance interest.
 
-# 7. Reverse Vesting
+12.4 A forfeited residual percentage is automatically reallocated to Carrie effective as of the Forfeiture Date, unless both members approve another written treatment before the forfeiture becomes final.
 
-Cameron receives the full:
+## 13. No Mandatory Capital Calls
 
-## 49% Service-Based Profits Interest
+Neither member is automatically required to contribute additional capital. A refusal to fund does not automatically:
 
-on the Grant Date.
+- dilute the member;
+- create a debt owed by the member;
+- change governance;
+- trigger forfeiture.
 
-However, the interest is subject to five-year reverse vesting.
+Any dilution or changed economics requires a written amendment approved as a Fundamental Decision.
 
-The portion remaining subject to forfeiture declines as follows:
+## 14. Member Loans and Emergency Funding
 
-| Completed Service | Nonforfeitable | Forfeitable |
-|---|---:|---:|
-| Grant | 0.0% | 49.0% |
-| Year 1 | 9.8% | 39.2% |
-| Year 2 | 19.6% | 29.4% |
-| Year 3 | 29.4% | 19.6% |
-| Year 4 | 39.2% | 9.8% |
-| Year 5 | 49.0% | 0.0% |
+14.1 Every member advance must be identified in writing as capital or a Member Loan.
 
----
+14.2 Unless both members expressly designate an emergency or short-term advance as capital, it is a Member Loan.
 
-# 8. Economic Participation During Reverse Vesting
+14.3 A Member Loan record states principal, date, purpose, interest, maturity, payment terms, and any subordination.
 
-Unless a forfeiture has occurred, Cameron shall be treated as holding the full:
+14.4 The interest rate should be no lower than the applicable federal rate when needed to support the intended tax treatment, unless professional advice supports another rate.
 
-## 49% Service-Based Profits Interest
+14.5 Subject to outside creditors, law, and required reserves, applicable Member Loans are repaid before capital returns and residual distributions.
 
-from the Grant Date.
+14.6 Multiple Member Loans have equal priority in proportion to unpaid principal unless their written terms state otherwise.
 
-Accordingly, ordinary residual profits and distributions are generally:
+## 15. Operating Distributions
 
-### Carrie
+15.1 The Company may consider ordinary distributions quarterly but is not required to distribute all available cash.
 
-## 51%
+15.2 Before an operating distribution, the Company provides for:
 
-### Cameron
+- subsidiary and Company obligations;
+- property reserves;
+- CMA-PM working capital;
+- debt covenants;
+- tax distributions;
+- approved acquisitions and capital projects;
+- reasonably anticipated liabilities.
 
-## 49%
+15.3 While Cameron's full interest remains outstanding, residual operating distributions are 51% Carrie / 49% Cameron.
 
-during the vesting period.
+15.4 After a final forfeiture, future operating distributions follow the adjusted residual percentages.
 
-Reverse vesting determines what Cameron permanently keeps if his required service ends before the five-year period is completed.
+## 16. Tax Distributions
 
----
+16.1 The Company may make tax distributions, targeted by March 15, based on the formula in Doc 06.
 
-# 9. Voluntary Cessation of Services
+16.2 Tax distributions are advances against later distributions unless the Company's tax allocations and economic arrangement require another treatment.
 
-If Cameron voluntarily stops performing the required services before full vesting:
+16.3 Tax distributions remain subject to available cash, law, debt restrictions, and required reserves.
 
-- Cameron retains the nonforfeitable portion;
-- Cameron forfeits the remaining forfeitable portion;
-- the forfeited portion thereafter ceases to participate in Cameron's future economics.
+## 17. Capital Transactions and Waterfall
 
-No automatic forced buyback applies to Cameron's nonforfeitable portion.
+17.1 **Capital Transaction** includes a property sale, refinancing distribution, sale of a subsidiary interest, Company liquidation, or another transaction expressly designated by CMA-I.
 
----
+17.2 Net capital proceeds are applied in this order:
 
-# 10. Death or Permanent Disability
+1. outside debt, taxes, transaction costs, and required reserves;
+2. applicable property- or transaction-specific Member Loans, including accrued interest;
+3. return of Attributed Property Capital to the contributing members, pro rata by their attributed unrecovered balances unless a written resolution establishes another priority;
+4. other Company-level Unrecovered Contributed Capital when the resolution designates the proceeds for broader capital return;
+5. remaining residual value under the current residual percentages.
 
-If Cameron dies or becomes permanently disabled before full vesting:
+17.3 If proceeds are insufficient to return all applicable capital, no residual value is distributed. The unpaid capital remains unrecovered at the Company level unless a final liquidation or written capital write-off determines otherwise.
 
-## All remaining forfeitable portions immediately become nonforfeitable.
+17.4 Refinance proceeds reduce Unrecovered Contributed Capital only to the extent actually distributed and expressly designated as return of capital.
 
-Cameron therefore holds the full:
+## 18. Profits, Losses, and Tax Allocations
 
-## 49%
+18.1 Economic profits and losses are determined consistently with this Agreement.
 
-before any applicable succession transfer.
+18.2 Tax allocations are made under a final CPA-approved allocation schedule intended to reflect the economic arrangement, maintain appropriate Section 704(b) capital accounts, and comply with applicable tax law.
 
----
+18.3 Cameron has no contractual deficit-restoration obligation unless separately agreed in writing.
 
-# 11. Service Agreement
+18.4 No provision requires an allocation that lacks substantial economic effect or otherwise violates applicable tax law.
 
-Cameron's detailed service obligations and reverse-vesting terms are established in:
+## 19. Tax Classification and Tax Administration
 
-## 09 — Cameron Service & Profits Interest Agreement
+19.1 The Company is intended to be taxed as a partnership unless both members approve another classification.
 
----
+19.2 The Company files Form 1065 and provides Schedule K-1 information as applicable.
 
-# 12. Future Capital Contributions
+19.3 The members and Company intend to satisfy Rev. Proc. 93-27 and Rev. Proc. 2001-43 where applicable, including owner treatment from the Grant Date and no deduction for the fair market value of the profits interest.
 
-Future capital contributions remain attributable to the member who actually contributes them.
+19.4 The CPA annually reviews:
 
-Additional Carrie capital increases Carrie's protected capital balance.
+- eligibility to elect out of the centralized partnership audit regime;
+- the partnership representative if no election is made;
+- Section 754 elections or adjustments;
+- Section 1061 applicability and reporting;
+- capital accounts, outside basis, debt allocations, and tax distributions.
 
-Any future Cameron cash contribution creates separate capital rights for Cameron.
+19.5 The Company designates [NAME] as initial Partnership Representative only if and when required by resolution.
 
----
+## 20. Books, Records, and Reports
 
-# 13. Member Loans
+20.1 The Company maintains complete books for:
 
-Member loans shall be separately documented and shall not automatically be treated as capital.
+- member capital and loans;
+- property subledgers;
+- subsidiaries;
+- allocations and distributions;
+- taxes;
+- material contracts and resolutions.
 
----
+20.2 Each member has reasonable access to Company records.
 
-# 14. Residual Profits
+20.3 The Company prepares an annual member statement showing contributions, capital returns, unrecovered capital, Member Loans, residual percentages, distributions, and tax distributions.
 
-From the Grant Date, and while Cameron has not forfeited any portion of his interest:
+## 21. Compensation and Reimbursement
 
-### Carrie
+21.1 Cameron's Service-Based Profits Interest is his initial primary compensation for the services in Doc 09.
 
-## 51%
+21.2 Cameron initially receives no salary or guaranteed annual payment.
 
-### Cameron
+21.3 Additional compensation requires both members' written approval and does not automatically change capital, governance, or vesting.
 
-## 49%
+21.4 Members are reimbursed for properly documented Company expenses.
 
-of residual distributable profits.
+## 22. Member Standards of Conduct
 
-If Cameron later forfeits part of his interest, future residual percentages shall adjust accordingly.
+Each member shall:
 
----
+- act in good faith;
+- avoid intentional misuse of Company property;
+- disclose material conflicts;
+- keep Company information reasonably confidential;
+- comply with duties that may not lawfully be waived.
 
-# 15. Ordinary Distributions
+This Agreement does not expand personal liability beyond applicable law.
 
-CMA-I may consider ordinary distributions quarterly.
+## 23. Limitation of Liability and Indemnification
 
-CMA-I may retain cash for:
+23.1 To the fullest extent permitted by Maryland law, a member or authorized representative is not personally liable for Company obligations solely by reason of acting for the Company.
 
-- reserves;
-- expenses;
-- acquisitions;
-- debt;
-- tax needs;
-- other reasonable business purposes.
+23.2 The Company may indemnify a member, officer, employee, or agent for authorized actions taken in good faith and in a manner reasonably believed to be in the Company's interests.
 
----
+23.3 No indemnification applies to fraud, knowing violation of law, willful misconduct, improper personal benefit, or conduct for which indemnification is prohibited.
 
-# 16. Profit Distributions vs. Return of Capital
+23.4 The Company may advance defense expenses subject to a written repayment undertaking when appropriate.
 
-An ordinary profit distribution does not automatically reduce contributed capital.
+## 24. Transfer Restriction During First Two Years
 
-A payment reduces unrecovered contributed capital only when specifically recorded as a:
+For two years after the Grant Date, Cameron may not voluntarily sell, gift, assign, pledge, or otherwise transfer the Service-Based Profits Interest, except a succession transfer at death or another transfer specifically approved after tax review.
 
-## Return of Capital
+This restriction does not prevent Cameron from holding the full interest, receiving allocations and distributions, or completing reverse vesting.
 
----
+## 25. Transfers After the Initial Two Years
 
-# 17. Property Sale Economics
+25.1 No member may transfer voting membership rights to an unrelated person without the other member's written approval.
 
-The intended order is:
+25.2 A member proposing an approved third-party transfer must first give the other member and then the Company a 30-day right of first refusal on the same material terms.
 
-1. satisfy property and company obligations;
-2. return applicable unrecovered contributed capital;
-3. distribute residual gain according to the applicable Service-Based Profits Interests.
+25.3 A transferee who has not been admitted as a substitute member receives only the economic rights permitted by Maryland law and no governance or management rights.
 
----
+25.4 Any permitted transferee must sign a joinder agreeing to this Agreement.
 
-# 18. Property Sale Example
+## 26. Involuntary Transfer Events
 
-Carrie's capital associated with Flamingo:
+An attempted transfer arising from divorce, bankruptcy, creditor process, charging order, or similar event does not automatically admit the recipient as a member.
 
-## $200,000
+The Company or the nonaffected member has an option, exercisable within 90 days after notice, to purchase the affected economic interest at fair market value determined under Section 27.
 
-Net sale proceeds:
+## 27. Valuation and Buyout Terms
 
-## $325,000
+27.1 Fair market value is determined without a minority or lack-of-marketability discount unless applicable law or a final professional valuation requires one.
 
-Residual appreciation after capital return:
+27.2 The members first select one independent appraiser with an ABV, ASA, CVA, or comparable qualification. If they cannot agree within 15 days, each selects one appraiser. If the two values differ by 15% or less, the average controls. If they differ by more than 15%, the two appraisers select a third and the median controls.
 
-## $125,000
+27.3 Unless the parties agree otherwise, an exercised buyout is paid 20% at closing and the balance in equal monthly installments over 60 months with interest at the applicable federal mid-term rate in effect at closing. The buyer may prepay without penalty.
 
-### Carrie
+27.4 This Section does not create a mandatory buyout merely because a member stops providing services.
 
-$200,000 capital  
-+ 51% of $125,000 = $63,750
+## 28. Withdrawal
 
-## $263,750
+A member may not voluntarily withdraw and require repayment of capital or purchase of the member's interest except under a written agreement approved by both members.
 
-### Cameron
+A cessation of Cameron's services is governed by Doc 09 and does not dissolve the Company.
 
-49% of $125,000
+## 29. Death, Disability, and Succession
 
-## $61,250
+29.1 If Carrie dies, her transferred governance, capital, and residual rights pass to Jay Flatt, subject to legal transfer mechanics.
 
----
+29.2 If Cameron dies, the remaining Forfeitable Interest first becomes fully nonforfeitable, then Cameron's full interest passes to Jay Flatt.
 
-# 19. Reinvestment
+29.3 When Jay provides reasonable evidence of the effective legal transfer and signs a joinder, Jay is automatically admitted as substitute member for the transferred interest without discretionary veto by the surviving member.
 
-Contributed capital remains unrecovered if sale proceeds are retained and reinvested rather than actually returned to the contributing member.
+29.4 If Jay predeceases the transferring member, disclaims, lacks legal capacity, or cannot receive the interest, the deceased member's controlling estate documents and applicable law govern. No alternate beneficiary is created by this Agreement.
 
----
+29.5 During estate administration, the legally authorized personal representative may exercise the deceased member's economic rights and only those governance rights permitted by law or necessary to preserve the interest until the substitute member is admitted.
 
-# 20. Property Reserves
+29.6 Permanent disability and related acceleration are governed by Doc 09.
 
-Each property should generally maintain:
+## 30. Dissolution and Winding Up
 
-## $20,000
+The Company dissolves upon:
 
-as an operating reserve.
+- written approval of both members;
+- an event requiring dissolution under nonwaivable law;
+- final judicial dissolution.
 
----
+On winding up, Company assets are applied in the order stated in Section 17, with reasonable reserves retained for contingent obligations. Remaining residual value is distributed under the then-current residual percentages.
 
-# 21. Ordinary Business Decisions
+## 31. Notices
 
-Carrie's 51% governance interest controls ordinary decisions.
+Notices under this Agreement must be in writing and delivered personally, by nationally recognized overnight service, by certified or first-class mail with proof of mailing, or by electronic delivery with proof of transmission to the addresses in Company records.
 
----
+Notice is effective on confirmed receipt, except where applicable law provides otherwise.
 
-# 22. Fundamental Decisions
+## 32. Amendments
 
-Both Carrie and Cameron must approve material changes involving:
+An amendment requires the approval otherwise applicable to the matter being amended. Any amendment affecting a Fundamental Decision requires both members.
 
-- governance percentages;
-- capital rights;
-- Cameron's 49% Service-Based Profits Interest;
-- reverse vesting;
-- 51/49 residual economics;
-- succession;
-- admission of new members;
-- merger;
-- dissolution;
-- sale of substantially all assets;
-- fundamental amendments.
+No amendment may retroactively transfer a member's capital or vested economic rights without that member's written consent.
 
----
+## 33. General Provisions
 
-# 23. Spending Authority
+- **Entire Agreement.** This Agreement, Doc 09, and duly adopted schedules and resolutions constitute the complete agreement on the covered matters.
+- **Conflict.** This Agreement controls over an internal policy. Doc 09 controls for service and vesting terms if it is more specific and consistent with this Agreement.
+- **Severability.** An unenforceable provision is narrowed or severed without invalidating the remainder.
+- **No Waiver.** A waiver must be in writing and does not waive later breaches.
+- **Counterparts and E-Signatures.** Signatures may be electronic and in counterparts.
+- **Governing Law.** Maryland law governs.
+- **Headings.** Headings are for convenience only.
 
-Authorized representatives may independently approve ordinary expenses up to:
-
-## $2,500 per occurrence
-
-Emergency authority may exceed this amount when reasonably necessary.
-
----
-
-# 24. Compensation
-
-Cameron's Service-Based Profits Interest is intended to be his primary compensation for substantial ongoing services.
-
-Cameron initially receives:
-
-## No salary or guaranteed annual payment.
-
----
-
-# 25. Books and Records
-
-CMA-I shall maintain records of:
-
-- member capital;
-- returns of capital;
-- unrecovered capital;
-- Cameron's 49% Service-Based Profits Interest;
-- forfeitable and nonforfeitable portions;
-- distributions;
-- tax allocations;
-- succession.
-
----
-
-# 26. Federal Tax Classification
-
-CMA-I is intended to be taxed as a:
-
-## Partnership
-
----
-
-# 27. Tax Capital Accounts
-
-Formal tax capital accounts are separate from contractual unrecovered-capital records.
-
----
-
-# 28. Tax Allocations
-
-Tax allocations should be designed to reflect:
-
-- contributed-capital rights;
-- the capital hurdle;
-- Cameron's full profits interest;
-- forfeiture provisions;
-- actual residual economics.
-
----
-
-# 29. Intended Tax Treatment of Cameron's Interest
-
-The parties intend Cameron's interest to constitute a genuine service-based partnership profits interest.
-
-The intended characteristics include:
-
-- no current claim to Carrie's existing capital;
-- participation only in future residual economics;
-- substantial ongoing services;
-- genuine reverse vesting and forfeiture;
-- treatment as a partner from the applicable grant date;
-- no fixed or guaranteed return.
-
----
-
-# 30. Transfer Restriction
-
-Cameron may not voluntarily transfer his Service-Based Profits Interest during the first:
-
-## Two Years
-
-following the Grant Date, subject to permitted exceptions.
-
----
-
-# 31. Death of Carrie
-
-Carrie's CMA-I interest, including capital rights, passes to:
-
-## Jay Flatt
-
-subject to applicable law and controlling estate documents.
-
----
-
-# 32. Death of Cameron
-
-Upon Cameron's death:
-
-1. all remaining forfeitable portions immediately become nonforfeitable;
-2. Cameron therefore holds the full 49%;
-3. Cameron's CMA-I interest passes to:
-
-## Jay Flatt
-
----
-
-# 33. Permanent Disability of Cameron
-
-Permanent disability causes full acceleration of the remaining forfeitable portion.
-
----
-
-# 34. Dissolution
-
-Upon dissolution, assets should generally be applied:
-
-1. to debts and obligations;
-2. to reasonable reserves;
-3. to applicable unrecovered contributed capital;
-4. to remaining residual interests.
-
----
-
-# 35. Governing Law
-
-This Agreement is governed by Maryland law.
-
----
-
-# 36. Signatures
+## 34. Signatures
 
 ### Carrie Reynolds-Flatt
 
-Signature: ______________________________
-
+Signature: ______________________________  
 Date: __________________
-
 
 ### Cameron Reynolds-Flatt
 
-Signature: ______________________________
-
+Signature: ______________________________  
 Date: __________________

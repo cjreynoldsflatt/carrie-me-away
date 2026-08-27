@@ -1,6 +1,19 @@
 # 17 — CMA Leasing & Marketing Playbook
 
-## Leasing Funnel
+**Status:** Final internal leasing playbook; verify current Maryland and local requirements before each listing or increase  
+**Version:** 2026-08-26.5  
+**Effective date:** [EFFECTIVE DATE]  
+**Last reviewed:** 2026-08-26  
+**Document owner:** CMA-PM  
+**Approved by:** Pending  
+**Related documents:** 07, 10, 11, 13, 14, 18, 19
+
+## Purpose
+
+This document is the source of truth for pricing, preparing, marketing, showing, and renewing a rental. Applicant criteria and selection are controlled by Doc 13.
+
+## 1. Leasing Funnel
+
 ```text
 Set Market Rent
       ↓
@@ -16,64 +29,103 @@ Scheduled Showings
       ↓
 Application
       ↓
-Screening
+Screening under Doc 13
       ↓
 Approval
       ↓
-Lease
+DoorLoop Lease
       ↓
-Move-In
+Move-In under Doc 14
 ```
 
-## Set Market Rent
-Use approximately 3–5 strong rental comparables where practical.
+## 2. Set Market Rent
+
+Use approximately three to five strong comparable rentals where practical.
 
 Compare:
+
 - property type;
-- bedrooms/bathrooms;
+- bedrooms and bathrooms;
 - square footage;
-- condition;
-- upgrades;
+- condition and upgrades;
 - parking;
 - outdoor space;
 - amenities;
-- location;
-- recent leased/active competition.
+- exact location;
+- recently leased and current competition.
 
-## Price / Presentation / Product
-Before blaming low demand, review:
+Record the source, date, asking or leased rent, and major differences for each comp.
 
-**Price** — Is rent competitive?  
-**Presentation** — Are photos, cleanliness, landscaping, and listing strong?  
-**Product** — Is the actual property desirable and ready?
+Do not set rent solely from the mortgage payment, desired cash flow, an automated estimate, or intuition.
 
-## Example CMA Listing
+## 3. Price, Presentation, and Product
+
+Before blaming weak demand, review:
+
+- **Price:** Is the rent competitive?
+- **Presentation:** Are the listing, photos, landscaping, and cleanliness strong?
+- **Product:** Is the actual property ready and attractive?
+
+## 4. Property Readiness
+
+Before listing:
+
+- complete material repairs;
+- remove construction debris;
+- clean thoroughly;
+- make the exterior presentable;
+- verify safety devices and major systems;
+- create current high-quality photos;
+- confirm rental license, occupancy, HOA, and lead requirements.
+
+Aim to be at least 90% show-ready before marketing.
+
+## 5. Photography and Marketing Assets
+
+Capture:
+
+- exterior;
+- living areas;
+- kitchen;
+- each bedroom and bathroom;
+- laundry;
+- parking;
+- yard or outdoor space;
+- meaningful amenities.
+
+Store original marketing assets in the permanent property folder. Reuse them only while they remain accurate.
+
+## 6. Example Listing
 
 ### Updated 3BR / 2.5BA Townhome with Parking and Private Outdoor Space
 
 Welcome to **[PROPERTY ADDRESS]**, a well-maintained three-bedroom, two-and-a-half-bath townhome with approximately **[SQ FT] square feet** of living space.
 
-The home features **[updated kitchen / hardwood floors / finished basement / patio / garage / other key features]** and a practical layout with generous living and storage space.
+The home features **[KEY FEATURES]** and a practical layout with generous living and storage space.
 
 #### Property Features
-- 3 bedrooms
-- 2.5 bathrooms
-- approximately [SQ FT] sq ft
-- [parking]
-- [laundry]
-- [heating/cooling]
-- [outdoor space]
-- [HOA amenities]
+
+- 3 bedrooms;
+- 2.5 bathrooms;
+- approximately [SQ FT] sq ft;
+- [parking];
+- [laundry];
+- [heating and cooling];
+- [outdoor space];
+- [HOA amenities].
 
 #### Location
+
 Convenient to:
-- [major road/transit]
-- [shopping]
-- [restaurants]
-- [parks/trails]
-- [other neutral amenities]
+
+- [major road or transit];
+- [shopping];
+- [restaurants];
+- [parks or trails];
+- [other neutral amenities].
 
 #### Lease Details
+
 - Monthly rent: **$[RENT]**
 - Security deposit: **$[DEPOSIT]**
 - Lease term: **[TERM]**
@@ -84,34 +136,53 @@ Convenient to:
 - Maximum lawful occupancy: **[NUMBER]**
 
 #### Rental Requirements
-- Gross household income target: **3× monthly rent**
-- Credit: **650+ preferred**, with overall profile considered
-- Verifiable rental history
-- No material unpaid landlord balances
-- All applicants subject to CMA-PM's written screening criteria and applicable law
+
+Insert the current published summary from Doc 13. Do not improvise criteria in the listing.
 
 #### Showings
-Showings are available during scheduled showing windows.
 
-Managed by **CMA Property Management LLC** on behalf of the property-owning LLC.
+Showings are available during scheduled windows.
 
-## Fair-Housing-Safe Listing Language
-Describe the property, features, amenities, location, and objective lease requirements.
+Managed by **CMA Property Management LLC** as agent for **[PROPERTY LLC NAME]**.
 
-Do not market to a preferred demographic.
+## 7. Fair-Housing-Safe Marketing
 
-## Showing Strategy
-Prefer one or two set showing windows each week rather than endless one-off appointments.
+Describe:
+
+- the property;
+- features;
+- amenities;
+- objective terms;
+- neutral location information.
+
+Do not market to or exclude a preferred demographic or protected class.
+
+## 8. Listing Distribution
+
+Preferred approach:
+
+1. create the strongest direct listing on the highest-value marketplace;
+2. use DoorLoop syndication where useful;
+3. verify how the listing appears on major sites;
+4. remove duplicate or stale listings promptly.
+
+Potential channels include Zillow, Realtor.com, Apartments.com, Zumper, Facebook Marketplace, DoorLoop syndication, and appropriate local channels.
+
+## 9. Showing Strategy
+
+Use one or two scheduled showing windows each week where practical instead of repeated one-off appointments.
 
 Example:
+
 ```text
 Friday: 6:00–7:00 PM
 Saturday: 10:00–11:30 AM
 ```
 
-Do not treat refusal of a group showing as a screening criterion.
+A prospect's preference for an individual showing is not a screening criterion.
 
-## Showing Message Template
+## 10. Showing Message
+
 ```text
 Thanks for your interest in [PROPERTY ADDRESS].
 
@@ -120,20 +191,95 @@ We are hosting showings at:
 • [DAY / TIME]
 • [DAY / TIME]
 
-Please let me know which time works best for you.
-
-Before attending, please review the rental requirements in the listing so you can confirm the property is likely to be a fit.
+Please let me know which time works best. Before attending, please review the published rental requirements so you can confirm the property is likely to be a fit.
 ```
 
-## Follow-Up
+## 11. Showing Handout or QR Code
+
+Provide:
+
+- rent and deposit;
+- lease term and availability;
+- utility summary;
+- pet rules;
+- published screening summary;
+- application link or QR code;
+- CMA-PM contact information.
+
+## 12. Application Timing and Selection
+
+Prospects should generally view the property before paying a screening fee when practical.
+
+CMA-PM's default selection rule is the **first complete qualified application** under Doc 13.
+
+Set the offered lease term and screening criteria before accepting applications. Do not change the rules after seeing the applicant pool.
+
+## 13. Follow-Up and Listing Performance
+
+A single follow-up may request interest and neutral feedback.
+
 ```text
-Thanks for touring [PROPERTY ADDRESS] yesterday.
-
-I wanted to check whether you are still interested. If not, any feedback on the property, price, or showing would be helpful.
+Thanks for touring [PROPERTY ADDRESS]. Are you still interested? If not, any feedback on the property, price, or showing would be helpful.
 ```
 
-## Performance Review
-- High views, few inquiries → likely listing/price issue
-- Many inquiries, few showings → likely scheduling/clarity issue
-- Many showings, few applications → likely price/product/presentation issue
-- Many applications, few approvals → marketing may be attracting poorly matched applicants
+Review weekly while vacant:
+
+- high views, few inquiries: price or listing issue;
+- many inquiries, few showings: scheduling or clarity issue;
+- many showings, few applications: price, presentation, or product issue;
+- many applications, few approvals: marketing and criteria may be poorly aligned.
+
+## 14. Renewal Rent Review
+
+Begin approximately 120 days before a fixed-term lease expires.
+
+### Step 1 — Market Review
+
+```text
+Current rent: $____
+Estimated market rent: $____
+Difference: $____ / ____%
+```
+
+### Step 2 — Retention Economics
+
+Consider:
+
+- payment and lease history;
+- property care;
+- current operating costs;
+- expected turnover work;
+- vacancy risk;
+- marketing and leasing cost;
+- size of the proposed increase.
+
+A reliable tenant slightly below market may produce a better outcome than maximum rent and turnover.
+
+### Step 3 — Decision
+
+Possible outcomes:
+
+- no increase;
+- modest increase;
+- gradual move toward market;
+- market adjustment where reasonable and lawful;
+- nonrenewal where permitted and appropriate.
+
+### Step 4 — Notice
+
+Under current Maryland law, a residential rent increase for a tenancy longer than one month generally requires at least **90 days' written notice**, delivered by first-class mail with a certificate of mailing or by a tenant-elected electronic method that provides proof of transmission. Verify the current statute and any stricter county or municipal rule before sending.
+
+Preferred internal timing:
+
+```text
+~120 days before expiration
+→ Market and tenant review
+
+~105 days before expiration
+→ Final renewal decision
+
+Before the applicable legal deadline
+→ Written renewal / rent-increase notice
+```
+
+Retain the market analysis, approved terms, notice, and proof of delivery.

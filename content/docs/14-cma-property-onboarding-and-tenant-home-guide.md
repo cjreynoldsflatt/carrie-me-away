@@ -1,99 +1,208 @@
 # 14 — CMA Property Onboarding & Tenant Home Guide
 
+**Status:** Final internal checklist and tenant-facing template draft  
+**Version:** 2026-08-26.5
+**Effective Date:** [PROPERTY-SPECIFIC DATE]  
+**Last reviewed:** 2026-08-26
+**Supersedes:** All prior drafts of Doc 14  
+**Document Owner:** CMA-PM  
+**Approved By:** Pending
+
 ## Purpose
 
-This document combines the internal property setup checklist with the tenant-facing information CMA-PM should maintain for every rental.
+This document combines:
 
-## 1. Property Profile
+1. CMA-PM's internal onboarding and move-in/move-out checklist; and
+2. the property-specific Tenant Home Guide delivered at move-in.
 
-- Property Address: **[ADDRESS]**
-- Property LLC: **[PROPERTY LLC]**
-- Managed By: **CMA Property Management LLC**
-- HOA / Condo Association: **[NAME]**
-- Rental License Number: **[NUMBER]**
-- Year Built: **[YEAR]**
+The Home Guide is informational and does not replace the lease, HOA documents, required disclosures, or law.
 
-## 2. CMA-PM Contact
+---
 
-Business Address:
+# 1. Property Profile
 
-**[STABLE ADDRESS]**
+- **Property Address:** [ADDRESS]
+- **Property LLC / Landlord:** [PROPERTY LLC]
+- **Managed By:** CMA Property Management LLC
+- **Property ID:** [CMA-PROP-___]
+- **DoorLoop ID:** [ID]
+- **Year Built:** [YEAR]
+- **HOA / Condo:** [NAME / NONE]
+- **Rental License / Registration:** [NUMBER / EXPIRATION]
+- **Lead Status:** [PRE-1978 / EXEMPTION / CERTIFICATE]
+- **Maximum Lawful Occupancy:** [NUMBER]
+- **Occupancy Source:** [CODE / LICENSE / HOA]
+- **Property Reserve Target:** $[AMOUNT]
 
-Phone:
+---
 
-**[GOOGLE VOICE NUMBER]**
+# 2. CMA-PM Contact Information
 
-Email:
+**Business Address:**  
+[STABLE BUSINESS ADDRESS]
 
-**[CMA-PM EMAIL]**
+**Business Phone:**  
+[GOOGLE VOICE NUMBER]
 
-Maintenance Portal:
+**General Email:**  
+rentals@cmapropertymanagement.com
 
-**[DOORLOOP LINK / INSTRUCTIONS]**
+**Maintenance / Escalation Email:**  
+maintenance@cmapropertymanagement.com
 
-## 3. Property Systems
+**DoorLoop Portal:**  
+[LINK / INSTRUCTIONS]
 
-### Water
-- Main shutoff location: **[LOCATION]**
-- Photo/link: **[LINK]**
+**Routine Super Service:**  
+[SUPER LINK / PHONE / INSTRUCTIONS]
 
-### Electrical
-- Panel location: **[LOCATION]**
-- Photo/link: **[LINK]**
+---
 
-### HVAC
-- System type: **[TYPE]**
-- Filter size: **[SIZE]**
-- Filter location: **[LOCATION]**
-- Replacement interval: **[INTERVAL]**
-- Responsibility: **[CMA-PM / TENANT]**
+# 3. Leasing Readiness Checklist
 
-### Water Heater
-- Type: **[TYPE]**
-- Location: **[LOCATION]**
+Before listing:
 
-### Smoke / CO
-- Locations: **[LOCATIONS]**
-- Last verified: **[DATE]**
+- [ ] material repairs complete;
+- [ ] property at least 90% show-ready;
+- [ ] deep cleaning complete;
+- [ ] lawn/exterior presentable;
+- [ ] construction supplies and debris removed;
+- [ ] utilities required for showing active;
+- [ ] smoke/CO devices checked;
+- [ ] HVAC and appliances checked;
+- [ ] professional or high-quality photos complete;
+- [ ] accurate photos stored in the permanent marketing folder;
+- [ ] listing description updated;
+- [ ] rental comps reviewed;
+- [ ] screening criteria and occupancy updated;
+- [ ] HOA/condo rules ready;
+- [ ] rental license/lead/safety requirements complete or scheduled;
+- [ ] DoorLoop listing/application configured;
+- [ ] deposit bank and rent routing confirmed.
 
-## 4. Utilities
+Do not list a materially unfinished property solely because CMA-PM is anxious about vacancy.
 
-| Utility | Responsibility | Provider |
-|---|---|---|
-| Electric | | |
-| Gas | | |
-| Water | | |
-| Sewer / Septic | | |
-| Trash | | |
-| Internet | | |
+---
 
-## 5. Trash / Recycling
+# 4. Property Systems Record
 
-- Trash Day: **[DAY]**
-- Recycling Day: **[DAY]**
-- Pickup Location: **[LOCATION]**
-- Special Rules: **[RULES]**
+## Main Water Shutoff
 
-## 6. Parking
+- Location: [LOCATION]
+- Photo/Link: [LINK]
+- Special Instructions: [INSTRUCTIONS]
 
-- Assigned Spaces: **[DETAILS]**
-- Guest Parking: **[DETAILS]**
-- Permit Requirements: **[DETAILS]**
-- HOA/Towing Rules: **[DETAILS]**
+## Fixture / Local Shutoffs
 
-## 7. HOA / Condo
+- Sinks: [NOTES]
+- Toilets: [NOTES]
+- Washer: [NOTES]
+- Other: [NOTES]
 
-- Association: **[NAME]**
-- Important Tenant Rules: **[SUMMARY]**
-- Full Rules: **[LINK / FILE]**
+## Electrical Panel
 
-## 8. Lawn / Snow / Exterior
+- Location: [LOCATION]
+- Photo/Link: [LINK]
+- Main Breaker Notes: [NOTES]
 
-- Lawn Responsibility: **[CMA-PM / TENANT / HOA]**
-- Snow Responsibility: **[CMA-PM / TENANT / HOA]**
-- Exterior Changes: **[RULES]**
+## HVAC
 
-## 9. Septic
+- System Type: [TYPE]
+- Thermostat: [TYPE / INSTRUCTIONS]
+- Filter Size: [SIZE]
+- Filter Location: [LOCATION]
+- Replacement Interval: [INTERVAL]
+- Responsibility: [CMA-PM / TENANT]
+- Last Service: [DATE]
+
+## Water Heater
+
+- Type: [TYPE]
+- Location: [LOCATION]
+- Shutoff Notes: [NOTES]
+
+## Smoke / Carbon Monoxide
+
+- Smoke Alarm Locations: [LOCATIONS]
+- CO Alarm Locations: [LOCATIONS]
+- Last Verified: [DATE]
+
+## Other Systems
+
+- Sump Pump: [LOCATION / NOTES]
+- Main Gas Shutoff: [LOCATION / SAFETY NOTE]
+- Septic / Well: [DETAILS]
+- Sprinkler / Irrigation: [DETAILS]
+- Garage Door: [DETAILS]
+- Security System: [DETAILS]
+
+---
+
+# 5. Utilities
+
+| Utility | Responsible Party | Provider | Account / Contact Notes |
+|---|---|---|---|
+| Electric | | | |
+| Gas | | | |
+| Water | | | |
+| Sewer / Septic | | | |
+| Trash / Recycling | | | |
+| Internet / Cable | | | |
+
+Move-in utility deadline: [DATE / RULE]
+
+---
+
+# 6. Trash, Recycling, Lawn, and Snow
+
+- Trash Day: [DAY]
+- Recycling Day: [DAY]
+- Pickup Location: [LOCATION]
+- Container Rules: [RULES]
+- Bulk Pickup: [INSTRUCTIONS]
+- Lawn Responsibility: [CMA-PM / TENANT / HOA]
+- Lawn Expectations: [DETAILS]
+- Snow/Ice Responsibility: [CMA-PM / TENANT / HOA]
+- Snow Areas: [SIDEWALK / STEPS / DRIVEWAY / OTHER]
+
+---
+
+# 7. Parking and Access
+
+- Assigned Spaces: [DETAILS]
+- Garage Use: [DETAILS]
+- Guest Parking: [DETAILS]
+- Permit Requirements: [DETAILS]
+- Towing Rules: [DETAILS]
+- Commercial/Recreational Vehicle Rules: [DETAILS]
+
+Access items issued:
+
+| Item | Quantity | Identifier |
+|---|---:|---|
+| Front Door Key | | |
+| Mailbox Key | | |
+| Garage Remote | | |
+| Fob | | |
+| Parking Permit | | |
+| Other | | |
+
+---
+
+# 8. HOA / Condominium
+
+- Association: [NAME]
+- Management Company: [NAME]
+- Contact: [PHONE / EMAIL]
+- Important Tenant Rules: [SUMMARY]
+- Full Rules: [LINK / FILE]
+- Move-In/Out Requirements: [DETAILS]
+- Amenities / Access: [DETAILS]
+- Known Fees / Fines: [DETAILS]
+
+---
+
+# 9. Septic / Well Instructions
 
 Applicable?
 
@@ -102,53 +211,179 @@ Applicable?
 
 If yes:
 
-**[SEPTIC INSTRUCTIONS]**
+- prohibited materials: [DETAILS]
+- water-use instructions: [DETAILS]
+- alarm / backup response: [DETAILS]
+- treatment/testing: [DETAILS]
+- service contact: [DETAILS]
 
-## 10. Appliances
+---
 
-| Appliance | Make / Model | Serial | Notes |
+# 10. Appliances and Fixtures
+
+| Item | Make / Model | Serial | Warranty / Notes |
 |---|---|---|---|
 | Refrigerator | | | |
-| Range | | | |
+| Range / Oven | | | |
 | Dishwasher | | | |
 | Microwave | | | |
 | Washer | | | |
 | Dryer | | | |
+| Garbage Disposal | | | |
+| Other | | | |
 
-## 11. Move-In Checklist
+---
 
-Before key handoff:
-- [ ] Lease fully signed
-- [ ] Required addenda signed
-- [ ] Required disclosures delivered
-- [ ] First required payment received
-- [ ] Security deposit received
-- [ ] Security deposit transferred to correct account
-- [ ] Move-in photos completed
-- [ ] Smoke/CO checked
-- [ ] HVAC checked
-- [ ] Locks checked
-- [ ] Tenant receives Home Guide
-- [ ] Tenant receives DoorLoop portal access
-- [ ] Tenant shown maintenance process
-- [ ] Tenant shown emergency procedure
-- [ ] Keys/remotes recorded
+# 11. Routine Maintenance and Emergencies
 
-## 12. Move-Out Checklist
+## Routine Super-Eligible Issues
 
-- [ ] Notice received
-- [ ] Move-out date confirmed
-- [ ] Required inspection information provided
-- [ ] Keys/remotes returned
-- [ ] Move-out photos completed
-- [ ] Move-in vs move-out condition compared
-- [ ] Damage documented
-- [ ] Forwarding address received
-- [ ] Security-deposit accounting completed
-- [ ] Turnover work scheduled
-- [ ] Ready-to-list date established
+For eligible routine repairs, the tenant may contact Super directly:
 
-## 13. Tenant-Facing Welcome Summary
+[SUPER INSTRUCTIONS]
+
+Examples may include supported handyman, plumbing, HVAC, appliance, pest, or other services.
+
+## Contact CMA-PM Directly When
+
+- there is an emergency or immediate danger;
+- active water, fire, gas, electrical, sewage, or structural damage exists;
+- Super denies, delays, or cannot handle the request;
+- the issue is recurring;
+- landlord approval is required;
+- a major building system is involved;
+- the issue may affect habitability, insurance, HOA, or legal compliance;
+- the tenant is unsure which path to use.
+
+## Emergency
+
+If there is immediate danger, call 911, the gas utility, fire department, or other appropriate emergency service first.
+
+Then contact CMA-PM at:
+
+[EMERGENCY NUMBER / INSTRUCTIONS]
+
+---
+
+# 12. Move-In Photo Walkthrough
+
+CMA-PM should take comprehensive date-stamped photos **before or during the move-in walkthrough and before possession**.
+
+Photograph:
+
+- exterior/front/rear;
+- every room from at least two wide angles;
+- each wall;
+- ceilings and floors;
+- doors, trim, windows, and blinds;
+- cabinets, counters, sinks, and fixtures;
+- each appliance;
+- bathrooms;
+- mechanical/safety systems;
+- all existing damage.
+
+For each preexisting issue:
+
+1. wide photo showing location;
+2. close-up showing condition;
+3. written note.
+
+Store at:
+
+```text
+Google Drive
+└── Properties
+    └── [PROPERTY]
+        └── Tenant
+            └── Move-In Condition
+                └── [DATE]
+```
+
+Use the same basic photo sequence at move-out.
+
+---
+
+# 13. Tenant Condition Acknowledgment
+
+Give the tenant a reasonable opportunity to identify preexisting issues.
+
+| Location | Condition / Issue | Photo | Date Reported |
+|---|---|---|---|
+| | | | |
+
+Tenant acknowledges receipt of the condition process:
+
+Tenant: ______________________________  
+Date: ________________________________
+
+CMA-PM: _____________________________  
+Date: ________________________________
+
+---
+
+# 14. Move-In Checklist
+
+- [ ] lease and addenda signed;
+- [ ] required disclosures delivered;
+- [ ] first required rent received/verified;
+- [ ] security deposit received and moved to compliant account;
+- [ ] deposit ledger updated;
+- [ ] utilities confirmed;
+- [ ] move-in photos complete;
+- [ ] tenant condition acknowledgment complete;
+- [ ] smoke/CO verified;
+- [ ] HVAC/filter documented;
+- [ ] locks and access devices documented;
+- [ ] Tenant Home Guide delivered;
+- [ ] DoorLoop access delivered;
+- [ ] Super instructions delivered;
+- [ ] emergency procedure reviewed;
+- [ ] HOA/parking rules delivered;
+- [ ] keys/remotes issued;
+- [ ] possession date/time recorded.
+
+---
+
+# 15. Move-Out Photo Walkthrough
+
+At move-out:
+
+- repeat the move-in photo sequence;
+- take date-stamped wide and close-up photos;
+- compare side by side;
+- separate ordinary wear from damage;
+- document each proposed deduction;
+- obtain estimates/invoices where appropriate;
+- record keys/access devices;
+- obtain forwarding address.
+
+Do not automatically charge for normal aging, routine repainting, minor scuffs, normal floor/carpet wear, or a few small ordinary picture nail holes.
+
+Use Doc 18.
+
+---
+
+# 16. Move-Out Checklist
+
+- [ ] notice received and date verified;
+- [ ] termination date confirmed;
+- [ ] inspection rights/instructions provided;
+- [ ] forwarding address received;
+- [ ] keys/remotes/permits returned;
+- [ ] utilities handled;
+- [ ] personal property removed;
+- [ ] move-out photos complete;
+- [ ] condition compared to move-in;
+- [ ] lawful deductions documented;
+- [ ] interest calculated;
+- [ ] itemization/refund completed on time;
+- [ ] DoorLoop ledger closed;
+- [ ] turnover work scheduled;
+- [ ] ready-to-list date established.
+
+---
+
+# 17. Tenant-Facing Welcome Summary
 
 ```text
 Welcome to [PROPERTY ADDRESS]
@@ -166,14 +401,18 @@ Phone:
 [GOOGLE VOICE]
 
 Email:
-[CMA-PM EMAIL]
+rentals@cmapropertymanagement.com
 
-Maintenance:
-Submit requests through DoorLoop.
+Routine Maintenance:
+For eligible routine repairs, contact Super directly:
+[SUPER INSTRUCTIONS]
+
+Property Management / Escalation:
+[DOORLOOP / CMA-PM INSTRUCTIONS]
 
 Emergency:
 If there is immediate danger, call 911 or the applicable utility first.
-Then contact CMA-PM.
+Then contact CMA-PM at [NUMBER].
 
 Water Shutoff:
 [LOCATION]
@@ -182,17 +421,32 @@ Electrical Panel:
 [LOCATION]
 
 HVAC Filter:
-[SIZE]
-[LOCATION]
+[SIZE] at [LOCATION]
 
-Trash:
+Trash / Recycling:
 [DAY / INSTRUCTIONS]
 
 Parking:
 [RULES]
 
-HOA:
+HOA / Condo:
 [IMPORTANT RULES]
+
+Maximum Approved Occupancy:
+[NUMBER]
 ```
 
-This Home Guide is informational. If it conflicts with the lease, controlling legal documents, HOA rules, or applicable law, those controlling documents govern.
+---
+
+# 18. Home Guide Acknowledgment
+
+Tenant acknowledges receipt of the Home Guide and understands that the signed lease, required disclosures, HOA documents, and applicable law control if a conflict exists.
+
+Tenant: ______________________________  
+Date: ________________________________
+
+Tenant: ______________________________  
+Date: ________________________________
+
+CMA-PM: _____________________________  
+Date: ________________________________

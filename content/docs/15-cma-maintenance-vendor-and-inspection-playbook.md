@@ -1,86 +1,97 @@
 # 15 — CMA Maintenance, Vendor & Inspection Playbook
 
+**Status:** Final internal operating playbook; verify property-specific and legal requirements before use  
+**Version:** 2026-08-26.5  
+**Effective date:** [EFFECTIVE DATE]  
+**Last reviewed:** 2026-08-26  
+**Document owner:** CMA-PM  
+**Approved by:** Pending  
+**Related documents:** 05, 07, 11, 14, 18, 20, 22
+
 ## Purpose
 
-This document defines how CMA-PM handles repairs, recurring maintenance, inspections, and vendor oversight.
+This document is the source of truth for CMA-PM maintenance intake, vendor controls, inspections, incident escalation, and use of Super.
 
-## 1. Maintenance Intake
+## 1. Maintenance Channels
 
-Preferred intake:
+### Routine Super-Eligible Issues
 
-**DoorLoop maintenance portal**
+Tenants may submit eligible routine repair requests directly to **Super** using the property-specific instructions in Doc 14.
 
-Tenant should provide:
-- issue description;
-- photos/video where useful;
-- when issue started;
-- whether water/electricity/HVAC is affected;
-- access availability.
+Examples may include supported:
 
-## 2. Triage
+- handyman issues;
+- plumbing;
+- HVAC service;
+- pest control;
+- appliance service;
+- other Super-supported categories.
 
-Classify each request:
+### CMA-PM Contact Required
 
-### Emergency
-Examples:
-- active major water leak;
-- fire;
-- gas odor;
-- major electrical hazard;
-- sewage backup;
-- dangerous loss of heat;
-- significant structural issue.
+Tenants should contact CMA-PM directly when:
 
-### Urgent
-Examples:
-- failed refrigerator;
-- significant plumbing problem;
-- partial electrical failure;
-- HVAC outage in moderate conditions.
+- there is an emergency or immediate risk to people or property;
+- Super denies coverage or cannot provide timely service;
+- the issue requires owner authorization;
+- the issue is recurring;
+- the issue involves a major building system;
+- the issue may affect habitability, insurance, HOA obligations, or legal compliance;
+- the tenant is unsure which channel applies.
 
-### Routine
-Examples:
-- cosmetic repair;
-- minor appliance issue;
-- noncritical fixture issue.
+DoorLoop remains the property-management system of record for material maintenance history and escalations.
+
+## 2. Internal Response Targets
+
+These are operating targets, not guarantees or substitutes for legal duties.
+
+| Priority | Examples | CMA-PM Target |
+|---|---|---|
+| Emergency | Active major leak, fire, gas odor, electrical danger, sewage backup, dangerous loss of heat | Immediate triage and emergency dispatch |
+| Urgent | Significant plumbing failure, refrigerator failure, partial electrical failure, HVAC outage | Acknowledge the same day and schedule promptly |
+| Routine | Minor fixture, cosmetic, ordinary service issue | Acknowledge within one business day |
 
 ## 3. Workflow
 
-DoorLoop is the maintenance system of record.
+### Routine Super Workflow
 
 ```text
-DoorLoop Request
-      |
-CMA-PM Reviews
-      |
-Classify
-      |
-Emergency?
-  |-- Yes -> emergency vendor / immediate response
-  |-- No
-       |
-Check Super coverage / marketplace
-       |
-Best path?
-  |-- Super
-  |-- Preferred CMA vendor
-       |
-Schedule
-       |
+Tenant
+   ↓
+Super Direct Request
+   ↓
+Super Schedules Service
+   ↓
 Work Completed
-       |
-Tenant / CMA Confirms
-       |
-Invoice / service record attached in DoorLoop
-       |
-Expense Tagged to Property
-       |
-Close Ticket
+   ↓
+Material Outcome Retained by CMA-PM
 ```
 
-Tenants should generally submit through DoorLoop rather than contacting Super directly. This preserves a complete property maintenance history and keeps CMA-PM in control of dispatch decisions.
+### CMA-PM Exception Workflow
+
+```text
+Tenant / Super / DoorLoop
+      ↓
+CMA-PM Reviews
+      ↓
+Emergency or Escalation?
+      ↓
+Choose Best Path
+  ├── Super Escalation
+  └── Preferred CMA Vendor
+      ↓
+Work Completed
+      ↓
+Invoice / Record Retained
+      ↓
+Expense Tagged to Property LLC
+      ↓
+Ticket Closed
+```
 
 ## 4. Vendor Roster
+
+Maintain primary, backup, and emergency contacts.
 
 | Category | Primary | Backup | Emergency |
 |---|---|---|---|
@@ -98,94 +109,173 @@ Tenants should generally submit through DoorLoop rather than contacting Super di
 | Septic | | | |
 | Restoration | | | |
 
-Track contact, service area, insurance where appropriate, pricing, emergency availability, quality notes, and prior CMA jobs.
+Track service area, pricing notes, emergency availability, quality history, and properties previously serviced.
 
+## 5. Vendor Onboarding Controls
 
-## 5. Super Maintenance Strategy
+Before using a vendor for material or recurring work, collect as applicable:
 
-CMA-PM may use **Super** as a supplemental maintenance marketplace and, on selected properties, an optional home-system / appliance warranty provider.
+- W-9;
+- legal business name and contact information;
+- trade or contractor license verification;
+- certificate of insurance;
+- workers' compensation evidence where applicable;
+- written scope or estimate;
+- agreed pricing and authorization method;
+- invoice requirements;
+- property-access instructions.
 
-### Use Super When
+For major work, consider:
 
-- the service category is supported;
+- written contract;
+- permits;
+- progress-payment schedule;
+- change-order controls;
+- lien waivers before final payment.
+
+Include vendor payments in the year-end Form 1099 review.
+
+### Occupied-Property Access
+
+- provide only the access needed for the specific job;
+- log keys, codes, or lockbox access when material;
+- remove access when the job ends;
+- do not place permanent tenant credentials in ordinary vendor notes;
+- instruct vendors not to retain tenant personal information beyond what is needed for the repair.
+
+## 6. Super Decision
+
+Super is a supplemental marketplace and optional home-system or appliance protection layer.
+
+Use Super when:
+
+- the category is supported;
+- the response time is appropriate;
 - pricing is competitive;
-- response time is appropriate;
-- the provider network is available in the property's area;
-- warranty coverage applies;
-- using Super is simpler than dispatching a direct vendor.
+- coverage applies;
+- the provider network is available.
 
-### Use a Direct CMA Vendor When
+Use a direct CMA-PM vendor when:
 
 - the issue is an emergency;
-- faster response is available directly;
-- CMA already has a trusted specialist;
+- a trusted specialist can respond faster;
 - Super does not cover the issue;
-- Super's service fee or pricing is unfavorable;
 - the job requires specialized local knowledge;
-- warranty exclusions make direct service preferable.
+- Super's pricing, caps, or exclusions are unfavorable.
 
-### Paid Warranty Decision
+The CMA property-analysis app uses **$1,449 per property per year** as a conservative high-cost modeling assumption when Super is enabled. It is not a verified universal current plan price. Confirm the actual quote, service fees, limits, and exclusions for each property.
 
-Do not make paid Super warranty coverage automatic across the portfolio. Review each property based on HVAC age and condition, water heater age, appliance age, repair history, expected remaining useful life, annual premium, service-call fees, coverage limits, exclusions, and replacement caps. Record the decision in the property's annual operating review.
+## 7. Incident and Insurance Escalation
 
-## 6. Recurring Maintenance
+Escalate promptly:
+
+- tenant or guest injury;
+- animal injury;
+- fire or smoke;
+- major water loss or sewage;
+- significant mold or moisture;
+- burglary or major vandalism;
+- storm or structural damage;
+- threatened lawsuit or demand letter;
+- fair-housing complaint;
+- event likely to trigger insurance.
+
+```text
+Protect people
+    ↓
+Stop further damage when safe
+    ↓
+Photos + factual incident record
+    ↓
+Notify insurer / broker when appropriate
+    ↓
+Preserve evidence and communications
+    ↓
+Coordinate tenant / vendor response
+    ↓
+Legal or compliance escalation if needed
+```
+
+Do not admit legal liability or promise insurance coverage.
+
+See Doc 20.
+
+## 8. Recurring Maintenance
 
 ### Quarterly
-- HVAC filter replacement/verification
-- open work-order review
-- exterior visual review where practical
+
+- HVAC filter replacement or verification;
+- open-work-order review;
+- exterior visual review where practical.
 
 ### Semiannual
-- seasonal exterior check
-- gutters/drainage where appropriate
-- HVAC preventive service where appropriate
+
+- seasonal exterior review;
+- gutters and drainage where appropriate;
+- HVAC preventive service where appropriate.
 
 ### Annual
-- smoke/CO review
-- HVAC review
-- plumbing visual review
-- roof/exterior visual review
-- insurance review
-- rental-license/compliance review
-- HOA compliance review
-- property condition review
 
-## 7. Property Inspection
+- smoke and CO review;
+- HVAC and plumbing visual review;
+- roof and exterior review;
+- insurance review;
+- rental-license and HOA compliance review;
+- property condition review;
+- Super coverage decision.
+
+## 9. Property Inspections
 
 Possible inspection types:
+
 - move-in;
 - exterior review;
-- scheduled interior inspection;
+- scheduled interior review;
 - maintenance inspection;
 - annual review;
 - move-out.
 
-Record date, notice provided where required, inspector, photos, issues, assigned vendor, and follow-up date.
+Record:
 
-Do not enter an occupied property without complying with the lease and applicable law except where lawful emergency access applies.
+- date;
+- notice provided where required;
+- inspector;
+- photos;
+- issues;
+- vendor assignment;
+- follow-up date.
 
-## 8. HVAC Filters
+Do not enter an occupied property without following the lease and applicable law, except for lawful emergency entry.
+
+## 10. HVAC Filters
 
 For every property record:
+
 - filter size;
 - location;
 - replacement interval;
-- responsibility;
+- responsible party;
 - last replacement;
 - next replacement.
 
 CMA-PM should not rely entirely on tenant memory.
 
-## 9. Vendor Spend
+## 11. Spending Authority
 
-CMA's existing spending authority applies.
+Use the spending authority in Docs 02, 03, 05, and 06.
 
-Authorized representatives may independently approve ordinary expenditures up to the existing per-occurrence threshold.
+Do not split transactions to avoid an approval threshold.
 
-Emergency spending may be made as reasonably necessary under CMA's existing emergency authority.
+## 12. Outside Property Manager
 
-No transaction splitting to avoid approval rules.
+If CMA-PM later retains an outside manager, CMA-PM should still review:
 
-## 10. Outside Property Manager
-
-If CMA later uses an outside manager, review rent collection, delinquency, maintenance, vendor markup, open work orders, invoices, reserve balance, tenant issues, inspections, lease renewals, vacancy, and compliance.
+- rent collection and delinquency;
+- maintenance and open work orders;
+- vendor markup and invoices;
+- reserve balance;
+- tenant issues;
+- inspections;
+- lease renewals;
+- vacancy;
+- compliance.

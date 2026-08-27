@@ -1,139 +1,66 @@
 # 04 — Property LLC Operating Agreement Template
 
+**Status:** Final CMA working template; attorney review and property-specific completion required  
+**Version:** 2026-08-26.5
+**Document owner:** CMA-I as sole member  
+**Supersedes:** All earlier versions of Doc 04  
+**Related documents:** 02, 05, 06, 07, 20, 23
+
 ## Operating Agreement of [PROPERTY LLC NAME]
 
-This Operating Agreement governs **[PROPERTY LLC NAME]**, referred to in this Agreement as the **Company**.
+This Operating Agreement governs **[PROPERTY LLC NAME]** (the **Company**), a [STATE] limited liability company.
 
-The Company is intended to own and operate a single real estate investment property for the benefit of its sole member, CMA Investments LLC (**CMA-I**).
+## 1. Company Information
 
----
+- **Legal name:** [PROPERTY LLC NAME]
+- **State of formation:** [STATE]
+- **Formation date:** [DATE]
+- **Effective date of this Agreement:** [DATE]
+- **Principal office:** [ADDRESS]
+- **Registered/resident agent:** [NAME AND ADDRESS]
+- **Property:** [PROPERTY ADDRESS]
 
-# 1. Company
+## 2. Sole Member
 
-### Legal Name
+The sole member is **CMA Investments LLC (CMA-I)**, which owns 100% of the Company.
 
-**[PROPERTY LLC NAME]**
+No individual directly owns the Company.
 
-### State of Formation
+## 3. Purpose
 
-**[STATE]**
+The Company's primary purpose is to acquire, own, lease, operate, maintain, improve, finance, refinance, and sell the Property and engage in activities reasonably incidental to that Property.
 
-### Effective Date
+The Company should not ordinarily own an unrelated rental property.
 
-**[DATE]**
+## 4. Title and Landlord Status
 
-### Property
+Title to the Property should be held in the Company's legal name.
 
-**[PROPERTY ADDRESS]**
+The Company is the landlord under residential leases.
 
-The Company is intended to own, hold, lease, operate, improve, finance, refinance, and sell the Property and to conduct activities reasonably related to the Property.
+CMA-I owns the Company but does not directly own the Property.
 
----
+## 5. Management by Sole Member
 
-# 2. Sole Member
+The Company is managed by CMA-I.
 
-The sole member of the Company is:
+CMA-I may authorize individuals or entities to act through:
 
-## CMA Investments LLC
+- written consent;
+- resolution;
+- bank authorization;
+- Property Management & Agency Agreement;
+- other written authority.
 
-CMA-I owns:
+## 6. Appointment of CMA-PM
 
-## 100% of the Company
+The Company may appoint **CMA Property Management LLC (CMA-PM)** as manager and agent under Doc 05.
 
-No individual person directly owns the Company.
+CMA-PM's authority comes from the written agency agreement and resolutions, not from ownership of the Property.
 
----
+## 7. Lease Execution
 
-# 3. Single-Member LLC
-
-The Company is intended to operate as a:
-
-## Single-Member LLC
-
-with CMA-I as its sole member.
-
----
-
-# 4. Purpose
-
-The Company's primary purpose is to own and operate:
-
-## [PROPERTY ADDRESS]
-
-The Company should not ordinarily own unrelated rental properties.
-
----
-
-# 5. Property Ownership
-
-The Property should be titled in the legal name of:
-
-## [PROPERTY LLC NAME]
-
-The Company is the legal owner of the Property.
-
----
-
-# 6. Landlord
-
-For any residential lease involving the Property:
-
-## [PROPERTY LLC NAME]
-
-is the landlord.
-
-CMA-PM or another properly appointed manager may act as the Company's authorized property manager and agent.
-
----
-
-# 7. Management by Sole Member
-
-The Company is managed under the authority of its sole member:
-
-## CMA-I
-
----
-
-# 8. Authorized Representatives
-
-CMA-I may authorize one or more individuals or entities to act on behalf of the Company through written consent, resolution, agency agreement, Property Management & Agency Agreement, or other written authorization.
-
----
-
-# 9. Appointment of CMA-PM
-
-The Company may appoint:
-
-## CMA Property Management LLC
-
-as its property manager and agent.
-
-The appointment should generally be documented through:
-
-## 05 — Property Management & Agency Agreement
-
----
-
-# 10. Property Management Authority
-
-Subject to the applicable Property Management & Agency Agreement, CMA-PM may be authorized to:
-
-- advertise the Property;
-- administer tenant screening;
-- enter into or administer leases;
-- collect rent;
-- communicate with tenants;
-- coordinate repairs and maintenance;
-- hire vendors;
-- pay property expenses;
-- administer security deposits;
-- maintain records.
-
----
-
-# 11. Lease Execution
-
-When CMA-PM has appropriate authority, leases may generally be executed in a form such as:
+When authorized, a lease may be signed:
 
 ```text
 [PROPERTY LLC NAME]
@@ -146,289 +73,150 @@ By: ______________________________
 Authorized Representative
 ```
 
----
+## 8. Capital and Funding
 
-# 12. Capital Contributions
+Capital funding generally comes from CMA-I and is recorded as a contribution from the sole member.
 
-Capital contributed to the Company should generally come from:
+The Company does not determine whether capital is economically attributable to Carrie, Cameron, or another source within CMA-I. Member-level capital is tracked at CMA-I.
 
-## CMA-I
+A transfer from CMA-I must be identified as:
 
-Any capital contribution from CMA-I shall be recorded in the Company's books as a contribution from its sole member.
+- capital contribution;
+- intercompany reimbursement;
+- Member Loan or other intercompany loan;
+- another documented transfer.
 
-Member-level attribution is tracked at:
+## 9. Property Reserve
 
-## CMA-I
+The Company should have access to an operating reserve equal to the greater of:
 
----
+- $20,000; or
+- approximately nine months of unavoidable carrying costs.
 
-# 13. No Direct Member-Level Capital Rights
+The reserve may be held through CMA-PM if separately attributed to the Property.
 
-Carrie and Cameron do not hold direct capital interests in the Company merely because they are members of CMA-I.
+## 10. Accounts and Bookkeeping
 
-The Company's sole member remains:
+The Company may use CMA-PM's centralized operating banking rather than a separate ordinary checking account, provided the Company's transactions remain separately identifiable.
 
-## CMA-I
+The Company or CMA-PM shall maintain records for:
 
----
+- rent and tenant charges;
+- expenses and vendors;
+- reserve balance;
+- security-deposit liability;
+- capital contributions;
+- intercompany transfers;
+- debt and financing;
+- sale/refinance proceeds;
+- material contracts.
 
-# 14. Property Capital Tracking
+## 11. Property Income and Expenses
 
-The Company shall maintain records sufficient to identify:
+Property income belongs to the Company, subject to its obligations and authorized transfers.
 
-- capital contributed by CMA-I;
-- capital expenditures;
-- debt;
-- property income;
-- property expenses;
-- distributions to CMA-I;
-- property reserve balances.
+Property expenses are charged to the Company even when CMA-PM physically pays them.
 
----
+## 12. Security Deposits
 
-# 15. Property Operating Reserve
+CMA-PM may administer deposits as agent. Deposits remain liabilities attributable to the Company and tenant and must be held and accounted for under applicable law.
 
-The Company should generally maintain access to a minimum operating reserve of:
+## 13. Insurance
 
-## $20,000
+The Company should be the named insured on landlord/property coverage for the Property.
 
-for the Property.
+Coverage should be reviewed under Doc 20, including property value, landlord liability, loss of rents, water/sewer backup, flood exposure, deductibles, and lender requirements.
 
----
+## 14. Debt and Guarantees
 
-# 16. Reserve Replenishment
+The Company may borrow against the Property when approved under CMA-I governance.
 
-If the Property's reserve falls below:
+Debt should ordinarily be incurred in the Company's name.
 
-## $20,000
+No person is required to provide a personal guarantee unless that person separately agrees in writing.
 
-future cash generated by the Property should generally replenish the reserve before excess cash is distributed or transferred to CMA-I.
+A payment made by a member under an approved guarantee is treated at CMA-I as a Member Loan unless designated as capital.
 
----
+## 15. Spending and Emergency Authority
 
-# 17. Bank Accounts
+Ordinary spending authority follows CMA-I resolutions and Doc 05.
 
-The Company is not initially required to maintain its own ordinary checking account if property operations are administered through CMA-PM.
+Emergency spending may exceed ordinary limits when reasonably necessary to protect tenant safety, property, essential systems, legal compliance, insurance, or material value.
 
----
+## 16. Distributions to CMA-I
 
-# 18. Property-Specific Accounting
+After providing for expenses, debt, reserves, and anticipated obligations, the Company may distribute excess cash to CMA-I.
 
-Even when banking is centralized, the Company's financial activity must remain separately identifiable.
+The Company does not distribute directly to Carrie or Cameron.
 
-### Core Rule
+## 17. Sale and Refinancing
 
-> **Banking may be centralized, but the Company's accounting must remain property-specific.**
+A sale or refinance requires approval under CMA-I governance.
 
----
+Net proceeds remain Company assets until applied to obligations or distributed to CMA-I.
 
-# 19. Property Income
+Member-level capital and residual economics are determined at CMA-I, not in this Company.
 
-Rent and other operating income generated by the Property belong economically to the Company, subject to expenses, debt, reserves, obligations, and authorized transfers.
+## 18. Tax Classification
 
----
+While wholly owned by CMA-I, the Company is intended to be disregarded for federal income-tax purposes unless another election is approved.
 
-# 20. Property Expenses
+The classification does not eliminate the Company's separate legal existence.
 
-The Company is responsible for expenses attributable to the Property.
+## 19. Separate Entity Practices
 
----
+The Company shall:
 
-# 21. Security Deposits
+- hold title in its name;
+- use its legal name in contracts where appropriate;
+- keep Company and property records;
+- maintain property-specific bookkeeping;
+- document intercompany transfers;
+- avoid personal commingling;
+- maintain required registrations, licenses, and insurance.
 
-Tenant security deposits are not rent, property profit, CMA-PM revenue, or owner distributions.
+## 20. Limitation of Liability and Indemnification
 
----
+To the fullest extent permitted by applicable law:
 
-# 22. CMA-PM Security Deposit Account
+- Company obligations remain Company obligations;
+- the Company may indemnify authorized representatives and agents for authorized good-faith actions;
+- no indemnification applies to fraud, willful misconduct, knowing violation of law, improper personal benefit, or prohibited conduct.
 
-Security deposits for the Property may be held through:
+## 21. No Additional Member or Transfer
 
-## CMA-PM Security Deposit Account
+No additional member may be admitted and CMA-I may not transfer its membership interest except under CMA-I governance and a written amendment to this Agreement.
 
----
+A change in ownership inside CMA-I does not change the Company's sole member or title to the Property.
 
-# 23. Insurance
+## 22. Dissolution and Winding Up
 
-The Company should maintain appropriate landlord/property insurance covering the Property.
+The Company may be dissolved by CMA-I.
 
-The named insured should generally be:
+On winding up:
 
-## [PROPERTY LLC NAME]
+1. pay or reserve for Company obligations;
+2. address tenant and security-deposit obligations;
+3. distribute remaining assets to CMA-I.
 
----
+## 23. Records and Access
 
-# 24. Liability
+CMA-I has full access to Company records. Records may be maintained through CMA-PM, DoorLoop, Google Drive, and the CMA app if separately identifiable and reasonably retrievable.
 
-The Company's liabilities should generally remain separate from CMA-I, CMA-PM, other Property LLCs, and individual owners of CMA-I.
+## 24. Notices and General Provisions
 
----
+- Notices must be written and delivered with proof of transmission or mailing.
+- The law of [STATE] governs the Company's internal affairs.
+- Amendments are made by written consent of CMA-I.
+- Electronic signatures and counterparts are permitted.
+- An unenforceable provision does not invalidate the remainder.
+- This Agreement and duly adopted sole-member resolutions are the entire operating agreement.
 
-# 25. Separate Entity Practices
+## 25. Sole Member Approval
 
-The Company should be operated consistently with its separate legal existence.
+**CMA Investments LLC, Sole Member of [PROPERTY LLC NAME]**
 
----
-
-# 26. Spending Authority
-
-Authorized representatives may generally approve ordinary property expenses up to:
-
-## $2,500 per occurrence
-
-unless CMA-I establishes another limit.
-
----
-
-# 27. Emergency Spending
-
-An authorized representative may approve expenses above the ordinary spending limit when reasonably necessary to protect tenant health or safety, prevent substantial property damage, comply with law, restore essential services, or prevent substantial immediate financial loss.
-
----
-
-# 28. Vendors and Contractors
-
-The Company or CMA-PM acting as agent may retain vendors and contractors for the Property.
-
----
-
-# 29. Outside Property Management
-
-The Company may use an outside property-management company if approved under CMA-I's governance rules.
-
----
-
-# 30. Distributions to CMA-I
-
-After providing for expenses, debt obligations, reserves, and anticipated near-term costs, the Company may distribute excess cash to:
-
-## CMA-I
-
-The Company does not make direct distributions to Carrie or Cameron.
-
----
-
-# 31. Property Sale
-
-The Property may be sold when approved under the CMA-I Operating Agreement and any applicable Company authorization.
-
-Member-level economics are calculated at CMA-I.
-
----
-
-# 32. Refinancing
-
-The Company may refinance the Property when approved under CMA-I's governance rules.
-
----
-
-# 33. Financing and Debt
-
-Loan obligations should ordinarily be incurred in the Company's name.
-
-No individual member of CMA-I is automatically required to personally guarantee Company debt.
-
----
-
-# 34. Tax Classification
-
-While wholly owned by CMA-I, the Company is intended to be treated as:
-
-## A disregarded entity for federal income-tax purposes
-
-unless another tax election is made.
-
----
-
-# 35. Books and Records
-
-The Company shall maintain or cause to be maintained records sufficient to identify ownership of the Property, leases, income, expenses, reserves, security deposits, insurance, capital contributions, distributions, debt, material contracts, and tax information.
-
----
-
-# 36. No Additional Members
-
-No additional member may be admitted to the Company unless approved in accordance with CMA-I's governance requirements.
-
----
-
-# 37. Transfer of Ownership
-
-CMA-I may not transfer its ownership interest in the Company except in accordance with CMA-I's governance requirements.
-
----
-
-# 38. No Individual Ownership Transfer
-
-A change in ownership, vesting, or succession of interests within CMA-I does not automatically transfer the Property or the Company's membership interest to an individual.
-
----
-
-# 39. Succession at CMA-I Level
-
-The death, disability, or succession of Carrie or Cameron is handled through CMA-I's governing documents.
-
-The Company's sole member remains CMA-I unless CMA-I's ownership of the Company is formally transferred.
-
----
-
-# 40. Dissolution
-
-The Company may be dissolved when approved under CMA-I's governance requirements.
-
-Upon dissolution, remaining assets shall generally be distributed to:
-
-## CMA-I
-
----
-
-# 41. Indemnification
-
-To the extent permitted by applicable law, the Company may indemnify an authorized representative or agent for actions taken in good faith, within authorized duties, and in the reasonable interests of the Company.
-
----
-
-# 42. Limitation of Liability
-
-To the fullest extent permitted by applicable law, debts and obligations of the Company are intended to remain obligations of the Company and not personal obligations of CMA-I's members, authorized representatives, employees, or agents.
-
----
-
-# 43. Compliance
-
-The Company shall comply with applicable laws governing the Property, including landlord-tenant requirements, rental licensing or registration, lead requirements where applicable, smoke and carbon monoxide requirements, security-deposit rules, insurance requirements, and other applicable state, county, or municipal requirements.
-
----
-
-# 44. Amendments
-
-This Agreement may be amended by:
-
-## CMA-I
-
-as sole member.
-
----
-
-# 45. Governing Law
-
-This Agreement shall be governed by the law of:
-
-## [STATE]
-
----
-
-# 46. Sole Member Approval
-
-CMA Investments LLC adopts this Operating Agreement as the sole member of:
-
-## [PROPERTY LLC NAME]
-
-### CMA Investments LLC  
-**Sole Member**
-
-By: ______________________________
-
-Title: ___________________________
-
+By: ______________________________  
+Name: ____________________________  
+Title: ___________________________  
 Date: ____________________________

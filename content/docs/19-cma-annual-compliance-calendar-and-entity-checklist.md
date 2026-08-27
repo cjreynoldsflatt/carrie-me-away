@@ -1,174 +1,194 @@
 # 19 — CMA Annual Compliance Calendar & Entity Checklist
 
-**Status:** Canonical planning draft  
-**Version:** 2026-08-26.2  
-**Last reviewed:** 2026-08-26
+**Status:** Final internal compliance calendar; current forms, fees, and deadlines must be verified each year  
+**Version:** 2026-08-26.5  
+**Effective date:** [EFFECTIVE DATE]  
+**Last reviewed:** 2026-08-26  
+**Document owner:** CMA-I / CMA-PM  
+**Approved by:** Pending annual consent  
+**Related documents:** 02, 03, 06, 07, 10, 13, 18, 20, 21, 22, 23
 
 ## Purpose
 
-This is the master recurring compliance checklist for CMA-I, CMA-PM, and each Property LLC.
+This is the master recurring compliance checklist for CMA-I, CMA-PM, and each Property LLC. The exact property address and current rule control.
 
-Use the exact property address and current law. A calendar reminder is not a substitute for checking the current rule before acting.
+## 1. January and Early-Year Close
 
-## 1. Company-Level Annual Calendar
-
-### January / Early Year
-
-- prepare vendor W-9 / Form 1099 review;
+- obtain missing vendor W-9s;
+- complete Form 1099 review;
 - close prior-year books;
-- reconcile member loans and capital;
-- reconcile property cash subledgers;
+- reconcile property subledgers;
+- reconcile Member Loans and capital;
 - reconcile security-deposit liabilities to the deposit bank;
-- prepare CPA tax package;
-- review CMA-PM working capital;
-- confirm authorized users and signers.
+- prepare the CPA tax package;
+- review CMA-PM's $5,000 working-capital target;
+- review system access and authorized signers;
+- review Stable mailing and registered-agent services;
+- confirm `cmapropertymanagement.com` and `cmainvestments.com` renewals.
 
-### By March Tax Cycle
+## 2. Partnership Tax Cycle
 
-- prepare / file or extend CMA-I Form 1065 as applicable;
-- confirm Schedule K-1 process;
-- determine whether CMA-I is eligible to elect out of the BBA centralized partnership audit regime and make the annual election when appropriate;
-- if CMA-I does not elect out, confirm partnership representative / designated individual;
-- calculate the March 15 target tax distribution under Docs 06 and 21, subject to available cash and restrictions.
+By the applicable federal and state deadlines:
 
-### By April 15
+- prepare, file, or extend CMA-I's Form 1065;
+- issue Schedule K-1s;
+- review BBA election-out eligibility;
+- confirm the Partnership Representative if no election is made;
+- complete the Section 1061 review;
+- calculate and approve any March 15 target tax distribution under Docs 06 and 21.
 
-For each Maryland LLC, complete the current Maryland Form 1 / annual report and any required business-personal-property filing and fee. The 2026 Maryland Form 1 lists April 15 as the due date and a $300 filing fee for LLCs; verify the current year's form before filing.
+## 3. Maryland Entity Filings
 
-Also confirm:
+For every Maryland LLC:
 
-- resident agent information;
-- principal office / mailing information;
-- company good standing;
-- ownership / control information that needs updating.
+- file the current Form 1 / annual report and any applicable personal-property filing;
+- pay the current fee;
+- confirm resident agent;
+- confirm principal office and mailing address;
+- confirm company good standing;
+- update ownership or control information if required.
 
-### Insurance Renewal Cycle
+The current-year form and deadline must be checked rather than copied from a prior year.
 
-Before each policy renewal:
+## 4. Maryland Management and Collection Gate
 
-- complete Doc 20 review;
-- confirm named insured / additional insured / mortgagee information;
-- review values and loss-of-rents assumptions;
-- review flood / water-backup exposure;
-- review umbrella, CMA-PM liability, E&O, and cyber decisions;
-- obtain updated vendor COIs as needed.
+Before CMA-PM first collects rent or another debt under the current common-ownership structure:
 
-### By October 1 / Before Every New Lease
+- execute the Property Management & Agency Agreement;
+- confirm CMA-I owns more than 50% of CMA-PM and the applicable Property LLC;
+- confirm CMA-PM is collecting only for related companies under the intended exemption;
+- make the required filing with the State Collection Agency Licensing Board before collection;
+- retain proof.
 
-Check the Maryland DHCD website for the newest **Maryland Tenants' Bill of Rights** and attach the latest unmodified version to every residential lease as required.
+If CMA-PM begins managing unrelated property or the ownership model changes, obtain a new licensing analysis before acting.
 
-### Lead Compliance Cycle, if Property Was Built Before 1978
+## 5. Lease and Tenant Materials
 
-For each covered property:
+Before every new lease or renewal:
 
-- confirm MDE registration after acquisition;
-- track the current MDE renewal cycle;
-- complete required lead inspection / certification at change in occupancy;
-- provide required educational materials and certificate to the tenant;
-- retain proof of compliance.
+- confirm the local rental license and inspection;
+- use the latest unmodified Maryland Tenants' Bill of Rights when required;
+- confirm lead documents for covered property;
+- confirm security-deposit receipt and rights notice;
+- confirm current lease and addenda;
+- confirm lawful occupancy;
+- confirm screening and adverse-action workflow;
+- confirm any local disclosures.
 
-MDE currently states that, effective January 1, 2026, registration/renewal fees increased and renewals generally cover a two-year period, with renewal due by December 31 when the property is in its renewal year. Verify the current MDE instructions.
+## 6. Lead Compliance, if Applicable
 
-## 2. Property-Level Annual Review
+For a covered pre-1978 property:
 
-For each Property LLC / property:
+- register with MDE after acquisition;
+- track the current registration / renewal cycle;
+- complete required change-of-occupancy inspection and certification;
+- provide required materials to the tenant;
+- retain proof.
 
-- [ ] rental license current
-- [ ] landlord / rental registration current
-- [ ] required local inspection current
-- [ ] lawful occupancy limit rechecked
-- [ ] year-built / lead status correct
-- [ ] smoke alarm compliance reviewed
-- [ ] carbon monoxide compliance reviewed
-- [ ] HOA / condo rental registration current
-- [ ] HOA lease-copy / tenant-form requirements satisfied
+Verify current MDE fees and renewal timing each year.
+
+## 7. Insurance Cycle
+
+Before each renewal:
+
+- complete Doc 20;
+- confirm named insured, mortgagee, and additional-insured decisions;
+- update replacement cost and loss-of-rents assumptions;
+- review flood and water-backup exposure;
+- review umbrella, CMA-PM GL, E&O, cyber, and workers' compensation needs;
+- obtain updated vendor certificates where needed.
+
+## 8. Property-Level Annual Review
+
+For each property:
+
+- [ ] rental license / registration current
+- [ ] local inspection current
+- [ ] lawful occupancy rechecked
+- [ ] lead status correct
+- [ ] smoke and CO compliance reviewed
+- [ ] HOA / condo rental requirements current
 - [ ] insurance renewed
 - [ ] renter's-insurance requirement reviewed
 - [ ] reserve target recalculated
-- [ ] Super coverage decision reviewed
+- [ ] Super decision reviewed
 - [ ] emergency vendor roster reviewed
-- [ ] property condition / preventive maintenance reviewed
+- [ ] preventive maintenance reviewed
 - [ ] security-deposit ledger reconciled
-- [ ] lease / addenda template reviewed
-- [ ] current Maryland Tenants' Bill of Rights confirmed
+- [ ] lease and addenda reviewed
+- [ ] tenant Home Guide updated
 
-## 3. Event-Triggered Compliance
+## 9. Lease Renewal and Rent Review
 
-### New Property Acquisition
+Approximately 120 days before expiration:
 
-Use Doc 07. Confirm entity, title, insurance, local rental feasibility, HOA, lead, smoke/CO, lender, and closing tax-basis package.
+- pull rental comps;
+- review tenant and turnover economics;
+- approve renewal terms;
+- determine the legal notice deadline;
+- send and retain compliant notice.
 
-### Before First Rent Collection by CMA-PM
+Under current Maryland law, a tenancy longer than one month generally requires at least 90 days' written notice before a rent increase, subject to stricter local rules and permitted delivery methods.
 
-- written Doc 05 agency agreement executed;
-- property remains within the current common-ownership model;
-- CMA-PM has completed the filing required for the common-ownership collection-agency exemption before collecting debt/rent under the current structure;
-- if the ownership or business model changes, complete a new licensing analysis first.
+## 10. Event-Triggered Checklists
 
-### New Tenant / New Lease
+### New Property
 
-- screening criteria finalized before applications;
-- fair-housing and FCRA procedure followed;
-- local rental approval active;
-- current Tenants' Bill of Rights attached;
-- lead documents if applicable;
-- security deposit routed to the CMA-PM Security Deposit Account;
-- move-in photos / condition record complete;
-- DoorLoop and Home Guide activated.
+Use Doc 07 for entity, title, lender, insurance, local rental, HOA, lead, smoke/CO, reserve, and tax-basis setup.
 
-### Tenant Move-Out
+### New Tenant
+
+- criteria published before applications;
+- screening and FCRA process complete;
+- lease and required materials complete;
+- deposit placed in the Maryland-compliant account within the legal deadline;
+- move-in evidence and Home Guide complete.
+
+### Move-Out
 
 - inspection rights followed;
-- move-out photos complete;
-- wear vs damage documented;
-- deposit interest / deductions / return handled under current law;
-- lead change-of-occupancy inspection completed if applicable before the next tenant.
+- move-out evidence complete;
+- wear and damage analyzed under Doc 18;
+- interest, itemization, supporting documents, and refund completed on time.
 
-### Property Sale
+### Sale
 
-Before marketing or contracting for sale:
+- check lease and tenant notice rights;
+- check Maryland tenant right-of-first-refusal requirements for covered property;
+- address the security deposit;
+- approve and document the capital waterfall and tax analysis.
 
-- check tenant lease / notice rights;
-- check the Maryland tenant right-of-first-refusal process for covered properties with three or fewer residential rental units;
-- check local sale protections;
-- reconcile security deposit transfer / return obligations;
-- prepare tax and capital-hurdle analysis;
-- approve sale under the applicable CMA governance rules.
+### Member Transfer, Death, or Disability
 
-### Death / Transfer of a CMA-I Interest
+- activate Docs 02, 08, 09, and 21;
+- document authority and substitute-member status;
+- review Section 754 consequences;
+- update bank, tax, platform, and entity authority.
 
-- activate Doc 08 / 21 succession checklist;
-- document substitute-member process;
-- obtain estate / fiduciary authority evidence;
-- review Section 754 consequences with CPA;
-- update bank, tax, and company authority records.
+### New Employee or Worker
 
-### New Employee / Worker
-
-Before hiring:
-
-- payroll and employment-law setup;
+- employment/payroll setup;
 - workers' compensation review;
-- access-control onboarding;
-- confidentiality / data rules;
-- role-specific insurance review.
+- access onboarding;
+- confidentiality and data rules;
+- role-specific insurance.
 
-## 4. Quarterly Administrative Review
+## 11. Quarterly Review
 
-Quarterly, CMA-PM should review:
+Quarterly, review:
 
 - unreconciled bank items;
-- property subledger balances;
-- CMA-PM $5,000 working-capital target;
+- property subledgers;
+- CMA-PM working capital;
 - property reserve shortfalls;
 - delinquency;
-- open maintenance / incidents;
-- expiring leases;
-- expiring licenses / insurance;
+- open maintenance and incidents;
+- leases expiring within 120 days;
+- expiring licenses and insurance;
 - vendor documentation gaps.
 
-## 5. Ownership
+## 12. Responsibility
 
 Primary operational owner: **Cameron**  
-Governance / backup review: **Carrie**  
-CPA / attorney / broker complete specialist tasks when required.
+Governance and backup review: **Carrie**  
+Specialists: CPA, attorney, insurance broker, lender, and local compliance professionals as needed.

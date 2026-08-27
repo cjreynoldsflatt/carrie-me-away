@@ -1,120 +1,130 @@
 # 10 — CMA Lease Requirements & Addenda
 
+**Status:** Final internal lease-review checklist; DoorLoop generates the tenant's actual lease  
+**Version:** 2026-08-26.5
+**Last reviewed:** 2026-08-26
+**Document owner:** CMA-PM  
+**Supersedes:** All earlier versions of Doc 10  
+**Related documents:** 05, 07, 13, 14, 17, 18, 19
+
 ## Purpose
 
-This document defines the lease standards **CMA Property Management LLC (CMA-PM)** should apply when creating a residential lease through DoorLoop or another approved Maryland lease platform.
+CMA-PM uses this checklist to review every DoorLoop-generated lease before signature. It is not the tenant's lease and does not replace current Maryland, local, HOA, or property-specific requirements.
 
-This is **not the tenant's final lease**.
+## 1. Parties and Property
 
-The actual lease should be generated in DoorLoop, customized for the specific property, and signed electronically there.
+The final lease must identify:
 
-The applicable Property LLC remains the landlord.
+- **Landlord:** the applicable Property LLC;
+- **Manager / Agent:** CMA Property Management LLC;
+- **Property address:** exact legal and mailing address;
+- **tenant and approved occupants:** full names;
+- **CMA-PM notice address, email, and phone:** business channels, not personal contact where practical.
 
-CMA-PM acts as manager and agent.
+Preferred signature format:
 
----
-
-# 1. Required Party Structure
-
-Every lease should clearly identify:
-
-**Landlord:**  
+```text
 [PROPERTY LLC NAME]
+Landlord
 
-**Manager / Agent:**  
-CMA Property Management LLC
+By: CMA Property Management LLC
+Its Authorized Property Manager and Agent
 
-**Property Address:**  
-[PROPERTY ADDRESS]
+By: ______________________________
+Authorized Representative
+```
 
-CMA-PM's business contact information should use:
+## 2. Maryland and Exact-Address Review
 
-- Stable business address;
-- Google Voice business number;
-- CMA-PM business email.
+Before sending the lease, verify:
 
-Avoid using personal contact information on routine tenant-facing documents where practical.
+- current Maryland lease requirements;
+- county and municipality requirements;
+- rental license / registration / inspection information;
+- lawful occupancy;
+- current Maryland Tenants' Bill of Rights attachment;
+- lead disclosures and certificates if applicable;
+- HOA/condo requirements;
+- security-deposit, late-fee, rent-increase, notice, entry, and termination terms.
 
----
+Do not assume an old saved form remains current.
 
-# 2. Maryland-Specific Base Lease
+## 3. Lease Term and Renewal
 
-Use DoorLoop's Maryland-specific residential lease workflow as the starting point.
+State:
 
-Before sending the lease, confirm the final lease reflects:
+- start and end dates;
+- fixed term or month-to-month status;
+- renewal method;
+- holdover treatment;
+- tenant notice requirements;
+- landlord renewal/nonrenewal procedure as permitted by law.
 
-- current Maryland residential lease requirements;
-- exact-address county / municipal requirements;
-- required disclosures;
-- applicable rental-license information;
-- applicable lead requirements;
-- current Maryland Tenants' Bill of Rights requirements;
-- current security-deposit rules;
-- current late-fee rules;
-- current notice requirements.
+CMA-PM should select the desired term before listing. Do not use an informal preference after applications are received.
 
-Do not assume a previously saved lease remains legally current.
+## 4. Rent
 
----
-
-# 3. Security Deposit
-
-The lease should clearly state:
-
-- security deposit amount;
-- when it is due;
-- how it is held;
-- required receipt / notice information;
-- conditions for lawful deductions;
-- move-out inspection rights where applicable;
-- return / itemization process.
-
-CMA-PM should administer security deposits through:
-
-## CMA-PM Security Deposit Account
-
-Security deposits must remain separate from ordinary operating funds.
-
-DoorLoop may track the tenant liability, but the underlying funds should remain in the dedicated CMA-PM security-deposit account.
-
----
-
-# 4. Rent
-
-The lease should clearly state:
+State:
 
 - monthly rent;
 - due date;
-- acceptable payment method;
-- grace period if applicable;
+- DoorLoop payment instructions;
 - lawful late fee;
-- returned / failed payment handling;
-- where payment is made.
+- failed-payment treatment;
+- partial-payment treatment;
+- grace period, if any;
+- tenant-paid convenience fees, if any and lawful.
 
-Preferred tenant-facing payment system:
+For ordinary monthly residential rent, confirm the current Maryland late-fee limit before use.
 
-## DoorLoop
+## 5. Rent Increases
 
-Rent should ultimately settle into the CMA-PM Operating Account.
+The lease should not promise unchanged rent beyond the stated term unless intended.
 
----
+CMA-PM begins the renewal review approximately 120 days before expiration.
 
-# 5. Lease Term
+For a Maryland tenancy longer than one month, current statewide law generally requires at least 90 days' written notice before an increase. Notice must use the statutory delivery method, including first-class mail with certificate of mailing or tenant-elected electronic delivery with proof of transmission. Stricter local rules control when applicable.
 
-For each property, choose:
+The renewal notice should state:
 
-- fixed-term lease;
-- renewal structure;
-- notice requirements;
-- holdover terms.
+- current rent;
+- new rent;
+- effective date;
+- proposed lease term;
+- response deadline;
+- required delivery record.
 
-Do not automatically use a three-year lease or a 90-day tenant notice requirement unless CMA specifically adopts that structure and it complies with current law.
+## 6. Security Deposit
 
----
+State:
 
-# 6. Utilities
+- amount;
+- due date;
+- receipt language;
+- holding and interest requirements;
+- move-in and move-out inspection rights;
+- lawful deductions;
+- itemization and return process;
+- forwarding-address procedure.
 
-The lease should assign responsibility for each utility.
+For ordinary Maryland residential leases, the current general maximum is one month's rent, subject to statutory exceptions. The account and administration must satisfy Real Property § 8-203 and any local rule.
+
+DoorLoop may track the liability. The actual funds go to the CMA-PM Security Deposit Account, not the operating account.
+
+## 7. First Rent and Move-In Funds
+
+State all amounts due before possession and the deadline for cleared funds.
+
+Do not deliver keys until:
+
+- lease is fully signed;
+- required funds are received or verified under the approved payment process;
+- required utilities and insurance are addressed;
+- licensing and safety conditions are satisfied.
+
+## 8. Utilities
+
+Complete the table:
 
 | Utility | Landlord / CMA-PM | Tenant | HOA / Other |
 |---|---|---|---|
@@ -125,410 +135,262 @@ The lease should assign responsibility for each utility.
 | Trash | | | |
 | Internet / Cable | | | |
 
-Property-specific utility responsibility should match the actual billing arrangement.
+If water or another utility can remain a property/owner lien or obligation, CMA-PM should preserve monitoring rights even when the tenant is responsible.
 
----
+## 9. Occupancy, Guests, and Use
 
-# 7. HOA / Condominium Addendum
+- list all approved occupants;
+- state residential-use limits;
+- incorporate the property-specific maximum lawful occupancy;
+- address guests, unauthorized residents, business use, short-term rental, and illegal activity;
+- avoid a blanket occupancy rule not verified for the exact property;
+- preserve fair-housing rights.
 
-If applicable, attach the relevant HOA or condominium rules.
-
-Lease should require tenant compliance with:
-
-- parking rules;
-- trash rules;
-- architectural / exterior rules;
-- amenity rules;
-- occupancy rules;
-- noise rules;
-- move-in / move-out procedures;
-- other lawful association requirements.
-
-Tenant should receive the rules before or with the lease.
-
----
-
-# 8. Pets
-
-If ordinary pets are allowed, define:
-
-- permitted animal types;
-- quantity limits;
-- size / breed restrictions if lawfully used;
-- pet rent if applicable;
-- lawful pet deposit / fee structure if applicable;
-- damage responsibility;
-- cleanup expectations.
-
-Service animals and qualifying assistance animals are not ordinary pets and should be handled separately under applicable law.
-
-Do not apply ordinary pet fees or restrictions to assistance animals where prohibited.
-
----
-
-# 9. Smoking / Vaping
-
-State the property's smoking and vaping policy clearly.
-
-Preferred default if CMA adopts it:
-
-## No smoking or vaping inside the dwelling.
-
-If exterior smoking is restricted by HOA or property rules, include that separately.
-
----
-
-# 10. Lawn / Landscaping
-
-Define whether responsibility belongs to:
-
-- CMA-PM;
-- tenant;
-- HOA;
-- outside vendor.
-
-If tenant is responsible, state expectations clearly.
-
-Do not rely on vague language such as "maintain yard reasonably."
-
----
-
-# 11. Snow / Ice
-
-Assign responsibility where applicable.
-
-Clarify:
-
-- sidewalks;
-- stairs;
-- driveway;
-- HOA-controlled areas.
-
-Ensure the lease does not conflict with local requirements or HOA obligations.
-
----
-
-# 12. HVAC Filters
-
-The lease should identify:
-
-- filter location;
-- filter size;
-- replacement responsibility;
-- expected replacement interval.
-
-Preferred CMA operating strategy:
-
-CMA-PM tracks filter size and replacement schedule even if the tenant is assigned routine replacement responsibility.
-
----
-
-# 13. Septic Addendum
-
-If the property uses septic, include a property-specific septic addendum.
-
-At minimum address:
-
-- prohibited materials;
-- wipes;
-- grease;
-- feminine hygiene products;
-- non-biodegradable materials;
-- tenant responsibility for damage caused by prohibited use where legally enforceable;
-- reporting of backups or drainage issues.
-
----
-
-# 14. Exterior Modifications
-
-Require written approval before tenant installs or modifies exterior items such as:
-
-- satellite dishes;
-- antennas;
-- cameras;
-- fixtures;
-- signs;
-- awnings;
-- exterior wiring;
-- structures;
-- permanent attachments.
-
-Any restriction must comply with applicable federal, state, local, and HOA rules.
-
----
-
-# 15. Parking
-
-Specify:
-
-- assigned spaces;
-- garage use;
-- guest parking;
-- HOA permits;
-- prohibited vehicle storage;
-- towing rules;
-- commercial vehicle restrictions if applicable.
-
----
-
-# 16. Renter's Insurance
-
-If CMA requires renter's insurance, define:
-
-- minimum liability coverage;
-- proof requirement;
-- renewal proof;
-- effective date.
-
-Do not represent renter's insurance as replacing the landlord's property insurance.
-
----
-
-# 17. Maintenance Reporting
-
-The lease should require prompt reporting of:
-
-- leaks;
-- plumbing backups;
-- electrical hazards;
-- HVAC failures;
-- roof leaks;
-- smoke / CO alarm issues;
-- unsafe conditions;
-- other conditions that may materially worsen if ignored.
-
-Preferred maintenance channel:
-
-## DoorLoop Maintenance Portal
-
-For emergencies, the lease / Home Guide should also provide CMA-PM's emergency contact process.
-
----
-
-# 18. Tenant-Caused Damage
-
-Tenant may be responsible for damage beyond ordinary wear and tear as permitted by law and the lease.
-
-CMA-PM should document material damage using:
-
-- photos;
-- inspection notes;
-- invoices;
-- estimates;
-- move-in condition records;
-- move-out condition records.
-
-Do not treat ordinary wear and tear as tenant damage.
-
----
-
-# 19. Entry and Access
-
-The lease should address lawful landlord / manager entry for:
-
-- repairs;
-- inspections;
-- emergencies;
-- showings;
-- agreed services;
-- other lawful purposes.
-
-CMA-PM should follow applicable notice requirements and avoid relying solely on generic national lease language.
-
----
-
-# 20. Occupancy
-
-List all approved occupants.
-
-Address:
-
-- unauthorized occupants;
-- guest limits where lawful;
-- subletting;
-- assignment;
-- short-term rental restrictions.
-
-Do not use occupancy provisions in a way that conflicts with fair-housing requirements.
-
----
-
-# 21. Subletting / Assignment
+## 10. Assignment and Subletting
 
 Preferred default:
 
-## No subletting or assignment without prior written approval.
+## No assignment, subletting, or short-term rental without prior written approval.
 
-If allowed, define the approval process.
+State the approval process and consequences of unauthorized use.
 
----
+## 11. HOA / Condominium Addendum
 
-# 22. Keys / Access Devices
+Attach applicable rules for:
 
-Track:
-
-- keys;
-- fobs;
-- garage remotes;
-- parking permits;
-- mailbox keys;
-- other access devices.
-
-Lease or addendum should address replacement cost where lawful.
-
----
-
-# 23. Move-In Condition
-
-CMA-PM should complete and retain:
-
-- date-stamped photos;
-- move-in condition notes;
-- tenant-reported preexisting issues;
-- appliance condition;
-- flooring/wall condition;
-- exterior condition where relevant.
-
-DoorLoop or the CMA Home Guide process may be used to manage this.
-
----
-
-# 24. Move-Out
-
-Lease should address:
-
-- required notice;
-- key return;
-- forwarding address;
-- condition expectations;
-- personal property removal;
-- cleaning expectations;
-- inspection process;
-- lawful security-deposit deductions;
-- abandoned property handling where applicable.
-
----
-
-# 25. Delinquency / Default
-
-Lease terms should align with current Maryland law.
-
-CMA-PM should not rely on outdated generic clauses for:
-
-- pay-or-quit notices;
-- eviction timing;
-- court fees;
-- collection fees;
-- late fees;
-- attorney fees.
-
-Use the current legal process and current DoorLoop / Maryland forms when needed.
-
----
-
-# 26. Property-Specific Addenda Library
-
-CMA should maintain reusable addenda for:
-
-- HOA / condo;
 - parking;
-- pets;
+- trash;
+- noise;
+- amenities;
+- move-in/move-out;
+- exterior changes;
+- leasing restrictions;
+- tenant registration;
+- fines.
+
+State lawful tenant responsibility for violations caused by the tenant, occupants, or guests.
+
+## 12. Pets and Assistance Animals
+
+For ordinary pets, define:
+
+- allowed animals;
+- number limits;
+- lawful pet rent / fee / deposit;
+- waste and damage responsibility;
+- approval and records.
+
+Assistance animals are handled under Doc 13 and applicable law and are not ordinary pets. Do not apply prohibited pet fees or restrictions to an approved assistance animal.
+
+## 13. Smoking and Vaping
+
+State the indoor and exterior policy.
+
+Preferred CMA default, when adopted for the property:
+
+## No smoking or vaping inside the dwelling.
+
+## 14. Lawn, Snow, and Exterior Care
+
+Assign responsibility for:
+
+- lawn and landscaping;
+- snow and ice;
+- exterior trash;
+- gutters if applicable;
+- HOA-controlled areas.
+
+Use specific tasks and timing rather than vague “maintain reasonably” language.
+
+## 15. HVAC and Filters
+
+State:
+
+- filter size and location;
+- replacement responsibility;
+- expected interval;
+- prohibition on blocking vents or misusing systems;
+- prompt reporting requirement.
+
+CMA-PM tracks the schedule internally even if the tenant replaces filters.
+
+## 16. Septic / Well Addendum
+
+If applicable, address:
+
+- prohibited flushing and drainage materials;
+- wipes, grease, feminine hygiene products, and non-biodegradable items;
+- water treatment and testing responsibilities;
+- reporting of backup, odor, pump, or drainage problems;
+- tenant-caused damage where legally enforceable.
+
+## 17. Appliances and Included Property
+
+List included appliances, furnishings, remotes, keys, parking devices, and other items.
+
+State repair/replacement responsibility and any item provided without a landlord repair obligation only if lawful and intentional.
+
+## 18. Renter's Insurance
+
+If required, state:
+
+- minimum liability limit;
+- proof and renewal requirements;
+- additional-interest information if used;
+- effective date;
+- consequences of lapse consistent with law.
+
+Clarify that landlord insurance does not insure tenant belongings.
+
+## 19. Maintenance Reporting and Super
+
+Require prompt reporting of leaks, backups, electrical hazards, HVAC failures, roof leaks, alarm issues, and other conditions that may worsen.
+
+The Home Guide may direct tenants to Super for eligible routine issues.
+
+CMA-PM remains the escalation contact for:
+
+- emergencies;
+- denied or delayed Super service;
+- major building systems;
+- repeat issues;
+- owner approval;
+- habitability, insurance, HOA, or legal concerns.
+
+## 20. Entry and Access
+
+State lawful entry purposes and procedure for:
+
+- maintenance;
+- inspections;
+- emergencies;
+- licensing / insurance;
+- showings;
+- agreed services.
+
+The final clause must reflect current Maryland and local notice rules. Emergency access is separate.
+
+## 21. Alterations and Picture Hanging
+
+Require written approval for:
+
+- painting or material alterations;
+- large anchors;
+- wall-mounted televisions;
+- heavy shelving;
+- drilling into tile, masonry, cabinetry, exterior walls, or other sensitive surfaces;
+- satellite dishes, cameras, antennas, signs, exterior wiring, or attachments.
+
+CMA's working wear policy treats a few small ordinary picture nail holes as ordinary wear. Excessive, large, or unusually placed holes may be damage.
+
+## 22. Ordinary Wear and Damage
+
+The lease should preserve the legal distinction between ordinary wear and tenant-caused damage.
+
+Examples and internal deduction standards are in Doc 18.
+
+Do not make the tenant responsible for ordinary aging, routine turnover, or preexisting conditions.
+
+## 23. Move-In Condition
+
+The lease/package should provide the legally required condition and inspection information and allow the tenant to report preexisting issues.
+
+CMA-PM completes the photo process in Doc 14 before or at possession.
+
+## 24. Move-Out
+
+Address:
+
+- notice;
+- inspection rights;
+- keys, remotes, permits, and forwarding address;
+- personal property removal;
+- cleaning and condition expectations;
+- lawful deductions;
+- abandoned-property procedure;
+- deposit return.
+
+## 25. Early Termination / Lease Break
+
+Avoid describing the clause as a punishment.
+
+The final lease should state:
+
+- whether an optional buyout is offered;
+- written notice requirements;
+- rent responsibility until the tenancy legally ends or the unit is re-rented, as applicable;
+- the landlord's duty to mitigate where required;
+- lawful reletting and turnover costs;
+- deposit treatment;
+- statutory termination rights that cannot be waived.
+
+Do not use a fixed punitive lease-break fee without local legal review.
+
+## 26. Delinquency, Default, and Legal Fees
+
+The clause must align with current law for:
+
+- late fees;
+- notices;
+- nonpayment proceedings;
+- acceptance of partial payment;
+- court costs;
+- attorney fees;
+- other breaches.
+
+Do not create unsupported processing or eviction fees. Do not authorize self-help.
+
+## 27. Notices
+
+State notice addresses and permitted delivery methods.
+
+For a statutory notice, use the delivery method required by the current statute or local law even if the lease allows additional methods for ordinary communication.
+
+## 28. Required and Property-Specific Addenda
+
+Potential addenda:
+
+- Maryland Tenants' Bill of Rights;
+- federal/Maryland lead;
+- HOA / condo;
+- pet;
+- assistance-animal approval terms when appropriate;
+- parking;
 - smoking;
-- lawn care;
-- snow removal;
-- HVAC filters;
-- septic;
 - utilities;
+- lawn / snow;
+- HVAC filter;
+- septic / well;
 - renter's insurance;
-- exterior modifications;
-- satellite dishes;
-- pool / spa if applicable;
-- fireplace / wood stove if applicable;
-- furnished-property rules if applicable;
-- property-specific operating rules.
+- exterior modifications / satellite dish;
+- pool / spa;
+- fireplace / wood stove;
+- furnished property;
+- local county / municipal addendum.
 
-Only attach addenda relevant to the specific property.
+Attach only what applies.
 
----
-
-# 27. Lease Generation Workflow
+## 29. Final Review and Archive
 
 ```text
-Approved Applicant
-      ↓
-DoorLoop Maryland Lease
-      ↓
-CMA Required Terms
-      ↓
-Property-Specific Addenda
-      ↓
-Exact-Address Compliance Check
-      ↓
-Final Review
-      ↓
-Tenant E-Signature
-      ↓
-Executed PDF
-      ↓
-DoorLoop + Google Drive Archive
+Approved applicant
+-> DoorLoop Maryland lease
+-> CMA checklist and property addenda
+-> exact-address compliance review
+-> final proofread
+-> e-signature
+-> DoorLoop record
+-> Google Drive archive
 ```
 
----
+Retain the executed lease, addenda, disclosures, amendments, renewals, notices, and condition records.
 
-# 28. Recordkeeping
+## 30. Annual Review
 
-After signing, retain:
+Review this checklist at least annually and when:
 
-- final executed lease;
-- all addenda;
-- disclosures;
-- amendments;
-- renewal documents;
-- tenant notices;
-- move-in condition records.
-
-Preferred archive:
-
-```text
-Google Drive
-└── Properties
-    └── [PROPERTY NAME]
-        └── Lease
-```
-
-DoorLoop remains the operational system.
-
-Google Drive remains the durable company archive.
-
----
-
-# 29. Relationship to DoorLoop
-
-DoorLoop should generate the actual tenant lease.
-
-This document serves as CMA's internal standard for checking that the final DoorLoop lease includes the terms and addenda CMA intends to use.
-
-If DoorLoop's standard clause conflicts with:
-
-- Maryland law;
-- local law;
-- HOA requirements;
-- CMA's approved business terms;
-
-the final lease should be corrected before signature.
-
----
-
-# 30. Annual Review
-
-Review this document at least annually and whenever:
-
-- Maryland landlord-tenant law changes;
-- a new county or municipality is entered;
-- DoorLoop changes its lease workflow;
-- CMA adopts a new tenant policy;
-- a recurring operational problem suggests a new addendum is useful.
-
-The objective is not to make the lease longer for its own sake.
-
-The objective is to make responsibilities clear, property-specific, and legally current.
+- Maryland or local law changes;
+- CMA enters a new jurisdiction;
+- DoorLoop changes its forms;
+- a new property type or HOA is added;
+- a recurring operational issue suggests a new addendum.
