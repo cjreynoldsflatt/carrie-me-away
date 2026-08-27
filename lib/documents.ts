@@ -130,5 +130,35 @@ export function getDocuments(): Document[] {
     updatedAt: '2026-08-26',
     content: readDoc('18-cma-wear-tear-and-security-deposit-guide.md'),
   },
+  {
+    slug: 'cma-annual-compliance-calendar-and-entity-checklist',
+    title: '19 — CMA Annual Compliance Calendar & Entity Checklist',
+    updatedAt: '2026-08-26',
+    content: readDoc('19-cma-annual-compliance-calendar-and-entity-checklist.md'),
+  },
+  {
+    slug: 'cma-insurance-and-risk-management-schedule',
+    title: '20 — CMA Insurance & Risk Management Schedule',
+    updatedAt: '2026-08-26',
+    content: readDoc('20-cma-insurance-and-risk-management-schedule.md'),
+  },
+  {
+    slug: 'cma-tax-and-capital-implementation-schedule',
+    title: '21 — CMA Tax & Capital Implementation Schedule',
+    updatedAt: '2026-08-26',
+    content: readDoc('21-cma-tax-and-capital-implementation-schedule.md'),
+  },
+  {
+    slug: 'cma-data-access-privacy-and-business-continuity-policy',
+    title: '22 — CMA Data Access, Privacy & Business Continuity Policy',
+    updatedAt: '2026-08-26',
+    content: readDoc('22-cma-data-access-privacy-and-business-continuity-policy.md'),
+  },
+  {
+    slug: 'cma-company-resolutions-and-annual-consents',
+    title: '23 — CMA Company Resolutions & Annual Consents',
+    updatedAt: '2026-08-26',
+    content: readDoc('23-cma-company-resolutions-and-annual-consents.md'),
+  },
 ]
 }
