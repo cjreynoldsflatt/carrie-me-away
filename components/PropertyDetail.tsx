@@ -325,7 +325,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       {/* Back header */}
-      <div className="px-4 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
+      <div className="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
         <button
           onClick={() => onBack ? onBack() : setSelectedId(null)}
           className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
