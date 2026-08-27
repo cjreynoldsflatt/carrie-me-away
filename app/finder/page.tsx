@@ -65,7 +65,7 @@ function FinderContent() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Top bar */}
-      <header className="min-h-14 shrink-0 bg-white border-b border-slate-200 px-5 py-2 flex items-center gap-3 z-10">
+      <header className="min-h-14 shrink-0 bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3 z-10">
         {/* Back to home */}
         <Link href="/" className="shrink-0 text-slate-400 hover:text-slate-700 transition-colors">
           <ChevronLeft size={20} />
