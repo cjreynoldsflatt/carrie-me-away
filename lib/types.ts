@@ -98,6 +98,7 @@ export interface GlobalAssumptions {
   turnoverCost: number            // default 1500 (one-time cost per tenant turnover)
   pestControlMonthly: number      // default 50 ($/month)
   lawnCareMonthly: number         // default 50 ($/month)
+  targetYieldOnCost: number       // default 0.05 (5%) — Maximum Purchase Price target
 }
 
 export interface SearchSettings {

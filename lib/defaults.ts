@@ -11,6 +11,7 @@ export const DEFAULT_ASSUMPTIONS: GlobalAssumptions = {
   turnoverCost: 1500,
   pestControlMonthly: 50,
   lawnCareMonthly: 50,
+  targetYieldOnCost: 0.05,
 }
 
 // Primary search center (Ellicott City / Columbia, MD)

@@ -242,8 +242,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   // Operating reserve — CMA funds $20k reserve per property at acquisition
   const PROPERTY_RESERVE = 20_000
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
-  // Maximum Purchase Price / Stabilized Yield on Cost
-  const [targetYieldOnCost, setTargetYieldOnCost] = useState(0.08)
+  // Maximum Purchase Price — other costs (permits/legal/contingency); target yield lives in global assumptions
   const [otherCostsInput, setOtherCostsInput] = useState(0)
 
   useEffect(() => {
@@ -347,6 +346,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
 
   // Maximum Purchase Price — Stabilized Yield on Cost
   const annualStabilizedNOI = metrics.netAnnualIncome
+  const targetYieldOnCost = assumptions.targetYieldOnCost ?? 0.05
   const maxTotalProjectCost = targetYieldOnCost > 0 && annualStabilizedNOI > 0
     ? Math.round(annualStabilizedNOI / targetYieldOnCost) : 0
   // Solve for max price with closing costs as % of price: price * (1 + rate) + repairs + other = maxTotal
@@ -1160,7 +1160,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   max={30}
                   step={0.5}
                   value={parseFloat((targetYieldOnCost * 100).toFixed(1))}
-                  onChange={(e) => setTargetYieldOnCost(Math.max(0.001, Math.min(0.30, Number(e.target.value) / 100)))}
+                  onChange={(e) => setAssumptions({ targetYieldOnCost: Math.max(0.001, Math.min(0.30, Number(e.target.value) / 100)) })}
                   className="w-14 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 <span className="text-sm text-slate-400">%</span>

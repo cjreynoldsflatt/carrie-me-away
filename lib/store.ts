@@ -365,7 +365,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'carrie-app-state',
-      version: 18,
+      version: 19,
       migrate: (persisted: unknown, version: number) => {
         const s = persisted as Record<string, unknown>
         if (version === 0) {
@@ -536,6 +536,17 @@ export const useAppStore = create<AppState>()(
             assumptions: {
               ...rest,
               closingCostRate: (rest.closingCostRate as number | undefined) === 0.02 ? 0.03 : (rest.closingCostRate as number | undefined) ?? 0.03,
+            },
+          }
+        }
+        if (version < 19) {
+          // Add targetYieldOnCost global assumption
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              targetYieldOnCost: (assumptions.targetYieldOnCost as number | undefined) ?? 0.05,
             },
           }
         }
