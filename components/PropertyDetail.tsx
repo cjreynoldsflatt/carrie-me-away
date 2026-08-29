@@ -242,6 +242,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   // Operating reserve — CMA funds $20k reserve per property at acquisition
   const PROPERTY_RESERVE = 20_000
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
+  // Maximum Purchase Price / Stabilized Yield on Cost
+  const [targetYieldOnCost, setTargetYieldOnCost] = useState(0.08)
+  const [otherCostsInput, setOtherCostsInput] = useState(0)
 
   useEffect(() => {
     const dbRent = listing?.estimatedRent ?? 0
@@ -261,6 +264,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     setOpenGear(null)
     setPurchaseMethod('cash')
     setCcapRate(0.06)
+    setOtherCostsInput(0)
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
       setUnitRents(Array(dbUnits).fill(perUnit))
@@ -340,6 +344,22 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const cameronQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
   const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== originalRent
   const repairsIsEdited = repairsInput !== (20000)
+
+  // Maximum Purchase Price — Stabilized Yield on Cost
+  const annualStabilizedNOI = metrics.netAnnualIncome
+  const maxTotalProjectCost = targetYieldOnCost > 0 && annualStabilizedNOI > 0
+    ? Math.round(annualStabilizedNOI / targetYieldOnCost) : 0
+  // Solve for max price with closing costs as % of price: price * (1 + rate) + repairs + other = maxTotal
+  const maxPurchasePrice = maxTotalProjectCost > 0
+    ? Math.round((maxTotalProjectCost - repairsInput - otherCostsInput) / (1 + assumptions.closingCostRate)) : 0
+  const maxClosingCosts = Math.round(Math.max(maxPurchasePrice, 0) * assumptions.closingCostRate)
+  const marketCapRate = listing.price > 0 ? annualStabilizedNOI / listing.price : 0
+  const priceDelta = listing.price - maxPurchasePrice
+  const priceStatus: 'below' | 'near' | 'above' =
+    maxPurchasePrice <= 0 ? 'above'
+    : listing.price <= maxPurchasePrice ? 'below'
+    : listing.price <= maxPurchasePrice * 1.05 ? 'near'
+    : 'above'
 
   return (
     <div className="flex flex-col h-full">
@@ -1123,6 +1143,95 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               Target: 6%+ for a strong cash-flow investment. At 7%+ the deal earns meaningfully more than most liquid alternatives without the same concentration risk.
             </p>
           </div>
+
+          {/* ── Maximum Purchase Price / Stabilized Yield on Cost ── */}
+          <Section title="Maximum Purchase Price">
+            <p className="text-xs text-slate-400 leading-relaxed pt-1 pb-2">
+              Stabilized yield on cost — the highest price you can pay and still hit your target return. NOI excludes debt payments.
+            </p>
+
+            {/* Target yield — editable */}
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-sm text-slate-700">Target yield on cost</span>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={1}
+                  max={30}
+                  step={0.5}
+                  value={parseFloat((targetYieldOnCost * 100).toFixed(1))}
+                  onChange={(e) => setTargetYieldOnCost(Math.max(0.001, Math.min(0.30, Number(e.target.value) / 100)))}
+                  className="w-14 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+                <span className="text-sm text-slate-400">%</span>
+              </div>
+            </div>
+
+            <Row label="Annual stabilized NOI" value={fmtCurrency(annualStabilizedNOI)} />
+            <Row
+              label="Max total project cost"
+              value={maxTotalProjectCost > 0 ? fmtCurrency(maxTotalProjectCost) : '—'}
+              sub={`NOI ÷ ${(targetYieldOnCost * 100).toFixed(1)}%`}
+            />
+
+            <div className="border-t border-slate-100 my-1.5" />
+            <p className="text-xs font-medium text-slate-500 pb-1">Less other project costs</p>
+
+            <Row label="Closing costs" value={fmtCurrency(maxClosingCosts)} prefix="−" sub={`${(assumptions.closingCostRate * 100).toFixed(0)}% of max price`} />
+            <Row label="Repairs / rehab" value={fmtCurrency(repairsInput)} prefix="−" />
+
+            {/* Permits / legal / contingency — editable */}
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-sm text-slate-700">
+                <span className="inline-block w-4 text-slate-400 text-sm">−</span>
+                Permits, legal, contingency
+              </span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-slate-400">$</span>
+                <input
+                  type="number"
+                  min={0}
+                  step={1000}
+                  value={otherCostsInput}
+                  onChange={(e) => setOtherCostsInput(Math.max(0, Number(e.target.value)))}
+                  className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+              </div>
+            </div>
+
+            <Divider />
+            <TotalRow
+              label="Maximum Purchase Price"
+              value={maxPurchasePrice > 0 ? fmtCurrency(maxPurchasePrice) : '—'}
+              color={priceStatus === 'below' ? 'text-emerald-700' : priceStatus === 'near' ? 'text-orange-600' : 'text-red-600'}
+            />
+
+            {/* Asking price vs maximum */}
+            <div className={cn(
+              'mt-2 rounded-lg px-3 py-2.5',
+              priceStatus === 'below' ? 'bg-emerald-50' : priceStatus === 'near' ? 'bg-orange-50' : 'bg-red-50'
+            )}>
+              <div className={cn('text-sm font-semibold', priceStatus === 'below' ? 'text-emerald-700' : priceStatus === 'near' ? 'text-orange-700' : 'text-red-700')}>
+                {priceStatus === 'below' ? 'Below maximum' : priceStatus === 'near' ? 'Near maximum' : 'Above maximum'}
+              </div>
+              <div className={cn('text-xs mt-0.5', priceStatus === 'below' ? 'text-emerald-600' : priceStatus === 'near' ? 'text-orange-600' : 'text-red-600')}>
+                {maxPurchasePrice > 0 ? (
+                  priceDelta > 0
+                    ? `Asking ${fmtPrice(listing.price)} · needs to drop ${fmtCurrency(priceDelta)} to hit target`
+                    : `Asking ${fmtPrice(listing.price)} · ${fmtCurrency(Math.abs(priceDelta))} below maximum`
+                ) : 'NOI too low to support any purchase price at this target yield'}
+              </div>
+            </div>
+
+            {/* Market cap rate — separate metric */}
+            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <div>
+                <div className="text-sm text-slate-700">Market Cap Rate</div>
+                <div className="text-xs text-slate-400 mt-0.5">NOI ÷ asking price</div>
+              </div>
+              <div className="text-base font-semibold text-slate-700 tabular-nums">{fmtYield(marketCapRate)}</div>
+            </div>
+          </Section>
 
           {/* ── Stress test ──────────────────────────────────── */}
           {effectiveRentInput > 0 && (() => {
