@@ -118,9 +118,9 @@ function abbr(v: number) {
 }
 
 const BENCHMARKS = [
-  { label: 'S&P 500 (50-yr nominal avg)', rate: 0.10 },
-  { label: 'REITs (hist. total return)', rate: 0.09 },
-  { label: 'US Bond Index (hist. avg)', rate: 0.042 },
+  { label: 'S&P 500 (VOO)', rate: 0.130 },
+  { label: 'REITs (VNQ)', rate: 0.035 },
+  { label: 'US Bond Index (AGG)', rate: -0.003 },
 ]
 
 function InlineSlider({
@@ -1558,7 +1558,14 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       </div>
                       {cagrExp != null && (
                         <div className="space-y-1.5">
-                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">vs. other investments (expected scenario)</p>
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">5-Year Return Comparison</p>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-slate-600 font-medium">This Property</span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-slate-500 tabular-nums">{(cagrExp * 100).toFixed(1)}%</span>
+                              <span className="text-slate-400 w-14 text-right text-[10px]">projected</span>
+                            </div>
+                          </div>
                           {BENCHMARKS.map(({ label, rate }) => {
                             const above = cagrExp >= rate
                             const diff = Math.abs(cagrExp - rate)
@@ -1566,16 +1573,16 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                               <div key={label} className="flex items-center justify-between text-xs">
                                 <span className="text-slate-600">{label}</span>
                                 <div className="flex items-center gap-2 shrink-0">
-                                  <span className="text-slate-500 tabular-nums">{(rate * 100).toFixed(1)}%</span>
+                                  <span className="text-slate-500 tabular-nums">{rate >= 0 ? '' : '−'}{(Math.abs(rate) * 100).toFixed(1)}%</span>
                                   <span className={cn('font-semibold tabular-nums w-14 text-right', above ? 'text-emerald-600' : 'text-red-500')}>
-                                    {above ? '+' : '−'}{(diff * 100).toFixed(1)}% {above ? '↑' : '↓'}
+                                    {above ? '+' : '−'}{(diff * 100).toFixed(1)}pp {above ? '↑' : '↓'}
                                   </span>
                                 </div>
                               </div>
                             )
                           })}
                           <p className="text-[10px] text-slate-400 leading-relaxed pt-0.5">
-                            Historical nominal averages. Excludes taxes, leverage differences, and liquidity. Real estate CAGR excludes selling costs.
+                            Property return is projected over the next 5 years. Market benchmarks show trailing 5-year annualized total returns (Aug 2021–Aug 2026) and are for context only. Excludes taxes, leverage differences, and liquidity.
                           </p>
                         </div>
                       )}
