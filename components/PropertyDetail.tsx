@@ -223,7 +223,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const isMultiFamily = listing?.propertyType === 'Multi Family'
 
   // Local editable values — reset when selected property changes
-  const [repairsInput, setRepairsInput] = useState(listing?.repairs ?? 20000)
+  const [repairsInput, setRepairsInput] = useState(20000)
   const [rentInput, setRentInput] = useState(listing?.estimatedRent ?? 0)
   const [unitsInput, setUnitsInput] = useState(listing?.units ?? 2)
   const [propertyTaxInput, setPropertyTaxInput] = useState(listing?.propertyTaxAnnual ?? 0)
@@ -244,10 +244,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
 
   useEffect(() => {
-    const dbRepairs = listing?.repairs ?? 20000
     const dbRent = listing?.estimatedRent ?? 0
     const dbUnits = listing?.units ?? 2
-    setRepairsInput(dbRepairs)
+    setRepairsInput(20000)
     // Default to the same conservative rent the map/list uses for grading (20th-percentile of range)
     const hasRentRange = (listing?.rentLow ?? 0) > 0 && (listing?.rentHigh ?? 0) > 0 && listing?.rentConfidence !== 'High'
     const defaultRent = hasRentRange
@@ -340,7 +339,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const carrieQuarterly = Math.round(quarterlyDistributable * CMA_I.carrieResidualPct)
   const cameronQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
   const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== originalRent
-  const repairsIsEdited = repairsInput !== (listing.repairs ?? 20000)
+  const repairsIsEdited = repairsInput !== (20000)
 
   return (
     <div className="flex flex-col h-full">
@@ -638,7 +637,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               <div className="flex items-center gap-1.5">
                 {repairsIsEdited && (
                   <button
-                    onClick={() => setRepairsInput(listing.repairs ?? 20000)}
+                    onClick={() => setRepairsInput(20000)}
                     className="text-orange-500 hover:text-orange-700 flex items-center gap-0.5"
                     title="Reset to saved value"
                   >
@@ -654,7 +653,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   onChange={(e) => setRepairsInput(Math.max(0, Number(e.target.value)))}
                   onBlur={(e) => {
                     const val = Math.max(0, Number(e.target.value))
-                    if (val !== (listing.repairs ?? 20000)) saveRepairsToDb(listing.id, val)
+                    if (val !== (20000)) saveRepairsToDb(listing.id, val)
                   }}
                   className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 />
