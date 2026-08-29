@@ -244,9 +244,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
   // Maximum Purchase Price — other costs (permits/legal/contingency); target yield lives in global assumptions
   const [otherCostsInput, setOtherCostsInput] = useState(0)
-  // Renovation Value-Add ROI
-  const [preRenovationValue, setPreRenovationValue] = useState(listing?.price ?? 0)
-  const [postRenovationValue, setPostRenovationValue] = useState(0)
 
   useEffect(() => {
     const dbRent = listing?.estimatedRent ?? 0
@@ -267,8 +264,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     setPurchaseMethod('cash')
     setCcapRate(0.06)
     setOtherCostsInput(0)
-    setPreRenovationValue(listing?.price ?? 0)
-    setPostRenovationValue(0)
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
       setUnitRents(Array(dbUnits).fill(perUnit))
@@ -348,16 +343,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const cameronQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
   const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== originalRent
   const repairsIsEdited = repairsInput !== (20000)
-
-  // Renovation Value-Add ROI
-  const renovationCost = repairsInput
-  const estimatedValueIncrease = postRenovationValue > 0 && preRenovationValue > 0
-    ? Math.max(0, postRenovationValue - preRenovationValue) : 0
-  const netValueCreated = estimatedValueIncrease - renovationCost
-  const renovationROI = renovationCost > 0 && postRenovationValue > 0
-    ? netValueCreated / renovationCost : null
-  const valueAddedPerDollar = renovationCost > 0 && postRenovationValue > 0
-    ? estimatedValueIncrease / renovationCost : null
 
   // Maximum Purchase Price — Stabilized Yield on Cost
   const annualStabilizedNOI = metrics.netAnnualIncome
@@ -1146,13 +1131,13 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
           <div className={cn('rounded-xl border p-4 space-y-1', yieldBg(metrics.investmentScore))}>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Net Cash Yield</div>
             <div className="text-sm text-slate-600">
-              {fmtCurrency(metrics.netAnnualIncome)}/yr ÷ {fmtCurrency(metrics.totalCashInvested)} invested
+              {fmtCurrency(metrics.netAnnualIncome)}/yr ÷ {fmtCurrency(totalCashRequired)} invested
             </div>
             <div className={cn('text-3xl font-bold', yieldColor(metrics.investmentScore))}>
-              {fmtYield(metrics.netCashYield)}
+              {fmtYield(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0)}
             </div>
             <div className={cn('text-sm font-semibold', yieldColor(metrics.investmentScore))}>
-              {yieldLabel(metrics.netCashYield)}
+              {yieldLabel(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0)}
             </div>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed">
               Target: 6%+ for a strong cash-flow investment. At 7%+ the deal earns meaningfully more than most liquid alternatives without the same concentration risk.
@@ -1165,21 +1150,17 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               Stabilized yield on cost — the highest price you can pay and still hit your target return. NOI excludes debt payments.
             </p>
 
-            {/* Target yield — editable */}
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-slate-700">Target yield on cost</span>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min={1}
-                  max={30}
-                  step={0.5}
-                  value={parseFloat((targetYieldOnCost * 100).toFixed(1))}
-                  onChange={(e) => setAssumptions({ targetYieldOnCost: Math.max(0.001, Math.min(0.30, Number(e.target.value) / 100)) })}
-                  className="w-14 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-                <span className="text-sm text-slate-400">%</span>
-              </div>
+            {/* Target yield — slider */}
+            <div className="py-1.5">
+              <InlineSlider
+                label="Target yield on cost"
+                value={parseFloat((targetYieldOnCost * 100).toFixed(1))}
+                onChange={(v) => setAssumptions({ targetYieldOnCost: v / 100 })}
+                min={1}
+                max={20}
+                step={0.5}
+                format={(v) => `${v.toFixed(1)}%`}
+              />
             </div>
 
             <Row label="Annual stabilized NOI" value={fmtCurrency(annualStabilizedNOI)} />
@@ -1248,98 +1229,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             </div>
           </Section>
 
-          {/* ── Renovation Value-Add ROI ─────────────────────── */}
-          <Section title="Renovation Value-Add ROI">
-            <p className="text-xs text-slate-400 leading-relaxed pt-1 pb-2">
-              Equity and value-creation metric — separate from income return. Shows how much value the renovation adds relative to its cost.
-            </p>
-
-            {/* Renovation cost — read from repairs input */}
-            <Row label="Renovation cost" value={fmtCurrency(renovationCost)} sub="From repairs / rehab above" />
-
-            {/* Pre-renovation value */}
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-slate-700">Pre-renovation value</span>
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-slate-400">$</span>
-                <input
-                  type="number"
-                  min={0}
-                  step={1000}
-                  value={preRenovationValue || ''}
-                  placeholder={String(listing.price)}
-                  onChange={(e) => setPreRenovationValue(Math.max(0, Number(e.target.value)))}
-                  className="w-28 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-              </div>
-            </div>
-
-            {/* Post-renovation value */}
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-slate-700">Post-renovation value</span>
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-slate-400">$</span>
-                <input
-                  type="number"
-                  min={0}
-                  step={1000}
-                  value={postRenovationValue || ''}
-                  placeholder="Enter estimate"
-                  onChange={(e) => setPostRenovationValue(Math.max(0, Number(e.target.value)))}
-                  className="w-28 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-              </div>
-            </div>
-
-            {postRenovationValue > 0 ? (
-              <>
-                <Divider />
-                <Row label="Estimated value increase" value={fmtCurrency(estimatedValueIncrease)} sub="Post − pre renovation value" />
-                <Row label="Renovation cost" value={fmtCurrency(renovationCost)} prefix="−" />
-                <Divider />
-                <TotalRow
-                  label="Net value created"
-                  value={fmtCurrency(netValueCreated)}
-                  color={netValueCreated >= 0 ? 'text-emerald-700' : 'text-red-600'}
-                />
-
-                {/* ROI metrics */}
-                <div className={cn(
-                  'mt-2 rounded-lg px-3 py-2.5 space-y-2',
-                  netValueCreated >= 0 ? 'bg-emerald-50' : 'bg-red-50'
-                )}>
-                  {netValueCreated < 0 && (
-                    <div className="text-xs font-semibold text-red-700">Value destructive — renovation costs more than it adds</div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className={cn('text-sm font-semibold', netValueCreated >= 0 ? 'text-emerald-700' : 'text-red-700')}>
-                        Renovation Value-Add ROI
-                      </div>
-                      <div className="text-xs text-slate-400 mt-0.5">Net value created ÷ renovation cost</div>
-                    </div>
-                    <div className={cn('text-xl font-bold tabular-nums', netValueCreated >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                      {renovationROI != null ? `${(renovationROI * 100).toFixed(0)}%` : '—'}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-slate-200/60 pt-2">
-                    <div>
-                      <div className={cn('text-sm font-semibold', netValueCreated >= 0 ? 'text-emerald-700' : 'text-red-700')}>
-                        Value added per $1 renovated
-                      </div>
-                      <div className="text-xs text-slate-400 mt-0.5">Estimated value increase ÷ renovation cost</div>
-                    </div>
-                    <div className={cn('text-xl font-bold tabular-nums', netValueCreated >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                      {valueAddedPerDollar != null ? `${valueAddedPerDollar.toFixed(2)}x` : '—'}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-xs text-slate-400 italic py-2">Enter a post-renovation value estimate to calculate ROI.</p>
-            )}
-          </Section>
-
           {/* ── Stress test ──────────────────────────────────── */}
           {effectiveRentInput > 0 && (() => {
             const stressBase = {
@@ -1397,9 +1286,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
           <Section title="Rental Income Payback">
             <div className="py-2 space-y-1">
               <div className="text-sm text-slate-600">
-                {fmtCurrency(metrics.totalCashInvested)} invested ÷ {fmtCurrency(metrics.netAnnualIncome)}/yr income
+                {fmtCurrency(totalCashRequired)} invested ÷ {fmtCurrency(metrics.netAnnualIncome)}/yr income
               </div>
-              <div className="text-3xl font-bold text-slate-900">{fmtPayback(metrics.paybackYears)}</div>
+              <div className="text-3xl font-bold text-slate-900">{fmtPayback(metrics.netAnnualIncome > 0 ? totalCashRequired / metrics.netAnnualIncome : Infinity)}</div>
               <p className="text-xs text-slate-400 leading-relaxed pt-1">
                 Years of projected net rental income to equal the original cash invested. You still own the property throughout — this is not economic break-even or total return.
               </p>
