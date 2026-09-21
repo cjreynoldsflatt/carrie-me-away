@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { GitCompare, MapPin, Trash2 } from 'lucide-react'
+import { GitCompare, MapPin, Trash2, Activity, X } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
@@ -10,14 +10,15 @@ import FilterPopover from './FilterPopover'
 import AddListingModal from './AddListingModal'
 import { cn } from '@/lib/utils'
 import type { SaleListing } from '@/lib/types'
+import type { StatusResult, ListingStatus } from '@/app/api/check-listing-status/route'
 
 const GRADES = [
-  { key: 'A+', min: 70,  max: Infinity, bg: 'bg-emerald-500', ring: 'ring-emerald-400', text: 'text-white' },
-  { key: 'A',  min: 57,  max: 69,       bg: 'bg-cyan-500',    ring: 'ring-cyan-400',    text: 'text-white' },
-  { key: 'B+', min: 44,  max: 56,       bg: 'bg-blue-500',    ring: 'ring-blue-400',    text: 'text-white' },
-  { key: 'B',  min: 32,  max: 43,       bg: 'bg-orange-400',  ring: 'ring-orange-300',  text: 'text-white' },
-  { key: 'C',  min: 20,  max: 31,       bg: 'bg-orange-600',  ring: 'ring-orange-500',  text: 'text-white' },
-  { key: 'D',  min: 0,   max: 19,       bg: 'bg-red-600',     ring: 'ring-red-500',     text: 'text-white' },
+  { key: 'A+', min: 97,  max: Infinity, bg: 'bg-emerald-500', ring: 'ring-emerald-400', text: 'text-white' },
+  { key: 'A',  min: 88,  max: 96,       bg: 'bg-cyan-500',    ring: 'ring-cyan-400',    text: 'text-white' },
+  { key: 'B+', min: 76,  max: 87,       bg: 'bg-blue-500',    ring: 'ring-blue-400',    text: 'text-white' },
+  { key: 'B',  min: 60,  max: 75,       bg: 'bg-orange-400',  ring: 'ring-orange-300',  text: 'text-white' },
+  { key: 'C',  min: 40,  max: 59,       bg: 'bg-orange-600',  ring: 'ring-orange-500',  text: 'text-white' },
+  { key: 'D',  min: 0,   max: 39,       bg: 'bg-red-600',     ring: 'ring-red-500',     text: 'text-white' },
 ] as const
 
 function scoreToGrade(score: number) {
@@ -73,6 +74,14 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
+  const [statusChecking, setStatusChecking] = useState(false)
+  const [statusResults, setStatusResults] = useState<StatusResult[] | null>(null)
+
+  const statusMap = useMemo<Record<string, string>>(() => {
+    if (!statusResults) return {}
+    return Object.fromEntries(statusResults.map((r) => [r.id, r.status]))
+  }, [statusResults])
+
   function toggleSelectMode() {
     if (selectMode) {
       setSelectMode(false)
@@ -95,6 +104,40 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
     await deleteListings(selectedIds)
     setSelectedIds([])
     setSelectMode(false)
+  }
+
+  async function handleCheckStatus() {
+    const withUrls = allListings.filter((l) => l.listingUrl)
+    if (withUrls.length === 0) {
+      alert('No listings have URLs to check.')
+      return
+    }
+    setStatusChecking(true)
+    setStatusResults(null)
+    try {
+      const res = await fetch('/api/check-listing-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listings: withUrls.map((l) => ({ id: l.id, url: l.listingUrl! })) }),
+      })
+      const data = await res.json()
+      setStatusResults(data.results ?? [])
+    } catch {
+      alert('Status check failed — try again.')
+    } finally {
+      setStatusChecking(false)
+    }
+  }
+
+  async function handleDeleteNonActive() {
+    if (!statusResults) return
+    const toDelete = statusResults
+      .filter((r) => r.status === 'Sold' || r.status === 'Pending' || r.status === 'Off Market')
+      .map((r) => r.id)
+    if (toDelete.length === 0) return
+    if (!confirm(`Delete ${toDelete.length} non-active propert${toDelete.length === 1 ? 'y' : 'ies'}? This cannot be undone.`)) return
+    await deleteListings(toDelete)
+    setStatusResults(null)
   }
 
   const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
@@ -166,6 +209,19 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           >
             <Trash2 size={14} />
           </button>
+          <button
+            onClick={handleCheckStatus}
+            disabled={statusChecking}
+            title="Check if any listings went pending or sold"
+            className={cn(
+              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
+              statusChecking
+                ? 'bg-violet-50 border-violet-300 text-violet-400 animate-pulse'
+                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
+            )}
+          >
+            <Activity size={14} />
+          </button>
           <FilterPopover />
           <AddListingModal />
           <AssumptionsPopover />
@@ -201,6 +257,19 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           >
             <Trash2 size={14} />
           </button>
+          <button
+            onClick={handleCheckStatus}
+            disabled={statusChecking}
+            title="Check if any listings went pending or sold"
+            className={cn(
+              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
+              statusChecking
+                ? 'bg-violet-50 border-violet-300 text-violet-400 animate-pulse'
+                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
+            )}
+          >
+            <Activity size={14} />
+          </button>
         </div>
       </div>
 
@@ -215,8 +284,14 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
 
       {selectMode && (
         <div className="px-4 py-2 bg-red-50 border-b border-red-100 text-xs text-red-700 flex items-center justify-between">
-          <span>{selectedIds.length === 0 ? 'Tap properties to select' : `${selectedIds.length} selected`}</span>
+          <span>{selectedIds.length === 0 ? 'Tap to select' : `${selectedIds.length} selected`}</span>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSelectedIds(selectedIds.length === listings.length ? [] : listings.map((l) => l.id))}
+              className="text-red-600 hover:text-red-800"
+            >
+              {selectedIds.length === listings.length ? 'Deselect all' : 'Select all'}
+            </button>
             {selectedIds.length > 0 && (
               <button onClick={handleDeleteSelected} className="font-semibold text-red-700 hover:text-red-900">
                 Delete {selectedIds.length}
@@ -228,6 +303,58 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           </div>
         </div>
       )}
+
+      {/* Status check results */}
+      {statusResults && (() => {
+        const changed = statusResults.filter((r) => r.status !== 'Active' && r.status !== 'Unknown')
+        const skipped = statusResults.filter((r) => r.status === 'Unknown').length
+        const statusColor: Record<ListingStatus, string> = {
+          Sold: 'text-red-600 font-semibold',
+          Pending: 'text-orange-600 font-semibold',
+          'Off Market': 'text-slate-500 font-semibold',
+          Active: 'text-emerald-600',
+          Unknown: 'text-slate-400',
+        }
+        return (
+          <div className="px-4 py-3 bg-violet-50 border-b border-violet-100 text-xs">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-semibold text-violet-800">
+                Status check — {allListings.filter((l) => l.listingUrl).length} listings checked
+              </span>
+              <button onClick={() => setStatusResults(null)} className="text-violet-400 hover:text-violet-600">
+                <X size={14} />
+              </button>
+            </div>
+            {changed.length === 0 ? (
+              <p className="text-violet-700">
+                All listings appear active.{skipped > 0 ? ` (${skipped} could not be checked)` : ''}
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {changed.map((r) => {
+                  const listing = allListings.find((l) => l.id === r.id)
+                  return (
+                    <div key={r.id} className="flex items-center gap-1.5">
+                      <span className={statusColor[r.status]}>{r.status}</span>
+                      <span className="text-slate-500">—</span>
+                      <span className="text-slate-700">{listing?.address ?? r.id}</span>
+                    </div>
+                  )
+                })}
+                {skipped > 0 && (
+                  <p className="text-slate-400 mt-1">{skipped} listing{skipped > 1 ? 's' : ''} could not be checked (site blocked or no URL).</p>
+                )}
+                <button
+                  onClick={handleDeleteNonActive}
+                  className="mt-2 text-red-600 font-semibold hover:text-red-800"
+                >
+                  Delete all non-active ({changed.length})
+                </button>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
@@ -285,6 +412,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
                 compareSelected={compareIds.includes(listing.id)}
                 selectMode={selectMode}
                 selectSelected={selectedIds.includes(listing.id)}
+                listingStatus={statusMap[listing.id]}
                 onClick={() => {
                   if (selectMode) {
                     toggleSelectId(listing.id)

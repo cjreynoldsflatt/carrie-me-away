@@ -1,4 +1,5 @@
 import { computeMetrics, computeConservativeRent } from './investment'
+import { estimateMdPropertyTax } from './md-tax'
 import type { SaleListing, RentalListing } from './types'
 
 // Helper to build a sale listing with computed investment metrics
@@ -17,15 +18,22 @@ function makeSale(
     | 'investmentScore'
     | 'insuranceAnnual'
     | 'conservativeRent'
+    | 'fiveYearCashFlows'
+    | 'cumulativeFiveYearCashFlow'
+    | 'cmaPropertyTaxAnnual'
+    | 'projectedPropertyTaxAnnual'
+    | 'propertyTaxIsEstimated'
+    | 'propertyTaxWarning'
   >,
 ): SaleListing {
+  const taxEst = estimateMdPropertyTax(raw.price, raw.propertyTaxAnnual, raw.city, raw.sdatAssessedValue)
   const conservativeRent = computeConservativeRent(raw.estimatedRent, raw.rentLow, raw.rentHigh, raw.rentConfidence)
   const metrics = computeMetrics({
     price: raw.price,
     hoaMonthly: raw.hoaMonthly,
     estimatedRent: raw.estimatedRent,
     conservativeRent,
-    propertyTaxAnnual: raw.propertyTaxAnnual,
+    propertyTaxAnnual: taxEst.cmaEstimated,  // use CMA estimated tax, not seller's bill
     insuranceRate: 0.005,
     closingCostRate: raw.closingCostRate,
     repairs: raw.repairs,
@@ -40,7 +48,15 @@ function makeSale(
     rentConfidence: raw.rentConfidence,
     rentalEvidence: raw.rentalEvidence,
   })
-  return { ...raw, conservativeRent, ...metrics }
+  return {
+    ...raw,
+    conservativeRent,
+    cmaPropertyTaxAnnual: taxEst.cmaEstimated,
+    projectedPropertyTaxAnnual: taxEst.projectedAfterReassessment,
+    propertyTaxIsEstimated: taxEst.isEstimated,
+    propertyTaxWarning: taxEst.warning,
+    ...metrics,
+  }
 }
 
 const defaults = {

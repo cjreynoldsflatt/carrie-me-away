@@ -14,22 +14,68 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS })
 }
 
+// Manual entry fields (used when the text-paste flow is unavailable, e.g. on mobile)
+interface ManualFields {
+  address?: string
+  city?: string       // "City, ST 12345"
+  price?: number
+  beds?: number
+  baths?: number
+  sqft?: number
+  yearBuilt?: number
+  hoaMonthly?: number
+  propertyTaxAnnual?: number
+  propertyType?: string
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { url, text, photoUrl: clientPhotoUrl, propertyType: clientPropertyType, units: clientUnits } = await req.json()
-    if (!text?.trim()) {
-      return NextResponse.json({ error: 'No text provided' }, { status: 400, headers: CORS })
+    const { url, text, photoUrl: clientPhotoUrl, propertyType: clientPropertyType, units: clientUnits, manual } = await req.json() as {
+      url?: string; text?: string; photoUrl?: string; propertyType?: string; units?: number; manual?: ManualFields
     }
 
-    const parsed = parseListingText(text, url)
+    // Require text, manual fields, or a URL to scrape
+    if (!text?.trim() && !manual && !url) {
+      return NextResponse.json({ error: 'No text or URL provided' }, { status: 400, headers: CORS })
+    }
 
-    // Address comes from URL (reliable) then falls back to text
+    // Parse fields — priority: manual > text > URL scraping
+    let parsed: ParsedListing
+    if (manual) {
+      parsed = {
+        price: Number(manual.price) || 0,
+        beds: Number(manual.beds) || 0,
+        baths: Number(manual.baths) || 0,
+        sqft: manual.sqft ? Number(manual.sqft) : null,
+        yearBuilt: manual.yearBuilt ? Number(manual.yearBuilt) : null,
+        hoaMonthly: Number(manual.hoaMonthly) || 0,
+        daysOnMarket: 0,
+        propertyType: clientPropertyType ?? manual.propertyType ?? 'Townhouse',
+        units: undefined as number | undefined,
+        city: manual.city ?? '',
+        propertyTaxAnnual: manual.propertyTaxAnnual ? Number(manual.propertyTaxAnnual) : null,
+      }
+    } else if (text?.trim()) {
+      parsed = parseListingText(text!, url)
+    } else {
+      // URL-only mode: fetch and scrape the listing page
+      const scraped = url ? await scrapeListingFromUrl(url) : null
+      if (!scraped?.price) {
+        return NextResponse.json(
+          { error: 'Could not auto-detect listing details from this URL. Please enter price and beds manually.' },
+          { status: 422, headers: CORS },
+        )
+      }
+      parsed = scraped
+    }
+
+    // Address: URL parsing is most reliable, then manual fields, then text
     const fromUrl = url ? addressFromUrl(url) : null
-    const streetAddress = fromUrl?.streetAddress ?? null
-    const city = fromUrl?.city ?? parsed.city ?? ''
+    const streetAddress = fromUrl?.streetAddress ?? manual?.address ?? null
+    const city = fromUrl?.city ?? (manual?.city ?? parsed.city ?? '')
 
     if (!streetAddress && !city) {
-      return NextResponse.json({ error: 'Could not find an address — make sure the URL is included' }, { status: 422, headers: CORS })
+      return NextResponse.json({ error: 'Could not find an address — add the URL or enter the address manually' }, { status: 422, headers: CORS })
     }
 
     const fullAddress = streetAddress ? `${streetAddress}, ${city}` : city
@@ -60,7 +106,7 @@ export async function POST(req: NextRequest) {
       yearBuilt: parsed.yearBuilt,
     }) : null
 
-    const id = stableId(url, streetAddress, city)
+    const id = stableId(url ?? null, streetAddress, city)
 
     // Check if already in DB before upserting
     const { data: existingRow } = await supabase.from('sale_listings').select('id').eq('id', id).maybeSingle()
@@ -311,6 +357,130 @@ function parseListingText(text: string, url?: string) {
   return { price, beds, baths, sqft, yearBuilt, hoaMonthly, daysOnMarket, propertyType, units, city, propertyTaxAnnual }
 }
 
+// ── URL scraper — fetches listing page and extracts data from JSON-LD + text ─────
+
+type ParsedListing = ReturnType<typeof parseListingText>
+
+/** Extract listing fields from schema.org JSON-LD blocks embedded in page HTML. */
+function extractFromJsonLd(html: string): Partial<ParsedListing> | null {
+  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+  let m: RegExpExecArray | null
+  while ((m = re.exec(html)) !== null) {
+    try {
+      const raw = JSON.parse(m[1])
+      const items: unknown[] = raw['@graph']
+        ? (raw['@graph'] as unknown[])
+        : Array.isArray(raw) ? raw : [raw]
+      for (const item of items) {
+        if (typeof item !== 'object' || !item) continue
+        const o = item as Record<string, unknown>
+        const typeStr = [o['@type']].flat().join(' ')
+        const isRealEstate = /Residence|House|Apartment|Condo|Townhouse|Property|Building/i.test(typeStr)
+        const isProduct = /^Product$/i.test(typeStr)
+        if (!isRealEstate && !isProduct) continue
+
+        const offers = (typeof o.offers === 'object' && o.offers) ? o.offers as Record<string, unknown> : null
+        const priceRaw = offers?.price ?? o.price
+        const price = priceRaw ? Number(String(priceRaw).replace(/[,$\s]/g, '')) : null
+        if (!price || price < 10000) continue
+
+        const beds = o.numberOfBedrooms != null ? Number(o.numberOfBedrooms) : null
+        const baths = o.numberOfBathroomsTotal != null
+          ? Number(o.numberOfBathroomsTotal)
+          : o.numberOfBathrooms != null ? Number(o.numberOfBathrooms) : null
+        const floorSize = (typeof o.floorSize === 'object' && o.floorSize) ? o.floorSize as Record<string, unknown> : null
+        const sqft = floorSize?.value ? Number(floorSize.value) : null
+        const yearBuilt = o.yearBuilt ? Number(o.yearBuilt) : null
+
+        let propertyType = 'Townhouse'
+        if (/Apartment|Condo/i.test(typeStr)) propertyType = 'Condo'
+        else if (/Single.?Family/i.test(typeStr)) propertyType = 'Single Family'
+        else if (/Multi.?Family|Duplex|Triplex/i.test(typeStr)) propertyType = 'Multi Family'
+
+        const addr = (typeof o.address === 'object' && o.address) ? o.address as Record<string, unknown> : null
+        const city = addr
+          ? `${addr.addressLocality ?? ''}, ${addr.addressRegion ?? ''} ${addr.postalCode ?? ''}`.trim().replace(/^,\s*/, '')
+          : ''
+
+        return {
+          price, beds: beds ?? 0, baths: baths ?? 0, sqft, yearBuilt,
+          propertyType, city, hoaMonthly: 0, daysOnMarket: 0, units: undefined, propertyTaxAnnual: null,
+        }
+      }
+    } catch { /* skip malformed JSON */ }
+  }
+  return null
+}
+
+async function scrapeListingFromUrl(url: string): Promise<ParsedListing | null> {
+  try {
+    const ac = new AbortController()
+    const timer = setTimeout(() => ac.abort(), 8000)
+    const res = await fetch(url, {
+      signal: ac.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+      },
+    })
+    clearTimeout(timer)
+    if (!res.ok) {
+      console.log('[scrapeListingFromUrl] HTTP', res.status, url)
+      return null
+    }
+    const html = await res.text()
+
+    // 1. Try JSON-LD structured data
+    const fromJsonLd = extractFromJsonLd(html)
+
+    // 2. Pull meta content= attributes into plain text BEFORE stripping tags.
+    //    Redfin/realtor.com embed beds/baths in og:description / name=description,
+    //    which are silently dropped when HTML tags are removed.
+    const metaContents = Array.from(html.matchAll(/<meta[^>]+content=["']([^"']{3,800})["']/gi))
+      .map((m) => m[1])
+      .join(' ')
+
+    // 3. Scan raw HTML (including script tags) for JSON key-value bed/bath patterns.
+    //    Redfin stores property data in embedded JS objects that aren't JSON-LD.
+    const bedsFromRaw = html.match(/"(?:beds|numBeds|bedroomCount|numberOfBedrooms|bed_count)"\s*:\s*(\d+)/i)?.[1]
+    const bathsFromRaw = html.match(/"(?:baths|numBaths|bathroomCount|numberOfBathroomsTotal|bath_count|bathsFull)"\s*:\s*(\d+(?:\.\d+)?)/i)?.[1]
+
+    // 4. Strip tags and run text parser on meta content + stripped body
+    const stripped = html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+      .replace(/&#x27;/gi, "'").replace(/&quot;/gi, '"')
+      .replace(/\s+/g, ' ')
+    const plainText = `${metaContents} ${stripped}`
+    const fromText = parseListingText(plainText, url)
+
+    // Merge — use || (not ??) for numeric fields so that a zero value from JSON-LD
+    // (e.g. Redfin's Product schema has no numberOfBedrooms → 0) falls through to
+    // the raw-JSON or text-parsed value rather than silently winning.
+    const merged: ParsedListing = {
+      ...fromText,
+      price: fromJsonLd?.price || fromText.price,
+      beds: fromJsonLd?.beds || (bedsFromRaw ? Number(bedsFromRaw) : 0) || fromText.beds,
+      baths: fromJsonLd?.baths || (bathsFromRaw ? Number(bathsFromRaw) : 0) || fromText.baths,
+      sqft: fromJsonLd?.sqft || fromText.sqft,
+      yearBuilt: fromJsonLd?.yearBuilt || fromText.yearBuilt,
+      propertyType: fromJsonLd?.propertyType ?? fromText.propertyType,
+      city: fromJsonLd?.city || fromText.city,
+    }
+
+    console.log('[scrapeListingFromUrl] scraped:', { price: merged.price, beds: merged.beds, baths: merged.baths, bedsFromRaw, bathsFromRaw, metaSnippet: metaContents.slice(0, 200) })
+    return merged.price ? merged : null
+  } catch (err) {
+    console.error('[scrapeListingFromUrl]', err)
+    return null
+  }
+}
+
 // ── Geocoder (OpenStreetMap Nominatim — free, no key) ─────────────────────────
 
 // ── og:image scraper — used as fallback when bookmarklet doesn't send the photo ─
@@ -337,14 +507,26 @@ async function fetchOgImage(url: string): Promise<string | null> {
 }
 
 async function geocode(address: string): Promise<{ lat: number; lng: number } | null> {
+  const hdrs = { 'User-Agent': 'carrie-me-away-app/1.0' }
+
+  // 1. Full address free-text query
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=us`
-    const res = await fetch(url, { headers: { 'User-Agent': 'carrie-me-away-app/1.0' } })
-    const data = await res.json()
-    if (data?.[0]) {
-      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
-    }
-  } catch { /* fall through to default coords */ }
+    const data = await fetch(url, { headers: hdrs }).then((r) => r.json())
+    if (data?.[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
+  } catch { /* fall through */ }
+
+  // 2. ZIP-centroid fallback — at least pins to the right region when the specific
+  //    street is too new or unknown for Nominatim (common in new subdivisions).
+  const zipMatch = address.match(/\b(\d{5})\b/)
+  if (zipMatch) {
+    try {
+      const zipUrl = `https://nominatim.openstreetmap.org/search?postalcode=${zipMatch[1]}&countrycodes=us&format=json&limit=1`
+      const zipData = await fetch(zipUrl, { headers: hdrs }).then((r) => r.json())
+      if (zipData?.[0]) return { lat: parseFloat(zipData[0].lat), lng: parseFloat(zipData[0].lon) }
+    } catch { /* fall through */ }
+  }
+
   return null
 }
 

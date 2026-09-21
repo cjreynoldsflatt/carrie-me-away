@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
-import { computeMetrics, computeConservativeRent, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, computeMonthlyPayment, computeRemainingBalance } from '@/lib/investment'
+import { computeMetrics, computeConservativeRent, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -14,46 +14,47 @@ import type { SaleListing } from '@/lib/types'
 
 // ── Grade scale (matches PropertyCard) ───────────────────────────────────────
 function scoreGrade(score: number): string {
-  if (score >= 70) return 'A+'
-  if (score >= 57) return 'A'
-  if (score >= 44) return 'B+'
-  if (score >= 32) return 'B'
-  if (score >= 20) return 'C'
+  if (score >= 97) return 'A+'
+  if (score >= 88) return 'A'
+  if (score >= 76) return 'B+'
+  if (score >= 60) return 'B'
+  if (score >= 40) return 'C'
   return 'D'
 }
 function gradeColor(score: number): string {
-  if (score >= 70) return 'bg-emerald-600'
-  if (score >= 57) return 'bg-cyan-600'
-  if (score >= 44) return 'bg-blue-600'
-  if (score >= 32) return 'bg-orange-400'
-  if (score >= 20) return 'bg-orange-600'
+  if (score >= 97) return 'bg-emerald-600'
+  if (score >= 88) return 'bg-cyan-600'
+  if (score >= 76) return 'bg-blue-600'
+  if (score >= 60) return 'bg-orange-400'
+  if (score >= 40) return 'bg-orange-600'
   return 'bg-red-600'
 }
 
-// ── Yield label (describes the yield %, not the grade) ───────────────────────
-function yieldLabel(y: number) {
-  if (y >= 0.055) return 'Exceptional'
-  if (y >= 0.0475) return 'Very Good'
-  if (y >= 0.04) return 'Good'
-  if (y >= 0.0325) return 'Fair'
-  if (y >= 0.025) return 'Below Average'
+// ── Yield label — relative to user's configured target yield ─────────────────
+function yieldLabel(y: number, target: number) {
+  const r = target > 0 ? y / target : 0
+  if (r >= 1.25) return 'Exceptional'
+  if (r >= 1.10) return 'Very Good'
+  if (r >= 1.00) return 'Good'
+  if (r >= 0.85) return 'Fair'
+  if (r >= 0.70) return 'Below Average'
   return 'Poor'
 }
 // Score-based colors (match grade circle & map marker)
 function yieldColor(score: number) {
-  if (score >= 70) return 'text-emerald-700'
-  if (score >= 57) return 'text-cyan-700'
-  if (score >= 44) return 'text-blue-700'
-  if (score >= 32) return 'text-orange-500'
-  if (score >= 20) return 'text-orange-700'
+  if (score >= 97) return 'text-emerald-700'
+  if (score >= 88) return 'text-cyan-700'
+  if (score >= 76) return 'text-blue-700'
+  if (score >= 60) return 'text-orange-500'
+  if (score >= 40) return 'text-orange-700'
   return 'text-red-600'
 }
 function yieldBg(score: number) {
-  if (score >= 70) return 'bg-emerald-50 border-emerald-200'
-  if (score >= 57) return 'bg-cyan-50 border-cyan-200'
-  if (score >= 44) return 'bg-blue-50 border-blue-200'
-  if (score >= 32) return 'bg-orange-50 border-orange-200'
-  if (score >= 20) return 'bg-orange-100 border-orange-300'
+  if (score >= 97) return 'bg-emerald-50 border-emerald-200'
+  if (score >= 88) return 'bg-cyan-50 border-cyan-200'
+  if (score >= 76) return 'bg-blue-50 border-blue-200'
+  if (score >= 60) return 'bg-orange-50 border-orange-200'
+  if (score >= 40) return 'bg-orange-100 border-orange-300'
   return 'bg-red-50 border-red-200'
 }
 
@@ -218,6 +219,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const saveSuperToDb = useAppStore((s) => s.saveSuperToDb)
   const savePropertyTypeToDb = useAppStore((s) => s.savePropertyTypeToDb)
   const saveUnitsToDb = useAppStore((s) => s.saveUnitsToDb)
+  const saveLocationToDb = useAppStore((s) => s.saveLocationToDb)
   const listing = saleListings.find((l) => l.id === selectedId)
 
   const isMultiFamily = listing?.propertyType === 'Multi Family'
@@ -226,19 +228,18 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const [repairsInput, setRepairsInput] = useState(20000)
   const [rentInput, setRentInput] = useState(listing?.estimatedRent ?? 0)
   const [unitsInput, setUnitsInput] = useState(listing?.units ?? 2)
-  const [propertyTaxInput, setPropertyTaxInput] = useState(listing?.propertyTaxAnnual ?? 0)
+  const [propertyTaxInput, setPropertyTaxInput] = useState(listing?.cmaPropertyTaxAnnual ?? listing?.propertyTaxAnnual ?? 0)
   // Per-unit rents for multi-family
   const [unitRents, setUnitRents] = useState<number[]>([])
   // Which gear row is expanded
   const [openGear, setOpenGear] = useState<string | null>(null)
-  // Purchase method for CMA financing
-  const [purchaseMethod, setPurchaseMethod] = useState<'cash' | 'ccap'>('cash')
-  const [ccapRate, setCcapRate] = useState(0.06)
   const [pmRateBeforeDisable, setPmRateBeforeDisable] = useState(
     assumptions.propertyManagementRate > 0 ? assumptions.propertyManagementRate : 0.10
   )
   const [superCostInput, setSuperCostInput] = useState(listing?.superAnnualCost ?? 1449)
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
+  const [regeocodeBusy, setRegeocodeBusy] = useState(false)
+
   // Operating reserve — CMA funds $20k reserve per property at acquisition
   const PROPERTY_RESERVE = 20_000
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
@@ -256,13 +257,11 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
       : dbRent
     setRentInput(defaultRent)
     setUnitsInput(dbUnits)
-    setPropertyTaxInput(listing?.propertyTaxAnnual ?? 0)
+    setPropertyTaxInput(listing?.cmaPropertyTaxAnnual ?? listing?.propertyTaxAnnual ?? 0)
     const dbSuper = listing?.superAnnualCost ?? 1449
     setSuperCostInput(dbSuper)
     setSuperBeforeDisable(dbSuper > 0 ? dbSuper : 1449)
     setOpenGear(null)
-    setPurchaseMethod('cash')
-    setCcapRate(0.06)
     setOtherCostsInput(0)
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
@@ -306,6 +305,10 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     turnoverCost: assumptions.turnoverCost,
     pestControlMonthly: assumptions.pestControlMonthly,
     lawnCareMonthly: assumptions.lawnCareMonthly,
+    appreciationRate: listing.appreciationRate ?? 0.03,
+    targetYieldOnCost: assumptions.targetYieldOnCost,
+    rentGrowthRate: assumptions.rentGrowthRate,
+    expenseInflationRate: assumptions.expenseInflationRate,
     rentalDemand: listing.rentalDemand,
     rentConfidence: listing.rentConfidence,
     rentalEvidence: listing.rentalEvidence,
@@ -322,11 +325,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const totalExpenses = metrics.vacancyReserve + metrics.maintenanceReserve + metrics.capExReserve +
     metrics.turnoverReserve + propertyTaxInput + annualHOA + metrics.insuranceAnnual +
     metrics.pestControlAnnual + metrics.lawnCareAnnual + metrics.superAnnual + managementCost + LLC_ANNUAL_COST
-  const ccapMonthlyPayment = purchaseMethod === 'ccap'
-    ? computeMonthlyPayment(metrics.totalCashInvested, ccapRate, 360)
-    : 0
-  const annualDebtService = ccapMonthlyPayment * 12
-  const cmaCashFlowAnnual = metrics.netAnnualIncome - annualDebtService
 
   // Operating reserve — fixed $20k target, funded at acquisition
   const reserveTarget = PROPERTY_RESERVE
@@ -355,6 +353,8 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const maxClosingCosts = Math.round(Math.max(maxPurchasePrice, 0) * assumptions.closingCostRate)
   const marketCapRate = listing.price > 0 ? annualStabilizedNOI / listing.price : 0
   const priceDelta = listing.price - maxPurchasePrice
+  const priceDeltaPct = maxPurchasePrice > 0 && listing.price > 0
+    ? Math.round(Math.abs(priceDelta) / listing.price * 100) : 0
   const priceStatus: 'below' | 'near' | 'above' =
     maxPurchasePrice <= 0 ? 'above'
     : listing.price <= maxPurchasePrice ? 'below'
@@ -433,7 +433,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   </div>
                   <div className={cn('text-right px-3 py-2 rounded-xl border text-sm font-bold', yieldBg(metrics.investmentScore), yieldColor(metrics.investmentScore))}>
                     {fmtYield(metrics.netCashYield)}
-                    <div className="text-xs font-normal opacity-75">{yieldLabel(metrics.netCashYield)}</div>
+                    <div className="text-xs font-normal opacity-75">{yieldLabel(metrics.netCashYield, assumptions.targetYieldOnCost)}</div>
                   </div>
                 </div>
               </div>
@@ -547,97 +547,81 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     </a>
                   ) : null
                 })()}
+                <button
+                  onClick={async () => {
+                    setRegeocodeBusy(true)
+                    try {
+                      const q = encodeURIComponent(`${listing.address}, ${listing.city}`)
+                      // Try full address first, then ZIP centroid if not found
+                      let lat: number | null = null, lng: number | null = null
+                      const fullRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=us`)
+                      const fullData = await fullRes.json()
+                      if (fullData?.[0]) {
+                        lat = parseFloat(fullData[0].lat)
+                        lng = parseFloat(fullData[0].lon)
+                      } else {
+                        const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
+                        if (zip) {
+                          const zipRes = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${zip}&countrycodes=us&format=json&limit=1`)
+                          const zipData = await zipRes.json()
+                          if (zipData?.[0]) {
+                            lat = parseFloat(zipData[0].lat)
+                            lng = parseFloat(zipData[0].lon)
+                          }
+                        }
+                      }
+                      if (lat !== null && lng !== null) {
+                        await saveLocationToDb(listing.id, lat, lng)
+                      } else {
+                        alert('Could not geocode this address. Check that the address and city are correct.')
+                      }
+                    } catch {
+                      alert('Geocoding failed. Check your connection and try again.')
+                    } finally {
+                      setRegeocodeBusy(false)
+                    }
+                  }}
+                  disabled={regeocodeBusy}
+                  className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 hover:underline disabled:opacity-40"
+                >
+                  <MapPin size={13} />
+                  {regeocodeBusy ? 'Locating…' : 'Fix location'}
+                </button>
               </div>
             </div>
           </div>
 
-          {/* ── Purchase Method ──────────────────────────────── */}
-          <Section title="Purchase Method">
-            <div className="py-1 space-y-3">
-              <div className="flex rounded-md border border-slate-200 overflow-hidden text-sm font-medium">
-                <button
-                  onClick={() => setPurchaseMethod('cash')}
-                  className={`flex-1 py-2 transition-colors ${purchaseMethod === 'cash' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  Carrie Capital
-                </button>
-                <button
-                  onClick={() => setPurchaseMethod('ccap')}
-                  className={`flex-1 py-2 transition-colors border-l border-slate-200 ${purchaseMethod === 'ccap' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  Loan
-                </button>
+          {/* ── Carrie Capital ───────────────────────────────── */}
+          <Section title="Carrie Capital">
+            <div className="py-1">
+              <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-2">
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">CMA-I Capital</div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Carrie contributed capital</span>
+                    <span className="font-semibold text-slate-800">{fmtCurrency(CMA_I.carrieContributedCapital)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Cameron contributed capital</span>
+                    <span className="font-semibold text-slate-500">$0</span>
+                  </div>
+                </div>
+                <div className="border-t border-slate-200 pt-2 space-y-1.5">
+                  <div className="flex items-start justify-between text-sm gap-2">
+                    <div>
+                      <span className="text-slate-600">CMA-I capital deployed to this property</span>
+                      <div className="text-xs text-slate-400">Incl. {fmtCurrency(PROPERTY_RESERVE)} Day 1 operating reserve</div>
+                    </div>
+                    <span className="font-semibold text-slate-800 shrink-0">{fmtCurrency(totalCashRequired)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Remaining undeployed CMA-I capital</span>
+                    <span className={cn('font-semibold', CMA_I.carrieContributedCapital - totalCashRequired >= 0 ? 'text-slate-800' : 'text-amber-600')}>
+                      {fmtCurrency(Math.max(0, CMA_I.carrieContributedCapital - totalCashRequired))}
+                    </span>
+                  </div>
+                </div>
               </div>
-              {purchaseMethod === 'ccap' && (
-                <div className="space-y-3">
-                  {/* Acquisition summary */}
-                  <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Total acquisition cost</span>
-                      <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Loan</span>
-                      <span className="font-semibold text-slate-800">{fmtCurrency(metrics.totalCashInvested)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm font-semibold border-t border-slate-200 pt-1.5">
-                      <span className="text-slate-800">CMA initial cash invested</span>
-                      <span className="text-emerald-600">$0</span>
-                    </div>
-                  </div>
-                  {/* Rate + debt service */}
-                  <InlineSlider
-                    label="Loan rate"
-                    value={ccapRate}
-                    onChange={setCcapRate}
-                    min={0.02}
-                    max={0.15}
-                    step={0.005}
-                    format={(v) => `${(v * 100).toFixed(1)}%`}
-                  />
-                  <div className="flex justify-between text-xs text-slate-600">
-                    <span>Monthly P&amp;I</span>
-                    <span className="font-semibold tabular-nums">{fmtCurrency(ccapMonthlyPayment)}/mo</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-slate-600">
-                    <span>Annual debt service</span>
-                    <span className="font-semibold tabular-nums">{fmtCurrency(annualDebtService)}/yr</span>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Finances 100% of the acquisition (price + closing costs + repairs) via a 30-year P+I loan. CMA's equity grows through appreciation and principal paydown.
-                  </p>
-                </div>
-              )}
-              {purchaseMethod === 'cash' && (
-                <div className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-2">
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">CMA-I Capital</div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Carrie contributed capital</span>
-                      <span className="font-semibold text-slate-800">{fmtCurrency(CMA_I.carrieContributedCapital)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Cameron contributed capital</span>
-                      <span className="font-semibold text-slate-500">$0</span>
-                    </div>
-                  </div>
-                  <div className="border-t border-slate-200 pt-2 space-y-1.5">
-                    <div className="flex items-start justify-between text-sm gap-2">
-                      <div>
-                        <span className="text-slate-600">CMA-I capital deployed to this property</span>
-                        <div className="text-xs text-slate-400">Incl. {fmtCurrency(PROPERTY_RESERVE)} Day 1 operating reserve</div>
-                      </div>
-                      <span className="font-semibold text-slate-800 shrink-0">{fmtCurrency(totalCashRequired)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Remaining undeployed CMA-I capital</span>
-                      <span className={cn('font-semibold', CMA_I.carrieContributedCapital - totalCashRequired >= 0 ? 'text-slate-800' : 'text-amber-600')}>
-                        {fmtCurrency(Math.max(0, CMA_I.carrieContributedCapital - totalCashRequired))}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </Section>
 
@@ -884,22 +868,54 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               value={fmtCurrency(propertyTaxInput)}
               monthly={mo(propertyTaxInput)}
               prefix="−"
+              sub={listing.propertyTaxWarning ? '⚠ CMA est. may exceed seller current bill' : undefined}
               openGear={openGear} setOpenGear={setOpenGear}
             >
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Annual amount</span>
-                  <span className="text-xs font-semibold text-slate-700 tabular-nums">{fmtCurrency(propertyTaxInput)}</span>
+              <div className="space-y-2">
+                {/* Three-line tax breakdown */}
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between text-slate-500">
+                    <span>Seller currently pays</span>
+                    <span className="tabular-nums font-medium">{fmtCurrency(listing.propertyTaxAnnual)}/yr</span>
+                  </div>
+                  <div className="flex justify-between text-slate-700 font-semibold">
+                    <span>CMA estimated{listing.propertyTaxIsEstimated ? ' (est.)' : ''}</span>
+                    <span className="tabular-nums">{fmtCurrency(listing.cmaPropertyTaxAnnual)}/yr</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>After reassessment (proj.)</span>
+                    <span className="tabular-nums">{fmtCurrency(listing.projectedPropertyTaxAnnual)}/yr</span>
+                  </div>
                 </div>
-                <input
-                  type="number"
-                  min={0}
-                  step={100}
-                  value={propertyTaxInput}
-                  onChange={(e) => setPropertyTaxInput(Math.max(0, Number(e.target.value)))}
-                  className="w-full text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-                <p className="text-xs text-slate-400">Local override · resets on refresh</p>
+                {listing.propertyTaxWarning && (
+                  <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5">
+                    Current tax bill may understate taxes after acquisition. Seller may benefit from a Homestead Tax Credit that CMA will not receive as a rental owner.
+                  </div>
+                )}
+                {/* Editable override */}
+                <div className="space-y-1 pt-1 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-500">Override for this analysis</span>
+                    <span className="text-xs font-semibold text-slate-700 tabular-nums">{fmtCurrency(propertyTaxInput)}</span>
+                  </div>
+                  <input
+                    type="number"
+                    min={0}
+                    step={100}
+                    value={propertyTaxInput}
+                    onChange={(e) => setPropertyTaxInput(Math.max(0, Number(e.target.value)))}
+                    className="w-full text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                  {propertyTaxInput !== listing.cmaPropertyTaxAnnual && (
+                    <button
+                      onClick={() => setPropertyTaxInput(listing.cmaPropertyTaxAnnual)}
+                      className="flex items-center gap-0.5 text-xs text-orange-500 hover:text-orange-700"
+                    >
+                      <RotateCcw size={9} /> Reset to CMA estimate
+                    </button>
+                  )}
+                  <p className="text-xs text-slate-400">Resets on refresh · enter actual SDAT amount if known</p>
+                </div>
               </div>
             </GearRow>
             {listing.hoaMonthly > 0 && (
@@ -1104,29 +1120,6 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             />
           </Section>
 
-          {/* ── CCAP Cash Flow (CCAP mode only) ──────────────── */}
-          {purchaseMethod === 'ccap' && (
-            <Section title="CMA Cash Flow After Financing">
-              <div className="space-y-1 py-1">
-                <Row label="Property net income (before debt)" value={fmtCurrency(metrics.netAnnualIncome)} monthly={mo(metrics.netAnnualIncome)} />
-                <Row
-                  label={`Loan debt service (${(ccapRate * 100).toFixed(1)}%)`}
-                  value={fmtCurrency(annualDebtService)}
-                  monthly={`${fmtCurrency(ccapMonthlyPayment)}`}
-                  prefix="−"
-                  sub="30-yr P+I on 100% of purchase price"
-                />
-                <Divider />
-                <TotalRow
-                  label="CMA annual cash flow"
-                  value={fmtCurrency(cmaCashFlowAnnual)}
-                  monthly={mo(cmaCashFlowAnnual)}
-                  color={cmaCashFlowAnnual >= 0 ? 'text-emerald-700' : 'text-red-600'}
-                />
-              </div>
-            </Section>
-          )}
-
           {/* ── Net cash yield ────────────────────────────────── */}
           <div className={cn('rounded-xl border p-4 space-y-1', yieldBg(metrics.investmentScore))}>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Net Cash Yield</div>
@@ -1137,7 +1130,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               {fmtYield(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0)}
             </div>
             <div className={cn('text-sm font-semibold', yieldColor(metrics.investmentScore))}>
-              {yieldLabel(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0)}
+              {yieldLabel(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0, assumptions.targetYieldOnCost)}
             </div>
             <p className="text-xs text-slate-500 mt-2 leading-relaxed">
               Target: 6%+ for a strong cash-flow investment. At 7%+ the deal earns meaningfully more than most liquid alternatives without the same concentration risk.
@@ -1209,6 +1202,11 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             )}>
               <div className={cn('text-sm font-semibold', priceStatus === 'below' ? 'text-emerald-700' : priceStatus === 'near' ? 'text-orange-700' : 'text-red-700')}>
                 {priceStatus === 'below' ? 'Below maximum' : priceStatus === 'near' ? 'Near maximum' : 'Above maximum'}
+                {priceDeltaPct > 0 && (
+                  <span className="ml-1.5 font-normal opacity-75">
+                    ({priceDeltaPct}% {priceDelta > 0 ? 'over' : 'under'} asking)
+                  </span>
+                )}
               </div>
               <div className={cn('text-xs mt-0.5', priceStatus === 'below' ? 'text-emerald-600' : priceStatus === 'near' ? 'text-orange-600' : 'text-red-600')}>
                 {maxPurchasePrice > 0 ? (
@@ -1300,147 +1298,11 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
           {(() => {
             const eq = equityScenarios(listing.price, listing.appreciationRate)        // 5-yr
             const eq1 = equityScenarios(listing.price, listing.appreciationRate, 1)    // 1-yr
-            const tenYrRent = tenYearRentalIncome(metrics.netAnnualIncome)             // 5-yr
-            const rent1yr = tenYearRentalIncome(metrics.netAnnualIncome, 1)            // 1-yr
 
-            // CCAP-specific 5-yr calculations (computed always, used only in CCAP branch)
-            const remBal10 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 60)
-            const propVal10 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 5))
-            const cmaEquity10 = propVal10 - remBal10
-            const cumCashFlow10CCAP = Math.round(cmaCashFlowAnnual * 5)
-            const cmaTotalGain10 = cumCashFlow10CCAP + cmaEquity10
+            // True year-by-year 5-year cash flows from computeMetrics
+            const tenYrRent = metrics.cumulativeFiveYearCashFlow   // actual 5-yr sum
+            const rent1yr = metrics.fiveYearCashFlows[0] ?? metrics.netAnnualIncome   // Year 1
 
-            // CCAP 1-year breakdown
-            const remBal1 = computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, 12)
-            const propVal1 = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 1))
-            const cmaEquity1 = propVal1 - remBal1
-            const cumCashFlow1CCAP = Math.round(cmaCashFlowAnnual * 1)
-            const cmaTotalGain1 = cumCashFlow1CCAP + cmaEquity1
-
-            // Combined gain for reference
-            const ownershipGain = purchaseMethod === 'ccap' ? cmaTotalGain10 : tenYrRent + eq.expected
-
-            // ── CCAP mode ──────────────────────────────────────────
-            if (purchaseMethod === 'ccap') {
-              const ccapChartData = Array.from({ length: 6 }, (_, yr) => {
-                const cashFlow = Math.round(cmaCashFlowAnnual * yr)
-                const propVal = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, yr))
-                const remBal = yr === 0 ? metrics.totalCashInvested : computeRemainingBalance(metrics.totalCashInvested, ccapRate, 360, yr * 12)
-                const equity = propVal - remBal
-                return { yr, cashFlow, equity, total: cashFlow + equity }
-              })
-              return (
-                <>
-                  <Section title="5-Year Loan Projection">
-                    <div className="py-2 space-y-4">
-                      <p className="text-xs text-slate-500 leading-relaxed">
-                        CMA economic position over 5 years — cumulative cash flow after loan debt service, plus equity built through appreciation and principal paydown.
-                      </p>
-                      <ResponsiveContainer width="100%" height={200}>
-                        <LineChart data={ccapChartData} margin={{ top: 8, right: 16, bottom: 0, left: 8 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                          <XAxis dataKey="yr" tickFormatter={(v) => v === 0 ? 'Now' : `Yr ${v}`} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                          <YAxis tickFormatter={abbr} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={48} />
-                          <Tooltip formatter={(v, name) => [fmtCurrency(v as number), name]} labelFormatter={(l) => l === 0 ? 'Today' : `Year ${l}`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }} />
-                          <ReferenceLine y={0} stroke="#cbd5e1" strokeDasharray="3 3" />
-                          <Line dataKey="cashFlow" name="Cumulative cash flow" stroke="#94a3b8" strokeWidth={1.5} dot={false} strokeDasharray="4 3" />
-                          <Line dataKey="equity" name="CMA equity" stroke="#93c5fd" strokeWidth={1.5} dot={false} />
-                          <Line dataKey="total" name="Total CMA position" stroke="#2563eb" strokeWidth={2.5} dot={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
-                        <span className="flex items-center gap-1.5"><span className="inline-block w-4 border-t-2 border-dashed border-slate-300" />Cumul. cash flow</span>
-                        <span className="flex items-center gap-1.5"><span className="inline-block w-4 border-t-2 border-blue-300" />CMA equity</span>
-                        <span className="flex items-center gap-1.5"><span className="inline-block w-4 border-t-[3px] border-blue-600" />Total position</span>
-                      </div>
-                      <div className="border-t border-slate-200 pt-3 space-y-1.5">
-                        {/* Column headers */}
-                        <div className="grid grid-cols-3 text-[10px] text-slate-400 uppercase tracking-wider mb-1">
-                          <span />
-                          <span className="text-center">Year 1</span>
-                          <span className="text-right">Year 5</span>
-                        </div>
-                        <div className="grid grid-cols-3 items-center text-sm font-medium">
-                          <span className="text-slate-700">Cash profit/loss</span>
-                          <span className={cn('text-center tabular-nums', cumCashFlow1CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                            {cumCashFlow1CCAP >= 0 ? '+' : ''}{fmtCurrency(cumCashFlow1CCAP)}
-                          </span>
-                          <span className={cn('text-right tabular-nums', cumCashFlow10CCAP >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                            {cumCashFlow10CCAP >= 0 ? '+' : ''}{fmtCurrency(cumCashFlow10CCAP)}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-3 items-center text-sm">
-                          <span className="text-slate-600">Property equity</span>
-                          <span className="text-center font-semibold tabular-nums text-slate-700">+{fmtCurrency(cmaEquity1)}</span>
-                          <span className="text-right font-semibold tabular-nums text-slate-700">+{fmtCurrency(cmaEquity10)}</span>
-                        </div>
-                        <div className="grid grid-cols-3 items-center text-base font-bold border-t border-slate-200 pt-1.5 mt-1.5">
-                          <span className="text-slate-900">Net wealth created</span>
-                          <span className={cn('text-center', cmaTotalGain1 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                            {cmaTotalGain1 >= 0 ? '+' : ''}{fmtCurrency(cmaTotalGain1)}
-                          </span>
-                          <span className={cn('text-right', cmaTotalGain10 >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                            {cmaTotalGain10 >= 0 ? '+' : ''}{fmtCurrency(cmaTotalGain10)}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        Equity is wealth locked in the property — real but not spendable unless you sell or refinance. Cash flow is actual money in or out each month.
-                      </p>
-                    </div>
-                  </Section>
-                  <Section title="CMA-I Projected Member Outcome">
-                    <div className="py-2 space-y-3">
-                      <p className="text-xs text-slate-500">
-                        Carrie 51% governance &amp; residual economic interest · Cameron 49% Service-Based Profits Interest
-                      </p>
-                      <div className="space-y-2">
-                        {([
-                          { name: 'Carrie Reynolds-Flatt', pct: CMA_I.carrieResidualPct, label: '51% residual interest' },
-                          { name: 'Cameron Reynolds-Flatt', pct: CMA_I.cameronResidualPct, label: '49% service-based interest' },
-                        ]).map(({ name, pct, label }) => {
-                          const partnerCash = Math.round(cumCashFlow10CCAP * pct)
-                          const partnerEquity = Math.round(cmaEquity10 * pct)
-                          const partnerNet = Math.round(cmaTotalGain10 * pct)
-                          const partnerQuarterly = Math.round(cmaCashFlowAnnual * pct / 4)
-                          return (
-                            <div key={name} className="rounded-lg bg-slate-50 px-3 py-2.5 space-y-1.5">
-                              <div className="flex items-start justify-between">
-                                <div className="text-sm font-semibold text-slate-800">{name}</div>
-                                <div className="text-xs text-slate-400 text-right">{label}</div>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-slate-500">5-yr rental cash flow</span>
-                                <span className={cn('font-semibold tabular-nums', partnerCash >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                  {partnerCash >= 0 ? '+' : ''}{fmtCurrency(partnerCash)}
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-slate-500">Share of property equity</span>
-                                <span className="font-semibold tabular-nums text-slate-700">+{fmtCurrency(partnerEquity)}</span>
-                              </div>
-                              <div className="flex justify-between text-sm border-t border-slate-200 pt-1.5">
-                                <span className="font-semibold text-slate-800">Total projected benefit</span>
-                                <div className="text-right">
-                                  <div className={cn('font-bold tabular-nums', partnerNet >= 0 ? 'text-emerald-700' : 'text-red-600')}>
-                                    {partnerNet >= 0 ? '+' : ''}{fmtCurrency(partnerNet)}
-                                  </div>
-                                  <div className={cn('text-xs tabular-nums', partnerQuarterly >= 0 ? 'text-emerald-600' : 'text-red-500')}>
-                                    {fmtCurrency(partnerQuarterly)}/qtr est.
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </Section>
-                </>
-              )
-            }
-
-            // ── Cash mode ──────────────────────────────────────────
             const computeCagr = (gain: number) => {
               const total = totalCashRequired + gain
               if (total <= 0 || totalCashRequired <= 0) return null
@@ -1450,8 +1312,26 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             const cagrExp = computeCagr(tenYrRent + eq.expected)
             const cagrStr = computeCagr(tenYrRent + eq.strong)
 
+            // 20-year chart: use year-by-year cash flows (growth-adjusted) for cumulative rent line
+            // Variable expenses grow with rent; fixed expenses grow by expenseInflationRate
+            const rentGrowthRate = assumptions.rentGrowthRate ?? 0.03
+            const expInflRate = assumptions.expenseInflationRate ?? 0.025
+            const baseGrossRent = metrics.grossAnnualRent
+            const varExpRate = (assumptions.vacancyRate + assumptions.maintenanceRate +
+              assumptions.capExRate + assumptions.propertyManagementRate)
+            // Derive fixed expenses: what's left after variable expenses and net income
+            const baseFixedExp = baseGrossRent * (1 - varExpRate) - metrics.netAnnualIncome
+
+            let cumulativeRent = 0
             const chartData = Array.from({ length: 21 }, (_, yr) => {
-              const rent = Math.round(metrics.netAnnualIncome * yr)
+              if (yr > 0) {
+                const rentFactor = Math.pow(1 + rentGrowthRate, yr - 1)
+                const expFactor = Math.pow(1 + expInflRate, yr - 1)
+                const grossRent_yr = baseGrossRent * rentFactor
+                const netCashFlow_yr = grossRent_yr - grossRent_yr * varExpRate - baseFixedExp * expFactor
+                cumulativeRent += netCashFlow_yr
+              }
+              const rent = Math.round(cumulativeRent)
               const gain = (rate: number) => yr === 0 ? 0 : Math.round(listing.price * (Math.pow(1 + rate, yr) - 1))
               return {
                 yr,

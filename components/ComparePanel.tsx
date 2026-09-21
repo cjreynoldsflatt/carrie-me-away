@@ -8,12 +8,12 @@ import type { SaleListing } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 function scoreGrade(score: number): string {
-  if (score >= 80) return 'A+'
-  if (score >= 70) return 'A'
+  if (score >= 97) return 'A+'
+  if (score >= 88) return 'A'
+  if (score >= 76) return 'B+'
   if (score >= 60) return 'B'
-  if (score >= 45) return 'C'
-  if (score >= 30) return 'D'
-  return 'F'
+  if (score >= 40) return 'C'
+  return 'D'
 }
 
 type BestFn = (listings: SaleListing[]) => string | null

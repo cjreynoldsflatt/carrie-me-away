@@ -8,6 +8,19 @@ import { DEFAULT_ASSUMPTIONS } from './defaults'
 
 export { DEFAULT_ASSUMPTIONS }
 
+// Debounced write-back to Supabase so rapid slider changes don't flood the API
+let _settingsTimer: ReturnType<typeof setTimeout> | null = null
+function scheduleSaveSettings(assumptions: GlobalAssumptions) {
+  if (_settingsTimer) clearTimeout(_settingsTimer)
+  _settingsTimer = setTimeout(() => {
+    fetch('/api/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(assumptions),
+    }).catch((err) => console.error('[store] settings sync failed:', err))
+  }, 600)
+}
+
 interface AppState {
   // Search
   search: SearchSettings
@@ -63,6 +76,8 @@ interface AppState {
   savePropertyTypeToDb: (id: string, propertyType: PropertyType) => Promise<void>
   // Persist units count to Supabase
   saveUnitsToDb: (id: string, units: number) => Promise<void>
+  // Persist corrected lat/lng to Supabase
+  saveLocationToDb: (id: string, lat: number, lng: number) => Promise<void>
 
   // Actions
   initialize: () => Promise<void>
@@ -183,6 +198,19 @@ export const useAppStore = create<AppState>()(
         }))
       },
 
+      saveLocationToDb: async (id, lat, lng) => {
+        await fetch(`/api/listings/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lng }),
+        })
+        set((state) => ({
+          saleListings: state.saleListings.map((l) =>
+            l.id === id ? { ...l, lat, lng } : l
+          ),
+        }))
+      },
+
       resetRentToOriginal: async (id) => {
         const original = get().originalRents[id]
         if (original == null) return
@@ -200,7 +228,11 @@ export const useAppStore = create<AppState>()(
 
       assumptions: DEFAULT_ASSUMPTIONS,
       setAssumptions: (updates) =>
-        set((state) => ({ assumptions: { ...state.assumptions, ...updates } })),
+        set((state) => {
+          const assumptions = { ...state.assumptions, ...updates }
+          scheduleSaveSettings(assumptions)
+          return { assumptions }
+        }),
 
       compareMode: false,
       compareIds: [],
@@ -229,19 +261,29 @@ export const useAppStore = create<AppState>()(
       initialize: async () => {
         set({ isLoading: true })
         try {
-          const res = await fetch('/api/listings')
-          if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          const data = await res.json()
-          console.log('[initialize] saleListings from API:', data.saleListings?.length, data.saleListings)
-          // Capture original HUD rents once per listing — never overwrite existing entries
+          const [listingsRes, settingsRes] = await Promise.all([
+            fetch('/api/listings'),
+            fetch('/api/settings'),
+          ])
+          if (!listingsRes.ok) throw new Error(`HTTP ${listingsRes.status}`)
+          const data = await listingsRes.json()
+
+          let remoteAssumptions: GlobalAssumptions | null = null
+          if (settingsRes.ok) {
+            const settingsData = await settingsRes.json()
+            remoteAssumptions = settingsData.assumptions ?? null
+          }
+
           const incoming: SaleListing[] = data.saleListings ?? []
           set((state) => {
             const originals = { ...state.originalRents }
             for (const l of incoming) {
               if (!(l.id in originals)) originals[l.id] = l.estimatedRent
             }
-            // Ensure all assumption defaults are present (guards against stale persisted state)
-            const safeAssumptions = { ...DEFAULT_ASSUMPTIONS, ...state.assumptions }
+            // Remote assumptions are the source of truth; fall back to localStorage then defaults
+            const safeAssumptions = remoteAssumptions
+              ? { ...DEFAULT_ASSUMPTIONS, ...remoteAssumptions }
+              : { ...DEFAULT_ASSUMPTIONS, ...state.assumptions }
             return {
               saleListings: incoming,
               rentalListings: data.rentalListings ?? [],
@@ -286,7 +328,7 @@ export const useAppStore = create<AppState>()(
             hoaMonthly: l.hoaMonthly,
             estimatedRent: l.estimatedRent,
             conservativeRent,
-            propertyTaxAnnual: l.propertyTaxAnnual,
+            propertyTaxAnnual: l.cmaPropertyTaxAnnual,  // use CMA estimated tax, not seller's bill
             insuranceRate: assumptions.insuranceRate,
             closingCostRate: assumptions.closingCostRate,
             repairs: l.repairs,
@@ -299,6 +341,10 @@ export const useAppStore = create<AppState>()(
             turnoverCost: assumptions.turnoverCost,
             pestControlMonthly: assumptions.pestControlMonthly,
             lawnCareMonthly: assumptions.lawnCareMonthly,
+            appreciationRate: l.appreciationRate ?? 0.03,
+            targetYieldOnCost: assumptions.targetYieldOnCost,
+            rentGrowthRate: assumptions.rentGrowthRate,
+            expenseInflationRate: assumptions.expenseInflationRate,
             rentalDemand: l.rentalDemand,
             rentConfidence: l.rentConfidence,
             rentalEvidence: l.rentalEvidence,
@@ -365,7 +411,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'carrie-app-state',
-      version: 19,
+      version: 20,
       migrate: (persisted: unknown, version: number) => {
         const s = persisted as Record<string, unknown>
         if (version === 0) {
@@ -547,6 +593,18 @@ export const useAppStore = create<AppState>()(
             assumptions: {
               ...assumptions,
               targetYieldOnCost: (assumptions.targetYieldOnCost as number | undefined) ?? 0.05,
+            },
+          }
+        }
+        if (version < 20) {
+          // Add rentGrowthRate and expenseInflationRate for 5-year model
+          const assumptions = (s.assumptions as Record<string, unknown>) ?? {}
+          return {
+            ...s,
+            assumptions: {
+              ...assumptions,
+              rentGrowthRate: (assumptions.rentGrowthRate as number | undefined) ?? 0.03,
+              expenseInflationRate: (assumptions.expenseInflationRate as number | undefined) ?? 0.025,
             },
           }
         }

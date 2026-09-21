@@ -41,8 +41,13 @@ export interface SaleListing {
   rentHigh: number
   rentConfidence: RentConfidence
   conservativeRent: number        // used for grading; lower-middle of range, or estimatedRent when manually set
-  // Assumptions
-  propertyTaxAnnual: number
+  // Assumptions — property tax
+  propertyTaxAnnual: number          // seller's current tax (display only; may include Homestead credit)
+  sdatAssessedValue?: number         // SDAT phased-in assessed value, if available from DB
+  cmaPropertyTaxAnnual: number       // CMA estimated tax — full assessment, no Homestead credit
+  projectedPropertyTaxAnnual: number // conservative post-reassessment estimate
+  propertyTaxIsEstimated: boolean    // true = derived from heuristic (no SDAT data)
+  propertyTaxWarning: boolean        // true = CMA tax is materially above seller's current bill
   insuranceAnnual: number
   closingCostRate: number
   repairs: number
@@ -64,6 +69,9 @@ export interface SaleListing {
   netCashYield: number
   paybackYears: number
   investmentScore: number
+  // 5-year year-by-year cash flow model
+  fiveYearCashFlows: number[]          // [yr1, yr2, yr3, yr4, yr5] net cash flow each year
+  cumulativeFiveYearCashFlow: number   // sum of the five years
   // Community signals
   rentalEvidence: RentalEvidence
   rentalDemand: RentalDemand
@@ -99,6 +107,8 @@ export interface GlobalAssumptions {
   pestControlMonthly: number      // default 50 ($/month)
   lawnCareMonthly: number         // default 50 ($/month)
   targetYieldOnCost: number       // default 0.05 (5%) — Maximum Purchase Price target
+  rentGrowthRate: number          // default 0.03 (3%/yr) — annual rent growth used in 5-yr model
+  expenseInflationRate: number    // default 0.025 (2.5%/yr) — annual fixed-expense inflation
 }
 
 export interface SearchSettings {

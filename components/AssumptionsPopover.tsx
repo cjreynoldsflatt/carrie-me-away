@@ -94,7 +94,9 @@ export default function AssumptionsPopover() {
     draft.tenancyYears === DEFAULT_ASSUMPTIONS.tenancyYears &&
     draft.turnoverCost === DEFAULT_ASSUMPTIONS.turnoverCost &&
     draft.pestControlMonthly === DEFAULT_ASSUMPTIONS.pestControlMonthly &&
-    draft.lawnCareMonthly === DEFAULT_ASSUMPTIONS.lawnCareMonthly
+    draft.lawnCareMonthly === DEFAULT_ASSUMPTIONS.lawnCareMonthly &&
+    draft.rentGrowthRate === DEFAULT_ASSUMPTIONS.rentGrowthRate &&
+    draft.expenseInflationRate === DEFAULT_ASSUMPTIONS.expenseInflationRate
 
   const isDirty = JSON.stringify(draft) !== JSON.stringify(assumptions)
 
@@ -173,6 +175,23 @@ export default function AssumptionsPopover() {
           onChange={upd('lawnCareMonthly')}
           min={0} max={300} step={5}
           format={(v) => v === 0 ? 'Included / N/A' : `$${v}/mo`}
+        />
+      </div>
+      <div className="space-y-2 pt-1">
+        <label className="text-sm text-slate-600">5-Year Growth Rates</label>
+        <NumericInput
+          label="Annual rent growth"
+          value={draft.rentGrowthRate}
+          onChange={upd('rentGrowthRate')}
+          min={0} max={0.10} step={0.005}
+          format={(v) => `${(v * 100).toFixed(1)}%/yr`}
+        />
+        <NumericInput
+          label="Expense inflation"
+          value={draft.expenseInflationRate}
+          onChange={upd('expenseInflationRate')}
+          min={0} max={0.10} step={0.005}
+          format={(v) => `${(v * 100).toFixed(1)}%/yr`}
         />
       </div>
       <div className="space-y-2 pt-1">

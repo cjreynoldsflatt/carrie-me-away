@@ -19,58 +19,60 @@ interface Props {
   compareSelected?: boolean
   selectMode?: boolean
   selectSelected?: boolean
+  listingStatus?: string   // from status check: 'Active' | 'Pending' | 'Sold' | 'Off Market' | 'Unknown'
 }
 
 // ── Grade scale (A+, A, B+, B, C, D) ────────────────────────────────────────
 function scoreGrade(score: number): string {
-  if (score >= 70) return 'A+'
-  if (score >= 57) return 'A'
-  if (score >= 44) return 'B+'
-  if (score >= 32) return 'B'
-  if (score >= 20) return 'C'
+  if (score >= 97) return 'A+'
+  if (score >= 88) return 'A'
+  if (score >= 76) return 'B+'
+  if (score >= 60) return 'B'
+  if (score >= 40) return 'C'
   return 'D'
 }
 function gradeColor(score: number): string {
-  if (score >= 70) return 'bg-emerald-600'
-  if (score >= 57) return 'bg-cyan-600'
-  if (score >= 44) return 'bg-blue-600'
-  if (score >= 32) return 'bg-orange-400'
-  if (score >= 20) return 'bg-orange-600'
+  if (score >= 97) return 'bg-emerald-600'
+  if (score >= 88) return 'bg-cyan-600'
+  if (score >= 76) return 'bg-blue-600'
+  if (score >= 60) return 'bg-orange-400'
+  if (score >= 40) return 'bg-orange-600'
   return 'bg-red-600'
 }
 
-// ── Yield scale ───────────────────────────────────────────────────────────────
-function yieldLabel(y: number) {
-  if (y >= 0.055) return 'Exceptional'
-  if (y >= 0.0475) return 'Very Good'
-  if (y >= 0.04) return 'Good'
-  if (y >= 0.0325) return 'Fair'
-  if (y >= 0.025) return 'Below Average'
+// ── Yield label — relative to user's configured target yield ──────────────────
+function yieldLabel(y: number, target: number) {
+  const r = target > 0 ? y / target : 0
+  if (r >= 1.25) return 'Exceptional'
+  if (r >= 1.10) return 'Very Good'
+  if (r >= 1.00) return 'Good'
+  if (r >= 0.85) return 'Fair'
+  if (r >= 0.70) return 'Below Average'
   return 'Poor'
 }
 // Score-based tile colors (match grade circle)
 function yieldBg(score: number) {
-  if (score >= 70) return 'bg-emerald-50'
-  if (score >= 57) return 'bg-cyan-50'
-  if (score >= 44) return 'bg-blue-50'
-  if (score >= 32) return 'bg-orange-50'
-  if (score >= 20) return 'bg-orange-100'
+  if (score >= 97) return 'bg-emerald-50'
+  if (score >= 88) return 'bg-cyan-50'
+  if (score >= 76) return 'bg-blue-50'
+  if (score >= 60) return 'bg-orange-50'
+  if (score >= 40) return 'bg-orange-100'
   return 'bg-red-50'
 }
 function yieldText(score: number) {
-  if (score >= 70) return 'text-emerald-700'
-  if (score >= 57) return 'text-cyan-700'
-  if (score >= 44) return 'text-blue-700'
-  if (score >= 32) return 'text-orange-500'
-  if (score >= 20) return 'text-orange-700'
+  if (score >= 97) return 'text-emerald-700'
+  if (score >= 88) return 'text-cyan-700'
+  if (score >= 76) return 'text-blue-700'
+  if (score >= 60) return 'text-orange-500'
+  if (score >= 40) return 'text-orange-700'
   return 'text-red-600'
 }
 function yieldBadge(score: number) {
-  if (score >= 70) return 'bg-emerald-100 text-emerald-800'
-  if (score >= 57) return 'bg-cyan-100 text-cyan-800'
-  if (score >= 44) return 'bg-blue-100 text-blue-800'
-  if (score >= 32) return 'bg-orange-100 text-orange-600'
-  if (score >= 20) return 'bg-orange-200 text-orange-800'
+  if (score >= 97) return 'bg-emerald-100 text-emerald-800'
+  if (score >= 88) return 'bg-cyan-100 text-cyan-800'
+  if (score >= 76) return 'bg-blue-100 text-blue-800'
+  if (score >= 60) return 'bg-orange-100 text-orange-600'
+  if (score >= 40) return 'bg-orange-200 text-orange-800'
   return 'bg-red-100 text-red-700'
 }
 
@@ -96,10 +98,11 @@ function GradeBadge({ score, netCashYield }: { score: number; netCashYield: numb
   )
 }
 
-export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false }: Props) {
+export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false, listingStatus }: Props) {
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
   const originalRent = useAppStore((s) => s.originalRents[listing.id])
+  const targetYield = useAppStore((s) => s.assumptions.targetYieldOnCost)
 
   const [editingRent, setEditingRent] = useState(false)
   const [rentInput, setRentInput] = useState('')
@@ -139,11 +142,14 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
   const tenYrCombined = tenYrRent + equity.expected
   const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
 
+  const isNonActive = listingStatus && listingStatus !== 'Active' && listingStatus !== 'Unknown'
+
   return (
     <div
       onClick={onClick}
       className={cn(
         'bg-white rounded-xl border cursor-pointer transition-all hover:shadow-md',
+        isNonActive && 'opacity-60',
         selectMode && selectSelected
           ? 'border-red-500 shadow-md ring-1 ring-red-200'
           : compareMode && compareSelected
@@ -213,6 +219,18 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
             </span>
           )}
         </div>
+
+        {/* Listing status banner — shown after a status check */}
+        {isNonActive && (
+          <div className={cn(
+            'absolute bottom-0 inset-x-0 py-1 text-center text-xs font-bold tracking-widest uppercase',
+            listingStatus === 'Sold' && 'bg-red-600/90 text-white',
+            listingStatus === 'Pending' && 'bg-orange-500/90 text-white',
+            listingStatus === 'Off Market' && 'bg-slate-700/90 text-white',
+          )}>
+            {listingStatus}
+          </div>
+        )}
       </div>
 
       {/* Body */}
@@ -363,7 +381,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
             <div className="flex items-center justify-between mb-0.5">
               <div className="text-xs uppercase tracking-wide opacity-60">Net Yield</div>
               <div className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full', yieldBadge(listing.investmentScore))}>
-                {yieldLabel(listing.netCashYield)}
+                {yieldLabel(listing.netCashYield, targetYield)}
               </div>
             </div>
             <div className={cn('text-base font-bold', yieldText(listing.investmentScore))}>{fmtYield(listing.netCashYield)}</div>

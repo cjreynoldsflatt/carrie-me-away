@@ -12,6 +12,8 @@ export const DEFAULT_ASSUMPTIONS: GlobalAssumptions = {
   pestControlMonthly: 50,
   lawnCareMonthly: 50,
   targetYieldOnCost: 0.05,
+  rentGrowthRate: 0.03,
+  expenseInflationRate: 0.025,
 }
 
 // Primary search center (Ellicott City / Columbia, MD)

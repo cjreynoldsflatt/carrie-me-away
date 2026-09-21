@@ -29,6 +29,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.units === 'number' && body.units >= 2 && body.units <= 100) {
     updates.units = body.units
   }
+  if (typeof body.lat === 'number' && body.lat >= 24 && body.lat <= 50) {
+    updates.lat = body.lat
+  }
+  if (typeof body.lng === 'number' && body.lng >= -125 && body.lng <= -65) {
+    updates.lng = body.lng
+  }
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No valid fields' }, { status: 400 })
   }

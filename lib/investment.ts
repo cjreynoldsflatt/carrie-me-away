@@ -37,6 +37,10 @@ interface RawListing {
   pestControlMonthly?: number
   lawnCareMonthly?: number
   superAnnualCost?: number
+  appreciationRate?: number      // annualized historical rate, used for 5-yr CAGR score
+  targetYieldOnCost?: number     // user's configurable target; used as normalization ceiling
+  rentGrowthRate?: number        // annual rent growth for 5-yr model (default 0.03)
+  expenseInflationRate?: number  // annual fixed-expense inflation for 5-yr model (default 0.025)
   rentalDemand: RentalDemand
   rentConfidence: RentConfidence
   rentalEvidence: RentalEvidence
@@ -76,13 +80,31 @@ export function computeMetrics(listing: RawListing) {
   const netCashYield = totalCashInvested > 0 ? netAnnualIncome / totalCashInvested : 0
   const paybackYears = netAnnualIncome > 0 ? totalCashInvested / netAnnualIncome : Infinity
 
+  // ── 5-year year-by-year model ───────────────────────────────────────────
+  const varExpRate = (listing.vacancyRate ?? 0.05) + (listing.maintenanceRate ?? 0.05) +
+    (listing.capExRate ?? 0.03) + (listing.propertyManagementRate ?? 0.10)
+  const fixedAnnualExpenses = listing.propertyTaxAnnual + annualHOA + insuranceAnnual +
+    pestControlAnnual + lawnCareAnnual + superAnnual + LLC_ANNUAL_COST + turnoverReserve
+  const { cashFlows: fiveYearCashFlows, total: cumulativeFiveYearCashFlow } = compute5YearCashFlows({
+    grossAnnualRent,
+    varExpRate,
+    fixedAnnualExpenses,
+    rentGrowthRate: listing.rentGrowthRate ?? 0.03,
+    expenseInflationRate: listing.expenseInflationRate ?? 0.025,
+  })
+
   const investmentScore = computeScore({
     netCashYield,
+    netAnnualIncome,
+    totalCashInvested,
+    price: listing.price,
+    closingCostRate: listing.closingCostRate,
+    repairs: listing.repairs,
+    appreciationRate: listing.appreciationRate ?? 0.03,
+    targetYieldOnCost: listing.targetYieldOnCost ?? 0.05,
+    cumulativeFiveYearCashFlow,
     rentalDemand: listing.rentalDemand,
     rentConfidence: listing.rentConfidence,
-    rentalEvidence: listing.rentalEvidence,
-    hoaMonthly: listing.hoaMonthly,
-    estimatedRent: listing.estimatedRent,
   })
 
   return {
@@ -101,27 +123,118 @@ export function computeMetrics(listing: RawListing) {
     lawnCareAnnual,
     superAnnual,
     llcAnnualCost: LLC_ANNUAL_COST,
+    fiveYearCashFlows,
+    cumulativeFiveYearCashFlow,
   }
+}
+
+// ── True year-by-year 5-year cash flow model ──────────────────────────────
+// Variable expenses (vacancy, maintenance, capEx, management) are percentages of rent
+// and grow automatically when rent grows. Fixed annual expenses (taxes, HOA, insurance,
+// pest, lawn, super, LLC, turnover) grow by expenseInflationRate each year.
+function compute5YearCashFlows(params: {
+  grossAnnualRent: number
+  varExpRate: number        // vacancy + maintenance + capEx + management rates combined
+  fixedAnnualExpenses: number  // sum of all fixed-cost expenses for base year
+  rentGrowthRate: number
+  expenseInflationRate: number
+}): { cashFlows: number[]; total: number } {
+  const { grossAnnualRent, varExpRate, fixedAnnualExpenses, rentGrowthRate, expenseInflationRate } = params
+  const cashFlows: number[] = []
+  let total = 0
+  for (let yr = 1; yr <= 5; yr++) {
+    const rentFactor = Math.pow(1 + rentGrowthRate, yr - 1)
+    const expFactor = Math.pow(1 + expenseInflationRate, yr - 1)
+    const grossRent_yr = grossAnnualRent * rentFactor
+    const netCashFlow_yr = Math.round(grossRent_yr - grossRent_yr * varExpRate - fixedAnnualExpenses * expFactor)
+    cashFlows.push(netCashFlow_yr)
+    total += netCashFlow_yr
+  }
+  return { cashFlows, total }
+}
+
+// ── Piecewise yield-ratio → component score ────────────────────────────────
+// Reaching the user's target yields ~70/100. Must materially exceed it to score well.
+// Control points: [yield / target ratio, component score]
+function yieldRatioToScore(ratio: number): number {
+  const pts: [number, number][] = [
+    [0,    0],
+    [0.70, 40],
+    [0.85, 55],
+    [1.00, 70],
+    [1.10, 85],
+    [1.25, 100],
+  ]
+  if (ratio <= 0) return 0
+  if (ratio >= 1.25) return 100
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1]
+    const [x1, y1] = pts[i]
+    if (ratio <= x1) return y0 + ((ratio - x0) / (x1 - x0)) * (y1 - y0)
+  }
+  return 100
 }
 
 function computeScore({
   netCashYield,
+  netAnnualIncome,
+  totalCashInvested,
+  price,
+  closingCostRate,
+  repairs,
+  appreciationRate,
+  targetYieldOnCost,
+  cumulativeFiveYearCashFlow,
   rentalDemand,
   rentConfidence,
-  rentalEvidence,
-  hoaMonthly,
-  estimatedRent,
 }: {
   netCashYield: number
+  netAnnualIncome: number
+  totalCashInvested: number
+  price: number
+  closingCostRate: number
+  repairs: number
+  appreciationRate: number
+  targetYieldOnCost: number
+  cumulativeFiveYearCashFlow: number
   rentalDemand: RentalDemand
   rentConfidence: RentConfidence
-  rentalEvidence: RentalEvidence
-  hoaMonthly: number
-  estimatedRent: number
 }) {
-  // Yield score: 0% = 0, 10% = 100 (capped)
-  const yieldScore = Math.min(100, Math.max(0, (netCashYield / 0.1) * 100))
+  const target = targetYieldOnCost > 0 ? targetYieldOnCost : 0.05
 
+  // 1. Stabilized Yield on Cost (45%)
+  // Piecewise: target = 70pts, 125%+ of target = 100pts
+  const stabilizedYieldScore = yieldRatioToScore(netCashYield / target)
+
+  // 2. Net Cash Yield (25%)
+  // Same curve; uses acquisition cost (purchase + closing) so excludes repair outlay
+  const acquisitionCost = price * (1 + closingCostRate)
+  const acquisitionYield = acquisitionCost > 0 ? netAnnualIncome / acquisitionCost : 0
+  const netCashYieldScore = yieldRatioToScore(acquisitionYield / target)
+
+  // 3. Projected 5-Year CAGR (15%)
+  // Own scale: 10% annualized CAGR = 100. Not normalized against yield target.
+  const appreciationGain = price * (Math.pow(1 + Math.max(0, appreciationRate), 5) - 1)
+  const cumulativeCashFlow = cumulativeFiveYearCashFlow  // true year-by-year sum
+  const totalReturn5yr = totalCashInvested > 0 ? (appreciationGain + cumulativeCashFlow) / totalCashInvested : 0
+  const cagr5yr = totalReturn5yr >= 0
+    ? Math.pow(1 + totalReturn5yr, 0.2) - 1
+    : -(Math.pow(1 + Math.abs(totalReturn5yr), 0.2) - 1)
+  const cagrScore = Math.min(100, Math.max(0, cagr5yr / 0.10 * 100))
+
+  // 4. Renovation Value-Add ROI (10%)
+  // Own scale: 0.3 income/repair ratio = 100. Not normalized against yield target.
+  const renovROI = repairs > 0 ? netAnnualIncome / repairs : 1
+  const renovationScore = Math.min(100, Math.max(0, renovROI / 0.3 * 100))
+
+  // 5. Rent Confidence (3%)
+  const confidenceScore: Record<RentConfidence, number> = {
+    High: 100,
+    Medium: 60,
+    Low: 25,
+  }
+
+  // 6. Rental Demand (2%)
   const demandScore: Record<RentalDemand, number> = {
     Strong: 100,
     Moderate: 67,
@@ -129,31 +242,35 @@ function computeScore({
     'Insufficient Data': 0,
   }
 
-  const confidenceScore: Record<RentConfidence, number> = {
-    High: 100,
-    Medium: 60,
-    Low: 25,
-  }
-
-  const evidenceScore: Record<RentalEvidence, number> = {
-    High: 100,
-    Likely: 67,
-    Unknown: 33,
-    'Confirmed Restrictions': 0,
-  }
-
-  // HOA burden: HOA as % of monthly rent
-  const hoaBurdenPct = estimatedRent > 0 ? hoaMonthly / estimatedRent : 0
-  // 0% HOA burden = 100, 30%+ = 0
-  const hoaScore = Math.max(0, 100 - (hoaBurdenPct / 0.3) * 100)
-
-  return Math.round(
-    yieldScore * 0.5 +
-      demandScore[rentalDemand] * 0.15 +
-      confidenceScore[rentConfidence] * 0.15 +
-      evidenceScore[rentalEvidence] * 0.1 +
-      hoaScore * 0.1,
+  let score = Math.round(
+    stabilizedYieldScore            * 0.45 +
+    netCashYieldScore               * 0.25 +
+    cagrScore                       * 0.15 +
+    renovationScore                 * 0.10 +
+    confidenceScore[rentConfidence] * 0.03 +
+    demandScore[rentalDemand]       * 0.02,
   )
+
+  // ── Grade guardrails ────────────────────────────────────────────────────────
+  // Operating performance sets the ceiling; appreciation/renovation cannot
+  // compensate for weak income metrics.
+  const yieldRatio = target > 0 ? netCashYield / target : 0
+
+  if (netAnnualIncome <= 0 || yieldRatio < 0.75) {
+    score = Math.min(score, 59)   // max C
+  } else if (yieldRatio < 1.00) {
+    score = Math.min(score, 75)   // max B
+  } else if (yieldRatio < 1.10) {
+    score = Math.min(score, 87)   // max B+
+  } else if (yieldRatio < 1.25) {
+    score = Math.min(score, 96)   // max A
+  }
+  // 125%+ → eligible for A+ — but all core metrics must also be strong
+  if (score >= 97 && (stabilizedYieldScore < 50 || netCashYieldScore < 50)) {
+    score = Math.min(score, 96)
+  }
+
+  return score
 }
 
 // ── Equity / appreciation helpers ─────────────────────────────────────────────

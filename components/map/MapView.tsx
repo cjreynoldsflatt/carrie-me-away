@@ -23,49 +23,56 @@ const homeIcon = L.divIcon({
 })
 
 // ── Auto-fit map to listings ──────────────────────────────────────────────────
+// Only re-fits when the set of listing IDs changes (new listing, filter change),
+// NOT when assumption edits change computed values on the same listings.
 function FitBounds({ listings }: { listings: SaleListing[] }) {
   const map = useMap()
+  const fittedKeyRef = useRef('')
   useEffect(() => {
     if (listings.length === 0) return
-    if (listings.length === 1) {
-      map.setView([listings[0].lat, listings[0].lng], 13)
-    } else {
-      const bounds = L.latLngBounds(listings.map((l) => [l.lat, l.lng]))
-      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 })
-    }
+    const key = listings.map((l) => l.id).join(',')
+    if (key === fittedKeyRef.current) return
+    fittedKeyRef.current = key
+    const points: [number, number][] = [...listings.map((l): [number, number] => [l.lat, l.lng]), [HOME.lat, HOME.lng]]
+    const bounds = L.latLngBounds(points)
+    map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 })
   }, [listings, map])
   return null
 }
 
 // ── Center map on selected listing, or fit-all when deselected ───────────────
+// listings kept in a ref so the effect only re-runs on selectedId changes,
+// not on assumption edits that recompute the same listings.
 function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; selectedId: string | null }) {
   const map = useMap()
   const prevId = useRef<string | null>(null)
+  const listingsRef = useRef(listings)
+  listingsRef.current = listings
   useEffect(() => {
     const wasSelected = prevId.current !== null
     prevId.current = selectedId
     if (!selectedId) {
-      // Only reset view if we were previously zoomed to a specific listing
-      if (wasSelected && listings.length > 0) {
-        if (listings.length === 1) {
-          map.setView([listings[0].lat, listings[0].lng], 13, { animate: true })
+      if (wasSelected && listingsRef.current.length > 0) {
+        const ls = listingsRef.current
+        if (ls.length === 1) {
+          map.setView([ls[0].lat, ls[0].lng], 13, { animate: true })
         } else {
-          const bounds = L.latLngBounds(listings.map((l) => [l.lat, l.lng]))
-          map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 })
+          const points: [number, number][] = [...ls.map((l): [number, number] => [l.lat, l.lng]), [HOME.lat, HOME.lng]]
+          map.fitBounds(L.latLngBounds(points), { padding: [60, 60], maxZoom: 14 })
         }
       }
       return
     }
-    const listing = listings.find((l) => l.id === selectedId)
+    const listing = listingsRef.current.find((l) => l.id === selectedId)
     if (listing) map.setView([listing.lat, listing.lng], Math.max(map.getZoom(), 14), { animate: true })
-  }, [selectedId, listings, map])
+  }, [selectedId, map])
   return null
 }
 
 // ── Colored pin marker ────────────────────────────────────────────────────────
 function makeIcon(listing: SaleListing, selected: boolean) {
   const s = listing.investmentScore
-  const bg = s >= 70 ? '#059669' : s >= 57 ? '#0891b2' : s >= 44 ? '#2563eb' : s >= 32 ? '#fb923c' : s >= 20 ? '#ea580c' : '#dc2626'
+  const bg = s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
   const border = selected ? '#facc15' : bg
   const ring = selected ? 'box-shadow:0 0 0 3px #facc1580;' : ''
 
@@ -96,11 +103,11 @@ function makeIcon(listing: SaleListing, selected: boolean) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 function scoreToGrade(score: number) {
-  if (score >= 70) return 'A+'
-  if (score >= 57) return 'A'
-  if (score >= 44) return 'B+'
-  if (score >= 32) return 'B'
-  if (score >= 20) return 'C'
+  if (score >= 97) return 'A+'
+  if (score >= 88) return 'A'
+  if (score >= 76) return 'B+'
+  if (score >= 60) return 'B'
+  if (score >= 40) return 'C'
   return 'D'
 }
 
@@ -135,7 +142,7 @@ export default function MapView() {
       />
       <FitBounds listings={listings} />
       <CenterOnSelected listings={listings} selectedId={selectedId} />
-      <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} />
+      <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} zIndexOffset={1000} />
       {listings.map((listing) => (
         <Marker
           key={listing.id}

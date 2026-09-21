@@ -4,6 +4,7 @@
 
 import { computeMetrics, computeConservativeRent } from './investment'
 import { DEFAULT_ASSUMPTIONS } from './defaults'
+import { estimateMdPropertyTax } from './md-tax'
 import type { SaleListing, RentalListing, PropertyType, RentConfidence, RentalEvidence, RentalDemand } from './types'
 
 // Loose type matching Supabase select('*') response
@@ -19,14 +20,19 @@ export function rowToSaleListing(row: Row): SaleListing {
   const propertyTaxAnnual = row.property_tax_annual ?? Math.round(row.price * 0.01)
   const repairs = row.repairs ?? 15000
   const superAnnualCost = row.super_annual_cost ?? 1449
+  const sdatAssessedValue: number | undefined = row.sdat_assessed_value ?? undefined
   const conservativeRent = computeConservativeRent(estimatedRent, rentLow, rentHigh, rentConfidence)
+
+  // Estimate CMA property tax — seller's bill may include Homestead credits
+  // that CMA as a rental investor will not receive
+  const taxEst = estimateMdPropertyTax(row.price, propertyTaxAnnual, row.city ?? '', sdatAssessedValue)
 
   const metrics = computeMetrics({
     price: row.price,
     hoaMonthly,
     estimatedRent,
     conservativeRent,
-    propertyTaxAnnual,
+    propertyTaxAnnual: taxEst.cmaEstimated,   // use CMA estimated tax, not seller's bill
     insuranceRate: DEFAULT_ASSUMPTIONS.insuranceRate,
     closingCostRate: DEFAULT_ASSUMPTIONS.closingCostRate,
     repairs,
@@ -42,6 +48,10 @@ export function rowToSaleListing(row: Row): SaleListing {
     rentalDemand: (row.rental_demand ?? 'Insufficient Data') as RentalDemand,
     rentConfidence,
     rentalEvidence: (row.rental_evidence ?? 'Unknown') as RentalEvidence,
+    appreciationRate: row.appreciation_rate ?? 0.03,
+    targetYieldOnCost: DEFAULT_ASSUMPTIONS.targetYieldOnCost,
+    rentGrowthRate: DEFAULT_ASSUMPTIONS.rentGrowthRate,
+    expenseInflationRate: DEFAULT_ASSUMPTIONS.expenseInflationRate,
   })
 
   return {
@@ -67,7 +77,12 @@ export function rowToSaleListing(row: Row): SaleListing {
     rentHigh,
     rentConfidence,
     conservativeRent,
-    propertyTaxAnnual,
+    propertyTaxAnnual,                                   // seller's current bill (display only)
+    sdatAssessedValue,
+    cmaPropertyTaxAnnual: taxEst.cmaEstimated,           // used in all calculations
+    projectedPropertyTaxAnnual: taxEst.projectedAfterReassessment,
+    propertyTaxIsEstimated: taxEst.isEstimated,
+    propertyTaxWarning: taxEst.warning,
     closingCostRate: DEFAULT_ASSUMPTIONS.closingCostRate,
     repairs,
     superAnnualCost,
