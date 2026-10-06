@@ -30,13 +30,26 @@ interface ManualFields {
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, text, photoUrl: clientPhotoUrl, propertyType: clientPropertyType, units: clientUnits, manual } = await req.json() as {
+    const { url, text, photoUrl: clientPhotoUrl, propertyType: clientPropertyType, units: clientUnits, manual, skipExisting } = await req.json() as {
       url?: string; text?: string; photoUrl?: string; propertyType?: string; units?: number; manual?: ManualFields
+      skipExisting?: boolean  // bulk-add from a search page: never overwrite listings already saved
     }
 
     // Require text, manual fields, or a URL to scrape
     if (!text?.trim() && !manual && !url) {
       return NextResponse.json({ error: 'No text or URL provided' }, { status: 400, headers: CORS })
+    }
+
+    // Bulk adds skip existing listings before any parsing/geocoding so user edits aren't clobbered
+    if (skipExisting && url) {
+      const urlId = stableId(url, null, '')
+      const { data: byUrl } = await supabase.from('sale_listings').select('id, address').eq('listing_url', url).limit(1)
+      const { data: byId } = urlId.startsWith('manual-') ? { data: [] }
+        : await supabase.from('sale_listings').select('id, address').eq('id', urlId).limit(1)
+      const existing = byUrl?.[0] ?? byId?.[0]
+      if (existing) {
+        return NextResponse.json({ alreadyExists: true, skipped: true, parsed: { address: existing.address } }, { headers: CORS })
+      }
     }
 
     // Parse fields — priority: manual > text > URL scraping
@@ -171,8 +184,9 @@ function stableId(url: string | null, streetAddress: string | null, city: string
     try {
       const { hostname, pathname } = new URL(url)
       if (hostname.includes('redfin.com')) {
-        // /MD/City/address-zip/home/123456789
-        const listingId = pathname.split('/')[5]
+        // /MD/City/address-zip/home/123456789 (units add a segment: .../unit-12/home/123456789)
+        const parts = pathname.split('/')
+        const listingId = parts[parts.indexOf('home') + 1]
         if (listingId) return `redfin-${listingId}`
       }
       if (hostname.includes('realtor.com')) {
@@ -289,6 +303,7 @@ function parseListingText(text: string, url?: string) {
   const hoaMatch = t.match(/HOA[^.]{0,60}?\$\s*([\d,]+)\s*\/\s*(?:mo|month)/i)
     ?? t.match(/\$\s*([\d,]+)\s*\/\s*(?:mo|month)\s*HOA/i)
     ?? t.match(/HOA\s*(?:fee[s]?)?[:\s]*\$?\s*([\d,]+)/i)
+    ?? t.match(/\$\s*([\d,]+)\s*HOA\b/i)  // Redfin search cards: "$163 HOA" (monthly)
   const hoaRaw = hoaMatch ? parseInt(hoaMatch[1].replace(/,/g, '')) : 0
   // Sanity check — HOA over $2k/mo is almost certainly a mis-parse
   const hoaMonthly = hoaRaw > 2000 ? 0 : hoaRaw

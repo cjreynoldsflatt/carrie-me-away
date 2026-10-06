@@ -3,8 +3,45 @@
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 
+// Redfin search/list pages (no /home/ in the path): add every result card on the page.
+// Cards are sent one at a time — the API geocodes via Nominatim, which allows ~1 req/s.
+// Written readable here, then joined onto one line (statements must end in ';', no // comments).
+const SEARCH_PAGE_JS = `
+var n=document.createElement('div');
+n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35);max-width:360px';
+document.body.appendChild(n);
+var seen={};var items=[];
+document.querySelectorAll('.bp-Homecard').forEach(function(c){
+  var a=c.querySelector('a[href*="/home/"]');if(!a)return;
+  var href=new URL(a.getAttribute('href'),location.origin).href;if(seen[href])return;seen[href]=1;
+  var lines=c.innerText.split('\\n').map(function(l){return l.trim();}).filter(Boolean);
+  var i=-1;lines.forEach(function(l,k){if(i<0&&/^\\$[\\d,]+$/.test(l))i=k;});
+  if(i<0)return;
+  var img=c.querySelector('img[src^="http"]');
+  items.push({url:href,text:lines.slice(i).join('\\n'),photoUrl:img?img.src:null});
+});
+if(!items.length){n.style.background='#dc2626';n.textContent='No listings found on this page.';setTimeout(function(){n.remove();},5000);return;}
+var added=0,existed=0,failed=0;
+function next(k){
+  if(k>=items.length){
+    n.style.background=failed?'#d97706':'#059669';
+    n.textContent='\\u2713 Added '+added+' \\u00b7 '+existed+' already saved'+(failed?' \\u00b7 '+failed+' failed':'');
+    setTimeout(function(){n.remove();},8000);return;
+  }
+  n.textContent='Adding '+(k+1)+' of '+items.length+' to Carrie Me Away\\u2026';
+  var it=items[k];
+  fetch('__BASE__/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:it.url,text:it.text,photoUrl:it.photoUrl,skipExisting:true})})
+    .then(function(r){return r.json();})
+    .then(function(d){if(d.error)failed++;else if(d.alreadyExists)existed++;else added++;})
+    .catch(function(){failed++;})
+    .then(function(){next(k+1);});
+}
+next(0);
+`
+
 function buildBookmarklet(baseUrl: string): string {
-  return `javascript:(function(){var url=location.href;var text=document.body.innerText;var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
+  const searchJs = SEARCH_PAGE_JS.replace(/\n\s*/g, '').replace('__BASE__', baseUrl)
+  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
 }
 
 export default function BookmarkletPage() {
@@ -25,7 +62,7 @@ export default function BookmarkletPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900">Bookmarklet</h1>
           <p className="text-sm text-slate-500 mt-1">
-            One-click add from any Redfin or Realtor.com listing page.
+            One-click add from any Redfin or Realtor.com listing page — or every result on a Redfin search page.
           </p>
         </div>
 
@@ -70,7 +107,7 @@ export default function BookmarkletPage() {
             </li>
             <li className="flex gap-3">
               <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span>
-              <span>On any Redfin or Realtor.com listing, click the bookmark — a notification confirms the listing was saved</span>
+              <span>On any Redfin or Realtor.com listing, click the bookmark — a notification confirms the listing was saved. On a Redfin search page, it adds every listing shown (already-saved ones are left untouched).</span>
             </li>
           </ol>
         </div>
