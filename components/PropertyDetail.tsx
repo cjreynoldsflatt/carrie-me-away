@@ -553,29 +553,22 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     setRegeocodeBusy(true)
                     try {
                       const q = encodeURIComponent(`${listing.address}, ${listing.city}`)
-                      // Try full address first, then ZIP centroid if not found
-                      let lat: number | null = null, lng: number | null = null
-                      const fullRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=us`)
-                      const fullData = await fullRes.json()
-                      if (fullData?.[0]) {
-                        lat = parseFloat(fullData[0].lat)
-                        lng = parseFloat(fullData[0].lon)
-                      } else {
-                        const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
-                        if (zip) {
-                          const zipRes = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${zip}&countrycodes=us&format=json&limit=1`)
-                          const zipData = await zipRes.json()
-                          if (zipData?.[0]) {
-                            lat = parseFloat(zipData[0].lat)
-                            lng = parseFloat(zipData[0].lon)
-                          }
-                        }
+                      const { result } = await fetch(`/api/geocode?address=${q}`).then((r) => r.json()) as
+                        { result: { lat: number; lng: number; precision: 'address' | 'zip' } | null }
+                      const moved = result && (Math.abs(result.lat - listing.lat) > 1e-5 || Math.abs(result.lng - listing.lng) > 1e-5)
+                      if (result?.precision === 'address' && moved) {
+                        await saveLocationToDb(listing.id, result.lat, result.lng)
+                        return
                       }
-                      if (lat !== null && lng !== null) {
-                        await saveLocationToDb(listing.id, lat, lng)
-                      } else {
-                        alert('Could not geocode this address. Check that the address and city are correct.')
-                      }
+                      // Geocoders only know the ZIP (common for new construction) or agree with the
+                      // current pin — let the user paste exact coordinates instead
+                      const input = prompt(
+                        `Couldn't find a more precise location for ${listing.address}.\n\n` +
+                        'Paste coordinates as "lat, lng" (in Google Maps, right-click the house and click the numbers to copy them):',
+                      )
+                      const m = input?.match(/(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)/)
+                      if (m) await saveLocationToDb(listing.id, parseFloat(m[1]), parseFloat(m[2]))
+                      else if (input) alert('Could not read those coordinates — use the format "39.4294, -77.2950".')
                     } catch {
                       alert('Geocoding failed. Check your connection and try again.')
                     } finally {

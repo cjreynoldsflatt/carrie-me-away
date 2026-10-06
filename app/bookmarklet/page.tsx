@@ -10,7 +10,8 @@ const SEARCH_PAGE_JS = `
 var n=document.createElement('div');
 n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35);max-width:360px';
 document.body.appendChild(n);
-var seen={};var items=[];
+var seen={};var items=[];var geo={};
+document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){try{[].concat(JSON.parse(s.textContent)).forEach(function(o){if(o&&o.url&&o.geo)geo[o.url]=o.geo;});}catch(e){}});
 document.querySelectorAll('.bp-Homecard').forEach(function(c){
   var a=c.querySelector('a[href*="/home/"]');if(!a)return;
   var href=new URL(a.getAttribute('href'),location.origin).href;if(seen[href])return;seen[href]=1;
@@ -18,7 +19,8 @@ document.querySelectorAll('.bp-Homecard').forEach(function(c){
   var i=-1;lines.forEach(function(l,k){if(i<0&&/^\\$[\\d,]+$/.test(l))i=k;});
   if(i<0)return;
   var img=c.querySelector('img[src^="http"]');
-  items.push({url:href,text:lines.slice(i).join('\\n'),photoUrl:img?img.src:null});
+  var g=geo[href]||{};
+  items.push({url:href,text:lines.slice(i).join('\\n'),photoUrl:img?img.src:null,lat:g.latitude,lng:g.longitude});
 });
 if(!items.length){n.style.background='#dc2626';n.textContent='No listings found on this page.';setTimeout(function(){n.remove();},5000);return;}
 var added=0,existed=0,failed=0;
@@ -30,7 +32,7 @@ function next(k){
   }
   n.textContent='Adding '+(k+1)+' of '+items.length+' to Carrie Me Away\\u2026';
   var it=items[k];
-  fetch('__BASE__/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:it.url,text:it.text,photoUrl:it.photoUrl,skipExisting:true})})
+  fetch('__BASE__/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:it.url,text:it.text,photoUrl:it.photoUrl,lat:it.lat,lng:it.lng,skipExisting:true})})
     .then(function(r){return r.json();})
     .then(function(d){if(d.error)failed++;else if(d.alreadyExists)existed++;else added++;})
     .catch(function(){failed++;})
@@ -41,7 +43,7 @@ next(0);
 
 function buildBookmarklet(baseUrl: string): string {
   const searchJs = SEARCH_PAGE_JS.replace(/\n\s*/g, '').replace('__BASE__', baseUrl)
-  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
+  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var gp=(document.querySelector('meta[name="geo.position"]')?.content||'').split(/[;,]/);var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType,lat:gp[0]?Number(gp[0]):null,lng:gp[1]?Number(gp[1]):null})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
 }
 
 export default function BookmarkletPage() {

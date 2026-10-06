@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { rowToSaleListing } from '@/lib/db-mappers'
+import { geocode, validCoords } from '@/lib/geocode'
 
 // CORS — needed so the bookmarklet (running on redfin.com / realtor.com) can POST here.
 const CORS = {
@@ -30,7 +31,8 @@ interface ManualFields {
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, text, photoUrl: clientPhotoUrl, propertyType: clientPropertyType, units: clientUnits, manual, skipExisting } = await req.json() as {
+    const { url, text, photoUrl: clientPhotoUrl, propertyType: clientPropertyType, units: clientUnits, manual, skipExisting, lat: clientLat, lng: clientLng } = await req.json() as {
+      lat?: number; lng?: number  // exact coordinates scraped from the listing page by the bookmarklet
       url?: string; text?: string; photoUrl?: string; propertyType?: string; units?: number; manual?: ManualFields
       skipExisting?: boolean  // bulk-add from a search page: never overwrite listings already saved
     }
@@ -93,8 +95,8 @@ export async function POST(req: NextRequest) {
 
     const fullAddress = streetAddress ? `${streetAddress}, ${city}` : city
 
-    // Geocode using OpenStreetMap Nominatim (free, no key)
-    const geo = await geocode(fullAddress)
+    // Prefer the listing site's own coordinates; otherwise geocode the address
+    const geo = validCoords(clientLat, clientLng) ?? await geocode(fullAddress)
     console.log('[add-listing] geocode:', { fullAddress, result: geo })
 
     // Photo — use what the bookmarklet sent, otherwise try scraping og:image
@@ -496,8 +498,6 @@ async function scrapeListingFromUrl(url: string): Promise<ParsedListing | null> 
   }
 }
 
-// ── Geocoder (OpenStreetMap Nominatim — free, no key) ─────────────────────────
-
 // ── og:image scraper — used as fallback when bookmarklet doesn't send the photo ─
 async function fetchOgImage(url: string): Promise<string | null> {
   try {
@@ -519,30 +519,6 @@ async function fetchOgImage(url: string): Promise<string | null> {
   } catch {
     return null
   }
-}
-
-async function geocode(address: string): Promise<{ lat: number; lng: number } | null> {
-  const hdrs = { 'User-Agent': 'carrie-me-away-app/1.0' }
-
-  // 1. Full address free-text query
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=us`
-    const data = await fetch(url, { headers: hdrs }).then((r) => r.json())
-    if (data?.[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
-  } catch { /* fall through */ }
-
-  // 2. ZIP-centroid fallback — at least pins to the right region when the specific
-  //    street is too new or unknown for Nominatim (common in new subdivisions).
-  const zipMatch = address.match(/\b(\d{5})\b/)
-  if (zipMatch) {
-    try {
-      const zipUrl = `https://nominatim.openstreetmap.org/search?postalcode=${zipMatch[1]}&countrycodes=us&format=json&limit=1`
-      const zipData = await fetch(zipUrl, { headers: hdrs }).then((r) => r.json())
-      if (zipData?.[0]) return { lat: parseFloat(zipData[0].lat), lng: parseFloat(zipData[0].lon) }
-    } catch { /* fall through */ }
-  }
-
-  return null
 }
 
 // ── HUD Fair Market Rent (free — get token at huduser.gov/hudapi/public/token) ─
