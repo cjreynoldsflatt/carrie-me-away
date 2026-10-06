@@ -2,7 +2,7 @@ import type { RentalDemand, RentalEvidence, RentConfidence } from './types'
 
 export const LLC_ANNUAL_COST = 300  // CMA Investments LLC fixed annual fee
 
-// Returns the rent used for conservative grading (lower-middle of range).
+// Returns the rent used for grading — the low end of the HUD range.
 // When the user has manually set rent (High confidence) we trust their value directly.
 export function computeConservativeRent(
   estimatedRent: number,
@@ -12,8 +12,7 @@ export function computeConservativeRent(
 ): number {
   if (rentConfidence === 'High') return estimatedRent
   if (rentLow > 0 && rentHigh > 0) {
-    // 20th percentile — just above the lower bound, keeping grading conservative
-    return Math.round(rentLow + (rentHigh - rentLow) * 0.20)
+    return rentLow
   }
   // No range: apply a 10% haircut as a safety margin
   return estimatedRent > 0 ? Math.round(estimatedRent * 0.90) : 0

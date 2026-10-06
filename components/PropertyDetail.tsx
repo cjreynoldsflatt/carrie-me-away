@@ -250,7 +250,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     const dbRent = listing?.estimatedRent ?? 0
     const dbUnits = listing?.units ?? 2
     setRepairsInput(20000)
-    // Default to the same conservative rent the map/list uses for grading (20th-percentile of range)
+    // Default to the Low rent — the same value the map/list uses for grading
     const hasRentRange = (listing?.rentLow ?? 0) > 0 && (listing?.rentHigh ?? 0) > 0 && listing?.rentConfidence !== 'High'
     const defaultRent = hasRentRange
       ? computeConservativeRent(dbRent, listing?.rentLow ?? 0, listing?.rentHigh ?? 0, listing?.rentConfidence ?? 'Low')
@@ -339,7 +339,8 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const quarterlyDistributable = Math.max(quarterlyNetCashFlow - quarterlyReserveContribution, 0)
   const carrieQuarterly = Math.round(quarterlyDistributable * CMA_I.carrieResidualPct)
   const cameronQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
-  const rentIsEdited = originalRent != null && originalRent > 0 && effectiveRentInput !== originalRent
+  // Only a saved custom override counts as an edit — picking Low/Moderate/High is a what-if, not saved
+  const rentIsEdited = originalRent != null && originalRent > 0 && listing.estimatedRent !== originalRent
   const repairsIsEdited = repairsInput !== (20000)
 
   // Maximum Purchase Price — Stabilized Yield on Cost
@@ -734,11 +735,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                         </button>
                       ))}
                     </div>
-                    {listing.conservativeRent > 0 && listing.conservativeRent < listing.estimatedRent && (
-                      <div className="text-xs text-blue-600 mt-1.5">
-                        Grade uses {fmtRent(listing.conservativeRent)} (conservative)
-                      </div>
-                    )}
+                    <div className="text-xs text-blue-600 mt-1.5">
+                      Grade uses Low · Moderate/High are what-ifs and aren&apos;t saved
+                    </div>
                   </div>
                 )}
                 {/* Custom override / manual input */}
