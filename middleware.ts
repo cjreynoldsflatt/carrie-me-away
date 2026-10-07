@@ -4,9 +4,12 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow the login page, auth API, and bookmarklet ingestion endpoints through without a cookie check
+  // Allow the login page, auth API, bookmarklet ingestion endpoints, and signed realtor
+  // share pages (the key in the URL is checked by /api/share) through without a cookie check
   if (
     pathname.startsWith('/login') ||
+    pathname.startsWith('/share/') ||
+    pathname.startsWith('/api/share/') ||
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/add-listing') ||
     pathname.startsWith('/api/add-rentals')

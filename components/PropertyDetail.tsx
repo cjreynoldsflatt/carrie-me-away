@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS } from '@/lib/rent-comps'
@@ -206,7 +206,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
+// shareMode: public realtor view — hides CMA-I sections, home distance, and owner-only controls
+export default function PropertyDetail({ onBack, shareMode = false }: { onBack?: () => void; shareMode?: boolean }) {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const saleListings = useAppStore((s) => s.saleListings)
@@ -241,6 +242,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const [superCostInput, setSuperCostInput] = useState(listing?.superAnnualCost ?? 1449)
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
   const [regeocodeBusy, setRegeocodeBusy] = useState(false)
+  const [copied, setCopied] = useState<'link' | 'share' | null>(null)
+  // Who the numbers are for — CMA-I internally, a generic investor on shared pages
+  const owner = shareMode ? 'investor' : 'CMA'
 
   // Operating reserve — CMA funds $20k reserve per property at acquisition
   const PROPERTY_RESERVE = 20_000
@@ -372,25 +376,55 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Back header */}
+      {/* Back header (owner view only) */}
+      {!shareMode && (
       <div className="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
         <button
           onClick={() => onBack ? onBack() : setSelectedId(null)}
-          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
         >
           <ArrowLeft size={15} />
           All properties
         </button>
-        <button
-          onClick={() => {
-            if (confirm('Delete this listing?')) deleteListing(listing.id)
-          }}
-          className="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 transition-colors"
-        >
-          <Trash2 size={14} />
-          Delete
-        </button>
+        <div className="flex items-center gap-3.5">
+          <button
+            onClick={async () => {
+              await navigator.clipboard.writeText(`${window.location.origin}/finder?id=${encodeURIComponent(listing.id)}`)
+              setCopied('link')
+              setTimeout(() => setCopied(null), 2000)
+            }}
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
+            title="Copy a link to this property in the app (requires login)"
+          >
+            {copied === 'link' ? <Check size={14} className="text-emerald-600" /> : <Link2 size={14} />}
+            {copied === 'link' ? 'Copied' : 'Copy link'}
+          </button>
+          <button
+            onClick={async () => {
+              const { path } = await fetch(`/api/share-link?id=${encodeURIComponent(listing.id)}`).then((r) => r.json())
+              await navigator.clipboard.writeText(`${window.location.origin}${path}`)
+              setCopied('share')
+              setTimeout(() => setCopied(null), 2000)
+            }}
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
+            title="Share with realtor — copies a public link without CMA-I details, no login needed"
+          >
+            {copied === 'share' ? <Check size={14} className="text-emerald-600" /> : <Share2 size={14} />}
+            {copied === 'share' ? 'Copied' : 'Share'}
+          </button>
+          <button
+            onClick={() => {
+              if (confirm('Delete this listing?')) deleteListing(listing.id)
+            }}
+            className="text-red-400 hover:text-red-600 transition-colors"
+            title="Delete listing"
+            aria-label="Delete listing"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
       </div>
+      )}
 
       {/* Scrollable content */}
       <div className="flex-1 min-h-0 overflow-y-auto">
@@ -417,10 +451,12 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               </div>
               {/* Distance + days badges — mirrors PropertyCard top-right */}
               <div className="absolute top-2 right-2 flex gap-1.5">
-                <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
-                  <Navigation size={10} />
-                  {distFromHome.toFixed(1)} mi
-                </span>
+                {!shareMode && (
+                  <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+                    <Navigation size={10} />
+                    {distFromHome.toFixed(1)} mi
+                  </span>
+                )}
                 {listing.daysOnMarket > 0 && (
                   <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
                     <Clock size={10} />
@@ -459,7 +495,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 <span>{listing.beds} bed{isMultiFamily ? '/unit' : ''}</span>
                 <span>{listing.baths} bath{isMultiFamily ? '/unit' : ''}</span>
                 <span>{listing.sqft.toLocaleString()} sqft</span>
-                <span>Built {listing.yearBuilt}</span>
+                {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                 <div className="flex items-center gap-1.5 text-sm text-slate-500">
@@ -562,6 +598,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     </a>
                   ) : null
                 })()}
+                {!shareMode && (
                 <button
                   onClick={async () => {
                     setRegeocodeBusy(true)
@@ -595,10 +632,12 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <MapPin size={13} />
                   {regeocodeBusy ? 'Locating…' : 'Fix location'}
                 </button>
+                )}
               </div>
             </div>
           </div>
 
+          {!shareMode && (<>
           {/* ── Carrie Capital ───────────────────────────────── */}
           <Section title="Carrie Capital">
             <div className="py-1">
@@ -632,6 +671,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               </div>
             </div>
           </Section>
+          </>)}
 
           {/* ── Step 1: Total cash invested ──────────────────── */}
           <Section title="Step 1 — Total Cash Required">
@@ -878,7 +918,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               value={fmtCurrency(propertyTaxInput)}
               monthly={mo(propertyTaxInput)}
               prefix="−"
-              sub={listing.propertyTaxWarning ? '⚠ CMA est. may exceed seller current bill' : undefined}
+              sub={listing.propertyTaxWarning ? `⚠ ${owner} est. may exceed seller current bill` : undefined}
               openGear={openGear} setOpenGear={setOpenGear}
             >
               <div className="space-y-2">
@@ -889,7 +929,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     <span className="tabular-nums font-medium">{fmtCurrency(listing.propertyTaxAnnual)}/yr</span>
                   </div>
                   <div className="flex justify-between text-slate-700 font-semibold">
-                    <span>CMA estimated{listing.propertyTaxIsEstimated ? ' (est.)' : ''}</span>
+                    <span>{shareMode ? 'Investor' : 'CMA'} estimated{listing.propertyTaxIsEstimated ? ' (est.)' : ''}</span>
                     <span className="tabular-nums">{fmtCurrency(listing.cmaPropertyTaxAnnual)}/yr</span>
                   </div>
                   <div className="flex justify-between text-slate-400">
@@ -899,7 +939,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                 </div>
                 {listing.propertyTaxWarning && (
                   <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5">
-                    Current tax bill may understate taxes after acquisition. Seller may benefit from a Homestead Tax Credit that CMA will not receive as a rental owner.
+                    Current tax bill may understate taxes after acquisition. Seller may benefit from a Homestead Tax Credit that {shareMode ? 'an investor' : 'CMA'} will not receive as a rental owner.
                   </div>
                 )}
                 {/* Editable override */}
@@ -921,7 +961,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                       onClick={() => setPropertyTaxInput(listing.cmaPropertyTaxAnnual)}
                       className="flex items-center gap-0.5 text-xs text-orange-500 hover:text-orange-700"
                     >
-                      <RotateCcw size={9} /> Reset to CMA estimate
+                      <RotateCcw size={9} /> Reset to {owner} estimate
                     </button>
                   )}
                   <p className="text-xs text-slate-400">Resets on refresh · enter actual SDAT amount if known</p>
@@ -1045,7 +1085,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               value={fmtCurrency(LLC_ANNUAL_COST)}
               monthly={mo(LLC_ANNUAL_COST)}
               prefix="−"
-              sub="CMA Investments LLC fixed cost"
+              sub={shareMode ? 'Holding LLC fixed cost' : 'CMA Investments LLC fixed cost'}
             />
             <div className={cn('-mx-4 px-4 transition-colors', openGear === 'management' ? 'bg-blue-50' : 'hover:bg-slate-50')}>
               <div
@@ -1059,8 +1099,8 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <span className="text-sm text-slate-700">
                     <span className="inline-block w-4 text-slate-400 text-sm">−</span>
                     {assumptions.propertyManagementRate > 0
-                      ? `CMA property mgmt fee (${(assumptions.propertyManagementRate * 100).toFixed(0)}%)`
-                      : 'CMA property mgmt fee'}
+                      ? `${shareMode ? 'Property' : 'CMA property'} mgmt fee (${(assumptions.propertyManagementRate * 100).toFixed(0)}%)`
+                      : shareMode ? 'Property mgmt fee' : 'CMA property mgmt fee'}
                   </span>
                   {/* Inline on/off toggle — stopPropagation so it doesn't open/close the gear */}
                   <button
@@ -1518,7 +1558,8 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                     </div>
                   </div>
                 </Section>
-                {(() => {
+                {/* CMA-I capital, ownership & member economics — owner view only */}
+                {!shareMode && (() => {
                   const propVal10Cash = Math.round(listing.price * Math.pow(1 + listing.appreciationRate, 5))
                   // Capital deployed = property acquisition cost + Day 1 operating reserve
                   const capitalDeployed = totalCashRequired
