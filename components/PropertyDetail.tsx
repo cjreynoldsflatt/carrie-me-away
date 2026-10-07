@@ -381,10 +381,11 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
       <div className="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
         <button
           onClick={() => onBack ? onBack() : setSelectedId(null)}
-          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
+          className="text-slate-500 hover:text-slate-800 transition-colors"
+          title="All properties"
+          aria-label="Back to all properties"
         >
-          <ArrowLeft size={15} />
-          All properties
+          <ArrowLeft size={17} />
         </button>
         <div className="flex items-center gap-3.5">
           <button
@@ -407,10 +408,10 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
               setTimeout(() => setCopied(null), 2000)
             }}
             className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
-            title="Share with realtor — copies a public link without CMA-I details, no login needed"
+            title="Copies a public link without CMA-I details — no login needed"
           >
             {copied === 'share' ? <Check size={14} className="text-emerald-600" /> : <Share2 size={14} />}
-            {copied === 'share' ? 'Copied' : 'Share'}
+            {copied === 'share' ? 'Copied' : 'Share externally'}
           </button>
           <button
             onClick={() => {
