@@ -429,36 +429,27 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
               </div>
             </div>
             <div className="px-4 py-3 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="text-xl font-bold text-slate-900">{fmtPrice(listing.price)}</div>
-                  <div className="text-sm text-slate-600 mt-0.5">{listing.address}</div>
-                  <div className="text-sm text-slate-400">{listing.city}</div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {/* Same pattern as the property card: big conservative grade, small realistic grade */}
-                  <div className="flex flex-col items-center gap-1 shrink-0">
-                    <div
-                      className={cn('w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base', gradeColor(metrics.investmentScore))}
-                      title={`Conservative grade: ${scoreGrade(metrics.investmentScore)} (${metrics.investmentScore}/100)`}
-                    >
-                      {scoreGrade(metrics.investmentScore)}
+              <div>
+                <div className="text-xl font-bold text-slate-900">{fmtPrice(listing.price)}</div>
+                <div className="text-sm text-slate-600 mt-0.5">{listing.address}</div>
+                <div className="text-sm text-slate-400">{listing.city}</div>
+              </div>
+              {/* Grades on their own row below the city: conservative, then realistic */}
+              <div className="flex items-center gap-4">
+                {([
+                  { label: 'Conservative', score: metrics.investmentScore, y: metrics.netCashYield },
+                  { label: 'Realistic', score: realisticMetrics.investmentScore, y: realisticMetrics.netCashYield },
+                ]).map((g) => (
+                  <div key={g.label} className="flex items-center gap-2" title={`${g.label} grade: ${scoreGrade(g.score)} (${g.score}/100)`}>
+                    <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0', gradeColor(g.score))}>
+                      {scoreGrade(g.score)}
                     </div>
-                    <div className="flex items-center gap-1" title={`Realistic grade: ${scoreGrade(realisticMetrics.investmentScore)} (${realisticMetrics.investmentScore}/100)`}>
-                      <span className="text-[9px] uppercase tracking-wide text-slate-400">Real</span>
-                      <span className={cn('w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-[10px]', gradeColor(realisticMetrics.investmentScore))}>
-                        {scoreGrade(realisticMetrics.investmentScore)}
-                      </span>
+                    <div className="leading-tight">
+                      <div className={cn('text-sm font-bold', yieldColor(g.score))}>{fmtYield(g.y)}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-slate-400">{g.label}</div>
                     </div>
                   </div>
-                  <div className={cn('text-right px-3 py-2 rounded-xl border text-sm font-bold', yieldBg(metrics.investmentScore), yieldColor(metrics.investmentScore))}>
-                    {fmtYield(metrics.netCashYield)}
-                    {Math.abs(realisticMetrics.netCashYield - metrics.netCashYield) >= 0.0005 && (
-                      <span className="text-xs font-semibold opacity-70" title="Conservative – realistic"> – {fmtYield(realisticMetrics.netCashYield)}</span>
-                    )}
-                    <div className="text-xs font-normal opacity-75">{yieldLabel(metrics.netCashYield, assumptions.targetYieldOnCost)}</div>
-                  </div>
-                </div>
+                ))}
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
                 {isMultiFamily ? (

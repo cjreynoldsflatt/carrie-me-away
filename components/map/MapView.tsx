@@ -74,48 +74,47 @@ function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; s
 const gradeHex = (s: number) =>
   s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
 
-// Average of two #rrggbb colors — the pointer sits mid-gradient
-function mixHex(a: string, b: string) {
-  const ch = (h: string, i: number) => parseInt(h.slice(1 + i * 2, 3 + i * 2), 16)
-  return '#' + [0, 1, 2].map((i) => Math.round((ch(a, i) + ch(b, i)) / 2).toString(16).padStart(2, '0')).join('')
-}
-
 function makeIcon(listing: SaleListing, selected: boolean) {
-  // Gradient from the conservative grade color (left) to the realistic grade color (right)
-  const cons = gradeHex(listing.investmentScore)
-  const real = gradeHex(listing.realisticScore ?? listing.investmentScore)
-  const bg = `linear-gradient(90deg, ${cons}, ${real})`
-  const pointer = mixHex(cons, real)
+  // White bubble (price + yield range); header strip fades from the conservative to the realistic grade color
+  // and reads "B+ → A" (single letter when both grades match)
+  const consScore = listing.investmentScore
+  const realScore = listing.realisticScore ?? consScore
+  const cons = gradeHex(consScore)
+  const real = gradeHex(realScore)
+  const grades = scoreToGrade(consScore) === scoreToGrade(realScore)
+    ? scoreToGrade(consScore)
+    : `${scoreToGrade(consScore)} → ${scoreToGrade(realScore)}`
   const yieldText = listing.realisticNetCashYield != null && Math.abs(listing.realisticNetCashYield - listing.netCashYield) >= 0.0005
     ? `${fmtYield(listing.netCashYield)}–${fmtYield(listing.realisticNetCashYield)}`
     : fmtYield(listing.netCashYield)
 
   const shadow = selected
     ? '0 0 0 3px #facc15, 0 4px 16px rgba(0,0,0,.45)'
-    : '0 3px 10px rgba(0,0,0,.4)'
+    : '0 3px 10px rgba(0,0,0,.35)'
 
   // Fixed-size box with content bottom-centered, so the pointer tip always sits on the
   // anchor no matter how wide the bubble's text is
-  const W = 160, H = 70
+  const W = 160, H = 84
   const html = `
     <div style="width:${W}px;height:${H}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none">
       <div style="
         pointer-events:auto;
-        background:${bg};
-        color:#fff;border-radius:10px;padding:5px 10px;text-align:center;
-        font-family:system-ui,sans-serif;font-size:13px;font-weight:800;
-        white-space:nowrap;box-shadow:${shadow};
+        background:#fff;color:#0f172a;border-radius:10px;overflow:hidden;text-align:center;
+        font-family:system-ui,sans-serif;white-space:nowrap;box-shadow:${shadow};
         transform:${selected ? 'scale(1.15)' : 'scale(1)'};
         transform-origin:bottom center;letter-spacing:-0.3px;
       ">
-        <div>${fmtPrice(listing.price)}</div>
-        ${listing.estimatedRent > 0 ? `<div style="font-weight:500;opacity:.95;font-size:11px;margin-top:1px">${fmtRent(listing.estimatedRent)}</div>` : ''}
-        <div style="font-weight:600;opacity:.95;font-size:11px;margin-top:1px">${yieldText}</div>
+        <div style="background:linear-gradient(90deg, ${cons}, ${real});color:#fff;font-size:11px;font-weight:800;padding:2px 10px;text-shadow:0 1px 1px rgba(0,0,0,.25)">${grades}</div>
+        <div style="padding:6px 12px 9px">
+          <div style="font-size:13px;font-weight:800">${fmtPrice(listing.price)}</div>
+          <div style="font-weight:600;font-size:11px;margin-top:2px;color:#475569">${yieldText}</div>
+        </div>
       </div>
       <div style="
         width:0;height:0;
         border-left:7px solid transparent;border-right:7px solid transparent;
-        border-top:8px solid ${pointer};
+        border-top:8px solid #fff;
+        filter:drop-shadow(0 2px 1px rgba(0,0,0,.2));
       "></div>
     </div>`
 

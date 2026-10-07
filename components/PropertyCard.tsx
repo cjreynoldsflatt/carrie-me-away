@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { useState, useRef } from 'react'
 import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
@@ -40,25 +39,6 @@ function gradeColor(score: number): string {
   return 'bg-red-600'
 }
 
-// ── Yield label — relative to user's configured target yield ──────────────────
-function yieldLabel(y: number, target: number) {
-  const r = target > 0 ? y / target : 0
-  if (r >= 1.25) return 'Exceptional'
-  if (r >= 1.10) return 'Very Good'
-  if (r >= 1.00) return 'Good'
-  if (r >= 0.85) return 'Fair'
-  if (r >= 0.70) return 'Below Average'
-  return 'Poor'
-}
-// Score-based tile colors (match grade circle)
-function yieldBg(score: number) {
-  if (score >= 97) return 'bg-emerald-50'
-  if (score >= 88) return 'bg-cyan-50'
-  if (score >= 76) return 'bg-blue-50'
-  if (score >= 60) return 'bg-orange-50'
-  if (score >= 40) return 'bg-orange-100'
-  return 'bg-red-50'
-}
 function yieldText(score: number) {
   if (score >= 97) return 'text-emerald-700'
   if (score >= 88) return 'text-cyan-700'
@@ -67,41 +47,11 @@ function yieldText(score: number) {
   if (score >= 40) return 'text-orange-700'
   return 'text-red-600'
 }
-function yieldBadge(score: number) {
-  if (score >= 97) return 'bg-emerald-100 text-emerald-800'
-  if (score >= 88) return 'bg-cyan-100 text-cyan-800'
-  if (score >= 76) return 'bg-blue-100 text-blue-800'
-  if (score >= 60) return 'bg-orange-100 text-orange-600'
-  if (score >= 40) return 'bg-orange-200 text-orange-800'
-  return 'bg-red-100 text-red-700'
-}
 
-
-function GradeBadge({ score, netCashYield }: { score: number; netCashYield: number }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        className={cn(
-          'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0 cursor-default',
-          gradeColor(score),
-        )}
-      >
-        {scoreGrade(score)}
-      </TooltipTrigger>
-      <TooltipContent side="left" className="max-w-xs">
-        <p className="font-semibold mb-1">Investment Grade: {scoreGrade(score)} ({score}/100)</p>
-        <p className="text-sm text-muted-foreground">
-          50% net cash yield · 15% rental demand · 15% rent confidence · 10% rental evidence · 10% HOA burden
-        </p>
-      </TooltipContent>
-    </Tooltip>
-  )
-}
 
 export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false, listingStatus }: Props) {
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
-  const targetYield = useAppStore((s) => s.assumptions.targetYieldOnCost)
 
   const [editingRent, setEditingRent] = useState(false)
   const [rentInput, setRentInput] = useState('')
@@ -110,7 +60,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
 
   function startEditRent(e: React.MouseEvent) {
     e.stopPropagation()
-    setRentInput(String(listing.estimatedRent))
+    setRentInput(String(listing.conservativeRent))
     setEditingRent(true)
     setTimeout(() => rentInputRef.current?.select(), 20)
   }
@@ -118,7 +68,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
   async function commitRent(e?: React.MouseEvent | React.KeyboardEvent) {
     e?.stopPropagation()
     const val = parseInt(rentInput.replace(/[^0-9]/g, ''))
-    if (!isNaN(val) && val > 0 && val !== listing.estimatedRent) {
+    if (!isNaN(val) && val > 0 && val !== listing.estimatedRent && val !== listing.conservativeRent) {
       setSavingRent(true)
       await saveRentToDb(listing.id, val)
       setSavingRent(false)
@@ -240,6 +190,25 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
             <div className="text-xl font-bold text-slate-900">{fmtPrice(listing.price)}</div>
             <div className="text-sm text-slate-500 leading-tight mt-0.5">{listing.address}</div>
             <div className="text-sm text-slate-400">{listing.city}</div>
+            {/* Grades row — same layout as the detail panel header */}
+            <div className="flex items-center gap-4 my-2">
+              {([
+                { label: 'Conservative', score: listing.investmentScore, y: listing.netCashYield },
+                ...(listing.realisticScore != null && listing.realisticNetCashYield != null
+                  ? [{ label: 'Realistic', score: listing.realisticScore, y: listing.realisticNetCashYield }]
+                  : []),
+              ]).map((g) => (
+                <div key={g.label} className="flex items-center gap-2" title={`${g.label} grade: ${scoreGrade(g.score)} (${g.score}/100)`}>
+                  <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0', gradeColor(g.score))}>
+                    {scoreGrade(g.score)}
+                  </div>
+                  <div className="leading-tight">
+                    <div className={cn('text-sm font-bold', yieldText(g.score))}>{fmtYield(g.y)}</div>
+                    <div className="text-[10px] uppercase tracking-wide text-slate-400">{g.label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
             <div className="flex items-center gap-3 mt-0.5 flex-wrap">
               {listing.listingUrl && (
                 <a
@@ -280,25 +249,6 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
               })()}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1 shrink-0">
-            <GradeBadge score={listing.investmentScore} netCashYield={listing.netCashYield} />
-            {listing.realisticScore != null && (
-              <Tooltip>
-                <TooltipTrigger className="flex items-center gap-1 cursor-default">
-                  <span className="text-[9px] uppercase tracking-wide text-slate-400">Real</span>
-                  <span className={cn('w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-[10px]', gradeColor(listing.realisticScore))}>
-                    {scoreGrade(listing.realisticScore)}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="left" className="max-w-xs">
-                  <p className="font-semibold mb-1">Realistic grade: {scoreGrade(listing.realisticScore)} ({listing.realisticScore}/100)</p>
-                  <p className="text-sm text-muted-foreground">
-                    Typical costs (maintenance 6%, CapEx 5%, insurance 0.35%, pest $25/mo, no lawn for townhouses) and comp-median rent. Big grade is conservative.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
         </div>
 
         {/* Specs */}
@@ -306,7 +256,8 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
           <span>{listing.beds}bd</span>
           <span>{listing.baths}ba</span>
           <span>{listing.sqft.toLocaleString()} sqft</span>
-          <span>Built {listing.yearBuilt}</span>
+          {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
+          <span>{listing.hoaMonthly > 0 ? `HOA ${fmtCurrency(listing.hoaMonthly)}/mo` : 'No HOA'}</span>
         </div>
 
         {listing.community && (
@@ -323,7 +274,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-1 mb-0.5">
-              <div className="text-xs text-slate-400 uppercase tracking-wide">Est. Rent</div>
+              <div className="text-xs text-slate-400 uppercase tracking-wide">Rent</div>
               {isRentEdited && !editingRent && (
                 <span className="text-[9px] font-semibold text-blue-600 bg-blue-100 px-1 rounded">edited</span>
               )}
@@ -359,7 +310,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
             ) : (
               <div className="flex items-center gap-1">
                 {listing.estimatedRent > 0 ? (
-                  <div className="text-base font-bold text-slate-800">{fmtRent(listing.estimatedRent)}</div>
+                  <div className="text-base font-bold text-slate-800">{fmtRent(listing.conservativeRent)}</div>
                 ) : (
                   <div className="text-sm font-medium text-slate-400 italic">Set rent</div>
                 )}
@@ -385,8 +336,10 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
                     <span className="text-[10px]">reset</span>
                   </button>
                 </>
+              ) : listing.rentSource === 'comps' ? (
+                <span>{listing.rentCompCount} comps · realistic {fmtRent(listing.realisticRent ?? listing.estimatedRent)}</span>
               ) : listing.rentLow > 0 ? (
-                <span>{fmtRent(listing.rentLow)}–{fmtRent(listing.rentHigh).replace('$', '')} <span className="text-slate-300">· HUD FMR</span></span>
+                <span>HUD estimate · no comps nearby</span>
               ) : listing.rentConfidence === 'High' ? (
                 <span>Manually set</span>
               ) : (
@@ -394,29 +347,12 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
               )}
             </div>
           </div>
-          <div className={cn('rounded-lg p-2.5', yieldBg(listing.investmentScore))}>
-            <div className="flex items-center justify-between mb-0.5">
-              <div className="text-xs uppercase tracking-wide opacity-60">Net Yield</div>
-              <div className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full', yieldBadge(listing.investmentScore))}>
-                {yieldLabel(listing.netCashYield, targetYield)}
-              </div>
-            </div>
-            <div className={cn('text-base font-bold', yieldText(listing.investmentScore))}>
-              {fmtYield(listing.netCashYield)}
-              {listing.realisticNetCashYield != null && (
-                <span className="text-xs font-semibold opacity-70" title="Conservative – realistic"> – {fmtYield(listing.realisticNetCashYield)}</span>
-              )}
-            </div>
-            <div className="text-xs opacity-60">{fmtPayback(listing.paybackYears)} payback</div>
-          </div>
           <div className="bg-slate-50 rounded-lg p-2.5">
             <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Net Income</div>
-            <div className="text-base font-semibold text-slate-800">{fmtCurrency(listing.netAnnualIncome)}/yr</div>
-          </div>
-          <div className="bg-slate-50 rounded-lg p-2.5">
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">HOA</div>
-            <div className="text-base font-semibold text-slate-800">
-              {listing.hoaMonthly > 0 ? fmtCurrency(listing.hoaMonthly) + '/mo' : 'None'}
+            <div className="text-base font-bold text-slate-800">{fmtCurrency(listing.netAnnualIncome)}/yr</div>
+            <div className="text-xs text-slate-400">
+              {listing.realisticNetAnnualIncome != null && <>realistic {fmtCurrency(listing.realisticNetAnnualIncome)} · </>}
+              {fmtPayback(listing.paybackYears)} payback
             </div>
           </div>
         </div>
