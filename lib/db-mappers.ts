@@ -76,6 +76,9 @@ export function rowToSaleListing(row: Row): SaleListing {
     rentLow,
     rentHigh,
     rentConfidence,
+    rentSource: row.rent_source ?? 'hud',
+    rentCompCount: row.rent_comp_count ?? 0,
+    autoRent: row.auto_rent ?? undefined,
     conservativeRent,
     propertyTaxAnnual,                                   // seller's current bill (display only)
     sdatAssessedValue,

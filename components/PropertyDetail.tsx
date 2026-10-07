@@ -214,13 +214,14 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const setAssumptions = useAppStore((s) => s.setAssumptions)
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
-  const originalRent = useAppStore((s) => selectedId ? s.originalRents[selectedId] : undefined)
   const saveRepairsToDb = useAppStore((s) => s.saveRepairsToDb)
   const saveSuperToDb = useAppStore((s) => s.saveSuperToDb)
   const savePropertyTypeToDb = useAppStore((s) => s.savePropertyTypeToDb)
   const saveUnitsToDb = useAppStore((s) => s.saveUnitsToDb)
   const saveLocationToDb = useAppStore((s) => s.saveLocationToDb)
   const listing = saleListings.find((l) => l.id === selectedId)
+  // Automated estimate (comps or HUD) that a manual override resets to
+  const originalRent = listing?.autoRent
 
   const isMultiFamily = listing?.propertyType === 'Multi Family'
 
@@ -340,7 +341,7 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
   const carrieQuarterly = Math.round(quarterlyDistributable * CMA_I.carrieResidualPct)
   const cameronQuarterly = Math.round(quarterlyDistributable * CMA_I.cameronResidualPct)
   // Only a saved custom override counts as an edit — picking Low/Moderate/High is a what-if, not saved
-  const rentIsEdited = originalRent != null && originalRent > 0 && listing.estimatedRent !== originalRent
+  const rentIsEdited = listing.rentSource === 'manual' && originalRent != null && originalRent > 0 && listing.estimatedRent !== originalRent
   const repairsIsEdited = repairsInput !== (20000)
 
   // Maximum Purchase Price — Stabilized Yield on Cost
@@ -704,7 +705,9 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <div className="mb-3">
                     <div className="mb-2">
                       <span className="text-xs text-slate-500">
-                        {listing.rentConfidence === 'Medium' ? 'HUD SAFMR + adjustments' : 'HUD FMR + adjustments'}
+                        {listing.rentSource === 'comps'
+                          ? `${listing.rentCompCount} nearby rental comps · ${listing.beds}bd ${listing.propertyType.toLowerCase()}s`
+                          : listing.rentConfidence === 'Medium' ? 'HUD SAFMR + adjustments · no rental comps saved nearby' : 'HUD FMR + adjustments · no rental comps saved nearby'}
                       </span>
                     </div>
                     <div className="grid grid-cols-3 gap-1 bg-slate-100 rounded-lg p-1">
@@ -770,12 +773,14 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <button
                     onClick={async () => {
                       await resetRentToOriginal(listing.id)
-                      setRentInput(originalRent)
+                      // Back to the default: Low end of the refreshed range
+                      const fresh = useAppStore.getState().saleListings.find((l) => l.id === listing.id)
+                      setRentInput(fresh && fresh.rentLow > 0 ? fresh.rentLow : originalRent)
                     }}
                     className="flex items-center gap-1 text-xs text-orange-500 hover:text-orange-700 pb-1"
                   >
                     <RotateCcw size={10} />
-                    Reset to original estimate ({fmtRent(originalRent)})
+                    Reset to automated estimate ({fmtRent(originalRent)})
                   </button>
                 )}
               </>
@@ -1836,7 +1841,7 @@ function RentCompsSection({ listing }: { listing: SaleListing }) {
     <Section title={`Rent Comps · ${comps.length} nearby`}>
       <div className="py-1">
         <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-          Active rentals within 2 mi with ±1 bed. With a live API these would be the exact comps used to derive the estimate.
+          Saved Redfin rentals within 2 mi with ±1 bed. The estimate uses same-bed, same-type comps within 1.5 mi (3 mi if fewer than 3).
         </p>
 
         <div className="divide-y divide-slate-100">

@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { rowToSaleListing, rowToRentalListing } from '@/lib/db-mappers'
+import { applyRentComps } from '@/lib/rent-comps'
 
 export async function GET() {
   const [saleRes, rentalRes] = await Promise.all([
@@ -29,9 +30,10 @@ export async function GET() {
   }
 
   const deduped = rows.filter((r) => !staleIds.includes(r.id))
+  const rentalRows = rentalRes.data ?? []
 
   return NextResponse.json({
-    saleListings: deduped.map(rowToSaleListing),
-    rentalListings: (rentalRes.data ?? []).map(rowToRentalListing),
+    saleListings: applyRentComps(deduped, rentalRows).map(rowToSaleListing),
+    rentalListings: rentalRows.map(rowToRentalListing),
   })
 }

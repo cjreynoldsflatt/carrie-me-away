@@ -12,7 +12,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params
   const body = await req.json()
   const updates: Record<string, unknown> = {}
-  if (typeof body.estimated_rent === 'number' && body.estimated_rent >= 0) {
+  if (body.reset_rent === true) {
+    // Drop a manual override — the automated estimate (comps or HUD) takes over again.
+    // rent_low/rent_high still hold the HUD range; its midpoint is the HUD FMR.
+    const { data: row } = await supabase.from('sale_listings').select('rent_low, rent_high').eq('id', id).single()
+    const low = row?.rent_low ?? 0, high = row?.rent_high ?? 0
+    const mid = low > 0 && high > 0 ? (low + high) / 2 : 0
+    if (mid > 0) {
+      updates.estimated_rent = Math.round(mid)
+      // ±15% range = zip-level SAFMR (Medium); ±20% = metro FMR (Low) — see add-listing
+      updates.rent_confidence = (high - low) / mid < 0.35 ? 'Medium' : 'Low'
+    }
+  } else if (typeof body.estimated_rent === 'number' && body.estimated_rent >= 0) {
     updates.estimated_rent = body.estimated_rent
     updates.rent_confidence = 'High'
   }

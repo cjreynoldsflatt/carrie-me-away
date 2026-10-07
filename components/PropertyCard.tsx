@@ -101,7 +101,6 @@ function GradeBadge({ score, netCashYield }: { score: number; netCashYield: numb
 export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false, listingStatus }: Props) {
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
-  const originalRent = useAppStore((s) => s.originalRents[listing.id])
   const targetYield = useAppStore((s) => s.assumptions.targetYieldOnCost)
 
   const [editingRent, setEditingRent] = useState(false)
@@ -135,7 +134,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
     setEditingRent(false)
   }
 
-  const isRentEdited = originalRent != null && originalRent > 0 && originalRent !== listing.estimatedRent
+  const isRentEdited = listing.rentSource === 'manual' && (listing.autoRent ?? 0) > 0 && listing.autoRent !== listing.estimatedRent
 
   const equity = equityScenarios(listing.price, listing.appreciationRate)
   const tenYrRent = tenYearRentalIncome(listing.netAnnualIncome)
@@ -358,7 +357,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
             <div className="text-xs text-slate-400 flex items-center gap-1.5">
               {isRentEdited ? (
                 <>
-                  <span className="text-slate-400">was {fmtRent(originalRent)}</span>
+                  <span className="text-slate-400">was {fmtRent(listing.autoRent ?? 0)}</span>
                   <button
                     onClick={handleResetRent}
                     className="text-orange-500 hover:text-orange-700 flex items-center gap-0.5"

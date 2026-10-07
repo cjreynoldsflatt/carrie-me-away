@@ -41,9 +41,40 @@ function next(k){
 next(0);
 `
 
+// Redfin rentals search pages (/rentals/ in the path): save every card as a rent comp in one
+// batch. The page must be filtered to one property type so comps match like-for-like.
+const RENTALS_PAGE_JS = `
+var n=document.createElement('div');
+n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35);max-width:360px';
+document.body.appendChild(n);
+function done(bg,msg){n.style.background=bg;n.textContent=msg;setTimeout(function(){n.remove();},8000);}
+var pt=(location.pathname.match(/property-type=([^,/]+)/)||[])[1];
+var ptype={townhouse:'Townhouse',house:'Single Family',condo:'Condo'}[pt];
+if(!ptype){done('#dc2626','Filter this Redfin search to one property type (Townhouse, House or Condo) first.');return;}
+var geo={};
+document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){try{[].concat(JSON.parse(s.textContent)).forEach(function(o){if(o&&o.url&&o.geo)geo[o.url]=o.geo;});}catch(e){}});
+var seen={};var rentals=[];
+document.querySelectorAll('.bp-Homecard').forEach(function(c){
+  var a=c.querySelector('a[href*="/home/"]');if(!a)return;
+  var href=new URL(a.getAttribute('href'),location.origin).href;if(seen[href])return;seen[href]=1;
+  var t=c.innerText.replace(/\\s+/g,' ');
+  var m=t.match(/\\$([\\d,]+)\\/mo\\s+(\\d+) beds?\\s+([\\d.]+) baths?\\s+([\\d,]+|\\u2014) sq ft\\s+(.+?, [A-Z]{2} \\d{5})/);
+  if(!m)return;
+  var g=geo[href]||{};
+  rentals.push({url:href,rent:+m[1].replace(/,/g,''),beds:+m[2],baths:+m[3],sqft:m[4]==='\\u2014'?null:+m[4].replace(/,/g,''),address:m[5],lat:g.latitude,lng:g.longitude});
+});
+if(!rentals.length){done('#dc2626','No rentals found on this page.');return;}
+n.textContent='Saving '+rentals.length+' rental comps\\u2026';
+fetch('__BASE__/api/add-rentals',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rentals:rentals,propertyType:ptype})})
+  .then(function(r){return r.json();})
+  .then(function(d){if(d.error)done('#dc2626','Error: '+d.error);else done('#059669','\\u2713 Saved '+d.saved+' '+ptype.toLowerCase()+' rental comps'+(d.skipped?' \\u00b7 '+d.skipped+' skipped':''));})
+  .catch(function(){done('#dc2626','Could not reach app \\u2014 check your connection.');});
+`
+
 function buildBookmarklet(baseUrl: string): string {
   const searchJs = SEARCH_PAGE_JS.replace(/\n\s*/g, '').replace('__BASE__', baseUrl)
-  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var gp=(document.querySelector('meta[name="geo.position"]')?.content||'').split(/[;,]/);var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType,lat:gp[0]?Number(gp[0]):null,lng:gp[1]?Number(gp[1]):null})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
+  const rentalsJs = RENTALS_PAGE_JS.replace(/\n\s*/g, '').replace('__BASE__', baseUrl)
+  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&location.pathname.includes('/rentals')){${rentalsJs}return;}if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var gp=(document.querySelector('meta[name="geo.position"]')?.content||'').split(/[;,]/);var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType,lat:gp[0]?Number(gp[0]):null,lng:gp[1]?Number(gp[1]):null})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
 }
 
 export default function BookmarkletPage() {
@@ -64,7 +95,7 @@ export default function BookmarkletPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-900">Bookmarklet</h1>
           <p className="text-sm text-slate-500 mt-1">
-            One-click add from any Redfin or Realtor.com listing page — or every result on a Redfin search page.
+            One-click add from any Redfin or Realtor.com listing page — or every result on a Redfin search page. On a Redfin rentals search, it saves the rentals as rent comps.
           </p>
         </div>
 
@@ -110,6 +141,10 @@ export default function BookmarkletPage() {
             <li className="flex gap-3">
               <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span>
               <span>On any Redfin or Realtor.com listing, click the bookmark — a notification confirms the listing was saved. On a Redfin search page, it adds every listing shown (already-saved ones are left untouched).</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">5</span>
+              <span>For better rent estimates: on Redfin, search <strong>For rent</strong>, filter to one property type (e.g. Townhouse), and click the bookmark. Those rentals become comps — listings with 3+ same-bed comps nearby use them instead of HUD.</span>
             </li>
           </ol>
         </div>

@@ -40,6 +40,9 @@ export interface SaleListing {
   rentLow: number
   rentHigh: number
   rentConfidence: RentConfidence
+  rentSource?: 'comps' | 'hud' | 'manual' // where estimatedRent / rentLow / rentHigh came from
+  rentCompCount?: number                   // rental comps behind the estimate (0 when HUD)
+  autoRent?: number                        // automated estimate a manual override resets to
   conservativeRent: number        // used for grading; low end of range, or estimatedRent when manually set
   // Assumptions — property tax
   propertyTaxAnnual: number          // seller's current tax (display only; may include Homestead credit)

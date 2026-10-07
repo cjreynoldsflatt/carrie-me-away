@@ -61,12 +61,9 @@ interface AppState {
   // Loading state
   isLoading: boolean
 
-  // Original HUD rents — captured once per listing on first load, never overwritten
-  originalRents: Record<string, number>
-
   // Persist a rent value to Supabase and clear any local override
   saveRentToDb: (id: string, rent: number) => Promise<void>
-  // Reset to the original HUD value (saved in originalRents)
+  // Drop a manual rent override so the automated estimate (listing.autoRent) applies again
   resetRentToOriginal: (id: string) => Promise<void>
   // Persist repairs value to Supabase
   saveRepairsToDb: (id: string, repairs: number) => Promise<void>
@@ -130,8 +127,6 @@ export const useAppStore = create<AppState>()(
 
       saleListings: [],
       rentalListings: [],
-
-      originalRents: {},
 
       saveRentToDb: async (id, rent) => {
         await fetch(`/api/listings/${encodeURIComponent(id)}`, {
@@ -212,18 +207,15 @@ export const useAppStore = create<AppState>()(
       },
 
       resetRentToOriginal: async (id) => {
-        const original = get().originalRents[id]
-        if (original == null) return
         await fetch(`/api/listings/${encodeURIComponent(id)}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ estimated_rent: original }),
+          body: JSON.stringify({ reset_rent: true }),
         })
-        set((state) => ({
-          saleListings: state.saleListings.map((l) =>
-            l.id === id ? { ...l, estimatedRent: original } : l
-          ),
-        }))
+        // Reload listings so the server re-applies rent comps to the un-overridden listing
+        // (not initialize() — that toggles isLoading for the whole app)
+        const data = await fetch('/api/listings').then((r) => r.json())
+        if (data?.saleListings) set({ saleListings: data.saleListings })
       },
 
       assumptions: DEFAULT_ASSUMPTIONS,
@@ -276,10 +268,6 @@ export const useAppStore = create<AppState>()(
 
           const incoming: SaleListing[] = data.saleListings ?? []
           set((state) => {
-            const originals = { ...state.originalRents }
-            for (const l of incoming) {
-              if (!(l.id in originals)) originals[l.id] = l.estimatedRent
-            }
             // Remote assumptions are the source of truth; fall back to localStorage then defaults
             const safeAssumptions = remoteAssumptions
               ? { ...DEFAULT_ASSUMPTIONS, ...remoteAssumptions }
@@ -287,7 +275,6 @@ export const useAppStore = create<AppState>()(
             return {
               saleListings: incoming,
               rentalListings: data.rentalListings ?? [],
-              originalRents: originals,
               assumptions: safeAssumptions,
             }
           })
@@ -614,7 +601,6 @@ export const useAppStore = create<AppState>()(
         search: state.search,
         layers: state.layers,
         assumptions: state.assumptions,
-        originalRents: state.originalRents,
       }),
     },
   ),
