@@ -436,11 +436,26 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
                   <div className="text-sm text-slate-400">{listing.city}</div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base shrink-0', gradeColor(metrics.investmentScore))}>
-                    {scoreGrade(metrics.investmentScore)}
+                  {/* Same pattern as the property card: big conservative grade, small realistic grade */}
+                  <div className="flex flex-col items-center gap-1 shrink-0">
+                    <div
+                      className={cn('w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base', gradeColor(metrics.investmentScore))}
+                      title={`Conservative grade: ${scoreGrade(metrics.investmentScore)} (${metrics.investmentScore}/100)`}
+                    >
+                      {scoreGrade(metrics.investmentScore)}
+                    </div>
+                    <div className="flex items-center gap-1" title={`Realistic grade: ${scoreGrade(realisticMetrics.investmentScore)} (${realisticMetrics.investmentScore}/100)`}>
+                      <span className="text-[9px] uppercase tracking-wide text-slate-400">Real</span>
+                      <span className={cn('w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-[10px]', gradeColor(realisticMetrics.investmentScore))}>
+                        {scoreGrade(realisticMetrics.investmentScore)}
+                      </span>
+                    </div>
                   </div>
                   <div className={cn('text-right px-3 py-2 rounded-xl border text-sm font-bold', yieldBg(metrics.investmentScore), yieldColor(metrics.investmentScore))}>
                     {fmtYield(metrics.netCashYield)}
+                    {Math.abs(realisticMetrics.netCashYield - metrics.netCashYield) >= 0.0005 && (
+                      <span className="text-xs font-semibold opacity-70" title="Conservative – realistic"> – {fmtYield(realisticMetrics.netCashYield)}</span>
+                    )}
                     <div className="text-xs font-normal opacity-75">{yieldLabel(metrics.netCashYield, assumptions.targetYieldOnCost)}</div>
                   </div>
                 </div>
