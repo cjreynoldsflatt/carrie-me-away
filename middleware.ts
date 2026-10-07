@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/login') ||
     pathname.startsWith('/share/') ||
+    pathname === '/cma-logo.png' ||   // shown on public share pages
     pathname.startsWith('/api/share/') ||
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/add-listing') ||

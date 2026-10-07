@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
-// Neutral title for public share links (the root layout's title names CMA Investments)
+// Title for public share links
 export const metadata: Metadata = {
-  title: 'Property Analysis',
+  title: 'Property Analysis · CMA Investments',
   robots: { index: false, follow: false },
 }
 
