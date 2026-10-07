@@ -8,7 +8,7 @@ import { useAppStore } from '@/lib/store'
 import { fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { HOME } from '@/lib/config'
 import type { SaleListing } from '@/lib/types'
-import { MIN_COMPS } from '@/lib/rent-comps'
+import { MIN_COMPS, MAX_COMP_AGE_DAYS, isFreshComp } from '@/lib/rent-comps'
 
 // ── Home marker ───────────────────────────────────────────────────────────────
 const homeIcon = L.divIcon({
@@ -165,16 +165,23 @@ function CompCoverage({ listings }: { listings: SaleListing[] }) {
           </Circle>
         )
       })}
-      {rentals.map((r) => (
-        <CircleMarker
-          key={`comp-${r.id}`}
-          center={[r.lat, r.lng]}
-          radius={4}
-          pathOptions={{ color: '#fff', weight: 1, fillColor: '#7c3aed', fillOpacity: 0.9 }}
-        >
-          <Tooltip direction="top">{fmtRent(r.monthlyRent)} · {r.beds}bd {r.propertyType.toLowerCase()} · {r.address}</Tooltip>
-        </CircleMarker>
-      ))}
+      {rentals.map((r) => {
+        // Expired comps (not seen on Redfin recently) stay visible in gray but don't count
+        const fresh = isFreshComp(r.fetchedAt)
+        return (
+          <CircleMarker
+            key={`comp-${r.id}`}
+            center={[r.lat, r.lng]}
+            radius={4}
+            pathOptions={{ color: '#fff', weight: 1, fillColor: fresh ? '#7c3aed' : '#94a3b8', fillOpacity: fresh ? 0.9 : 0.6 }}
+          >
+            <Tooltip direction="top">
+              {fmtRent(r.monthlyRent)} · {r.beds}bd {r.propertyType.toLowerCase()} · {r.address}
+              {!fresh && ` · expired (not seen in ${MAX_COMP_AGE_DAYS}+ days)`}
+            </Tooltip>
+          </CircleMarker>
+        )
+      })}
     </>
   )
 }
@@ -250,6 +257,7 @@ export default function MapView() {
           <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-[#f59e0b]" /> {MIN_COMPS}–4 comps (thin)</div>
           <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-[#dc2626]" /> Under {MIN_COMPS} — using HUD</div>
           <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#7c3aed] ml-0.5" /> Saved rental</div>
+          <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#94a3b8] ml-0.5" /> Expired ({MAX_COMP_AGE_DAYS}+ days, not counted)</div>
           <div className="text-[10px] text-slate-400 pt-0.5">Circles = 1.5 mi. Click one for a Redfin link.</div>
         </div>
       )}

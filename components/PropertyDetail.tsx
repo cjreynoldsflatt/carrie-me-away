@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
+import { isFreshComp, MAX_COMP_AGE_DAYS } from '@/lib/rent-comps'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -1883,7 +1884,7 @@ function RentCompsSection({ listing }: { listing: SaleListing }) {
 
   const comps = rentalListings
     .map((r) => ({ ...r, dist: distanceMiles(listing.lat, listing.lng, r.lat, r.lng) }))
-    .filter((r) => r.dist <= 2.0 && Math.abs(r.beds - listing.beds) <= 1)
+    .filter((r) => r.dist <= 2.0 && Math.abs(r.beds - listing.beds) <= 1 && isFreshComp(r.fetchedAt))
     .sort((a, b) => a.dist - b.dist)
 
   if (comps.length === 0) return null
@@ -1896,7 +1897,7 @@ function RentCompsSection({ listing }: { listing: SaleListing }) {
     <Section title={`Rent Comps · ${comps.length} nearby`}>
       <div className="py-1">
         <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-          Saved Redfin rentals within 2 mi with ±1 bed. The estimate uses same-bed, same-type comps within 1.5 mi (3 mi if fewer than 3).
+          Redfin rentals seen in the last {MAX_COMP_AGE_DAYS} days within 2 mi with ±1 bed. The estimate uses same-bed, same-type comps within 1.5 mi (3 mi if fewer than 3).
         </p>
 
         <div className="divide-y divide-slate-100">

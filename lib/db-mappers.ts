@@ -117,5 +117,6 @@ export function rowToRentalListing(row: Row): RentalListing {
     daysOnMarket: row.days_on_market ?? 0,
     community: row.community ?? undefined,
     propertyType: row.property_type as PropertyType,
+    fetchedAt: row.fetched_at ?? undefined,
   }
 }

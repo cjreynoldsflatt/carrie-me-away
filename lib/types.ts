@@ -101,6 +101,7 @@ export interface RentalListing {
   daysOnMarket: number
   community?: string
   propertyType: PropertyType
+  fetchedAt?: string   // last time the rental was seen on Redfin
 }
 
 export interface GlobalAssumptions {

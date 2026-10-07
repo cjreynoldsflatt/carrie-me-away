@@ -5,7 +5,12 @@ import { distanceMiles } from './investment'
 
 export const MIN_COMPS = 3
 const RADII_MILES = [1.5, 3]        // try close comps first, widen if too few
-const MAX_COMP_AGE_DAYS = 180       // older asking rents are stale
+export const MAX_COMP_AGE_DAYS = 90  // last seen on Redfin longer ago than this = stale
+
+/** True when a rental was seen on Redfin recently enough to count as a comp. */
+export function isFreshComp(fetchedAt: string | null | undefined): boolean {
+  return !fetchedAt || Date.now() - new Date(fetchedAt).getTime() <= MAX_COMP_AGE_DAYS * 86_400_000
+}
 
 type Row = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -25,12 +30,11 @@ function percentile(sorted: number[], p: number): number {
 export function estimateFromComps(sale: Row, rentals: Row[]): CompEstimate | null {
   // Multi-family is priced per unit — single-home comps don't apply
   if (sale.property_type === 'Multi Family' || !sale.beds) return null
-  const cutoff = Date.now() - MAX_COMP_AGE_DAYS * 86_400_000
   const candidates = rentals.filter((r) =>
     r.beds === sale.beds &&
     r.property_type === sale.property_type &&
     r.monthly_rent > 0 &&
-    (!r.fetched_at || new Date(r.fetched_at).getTime() >= cutoff),
+    isFreshComp(r.fetched_at),
   )
   for (const radius of RADII_MILES) {
     const rents = candidates
