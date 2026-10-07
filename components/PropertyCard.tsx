@@ -280,7 +280,25 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
               })()}
             </div>
           </div>
-          <GradeBadge score={listing.investmentScore} netCashYield={listing.netCashYield} />
+          <div className="flex flex-col items-center gap-1 shrink-0">
+            <GradeBadge score={listing.investmentScore} netCashYield={listing.netCashYield} />
+            {listing.realisticScore != null && (
+              <Tooltip>
+                <TooltipTrigger className="flex items-center gap-1 cursor-default">
+                  <span className="text-[9px] uppercase tracking-wide text-slate-400">Real</span>
+                  <span className={cn('w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-[10px]', gradeColor(listing.realisticScore))}>
+                    {scoreGrade(listing.realisticScore)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="max-w-xs">
+                  <p className="font-semibold mb-1">Realistic grade: {scoreGrade(listing.realisticScore)} ({listing.realisticScore}/100)</p>
+                  <p className="text-sm text-muted-foreground">
+                    Typical costs (maintenance 6%, CapEx 5%, insurance 0.35%, pest $25/mo, no lawn for townhouses) and comp-median rent. Big grade is conservative.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
 
         {/* Specs */}
@@ -383,7 +401,12 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
                 {yieldLabel(listing.netCashYield, targetYield)}
               </div>
             </div>
-            <div className={cn('text-base font-bold', yieldText(listing.investmentScore))}>{fmtYield(listing.netCashYield)}</div>
+            <div className={cn('text-base font-bold', yieldText(listing.investmentScore))}>
+              {fmtYield(listing.netCashYield)}
+              {listing.realisticNetCashYield != null && (
+                <span className="text-xs font-semibold opacity-70" title="Conservative – realistic"> – {fmtYield(listing.realisticNetCashYield)}</span>
+              )}
+            </div>
             <div className="text-xs opacity-60">{fmtPayback(listing.paybackYears)} payback</div>
           </div>
           <div className="bg-slate-50 rounded-lg p-2.5">

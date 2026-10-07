@@ -19,6 +19,9 @@ const MD_RATES: Record<string, { totalPer100: number; name: string }> = {
   PrinceGeorges:       { totalPer100: 1.072, name: "Prince George's County" },// 0.112 + 0.960
   Harford:             { totalPer100: 1.072, name: 'Harford County' },        // 0.112 + 0.960 (approx)
   SykesvilleMuni:      { totalPer100: 1.370, name: 'Carroll County (Sykesville)' }, // + $0.240 municipal
+  // FY2026 unincorporated rate. "Frederick" mailing addresses include unincorporated areas
+  // (Ballenger Creek, Urbana); parcels inside City of Frederick limits also pay a city tax.
+  Frederick:           { totalPer100: 1.222, name: 'Frederick County' },      // 0.112 + 1.110
 }
 
 // City keyword → rate key. More-specific strings first.
@@ -51,6 +54,14 @@ const CITY_TO_KEY: [string, string][] = [
   ['college park',    'PrinceGeorges'],
   ['bel air',         'Harford'],
   ['aberdeen',        'Harford'],
+  ['frederick',       'Frederick'],
+  ['urbana',          'Frederick'],
+  ['new market',      'Frederick'],
+  ['ijamsville',      'Frederick'],
+  ['monrovia',        'Frederick'],
+  ['adamstown',       'Frederick'],
+  ['middletown',      'Frederick'],
+  ['walkersville',    'Frederick'],
 ]
 
 export function detectMdRateKey(city: string): string | null {

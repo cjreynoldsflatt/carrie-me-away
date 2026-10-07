@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SaleListing, RentalListing, SearchSettings, LayerSettings, SortOption, GlobalAssumptions, PropertyType } from './types'
-import { computeMetrics, computeConservativeRent } from './investment'
+import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions } from './investment'
 import { DEFAULT_ASSUMPTIONS } from './defaults'
 
 export { DEFAULT_ASSUMPTIONS }
@@ -310,35 +310,43 @@ export const useAppStore = create<AppState>()(
         return saleListings.map((l) => {
           // Recompute conservativeRent here so it stays current with any rent edits
           const conservativeRent = computeConservativeRent(l.estimatedRent, l.rentLow, l.rentHigh, l.rentConfidence)
-          const metrics = computeMetrics({
+          const metricsFor = (a: typeof assumptions, rent: number) => computeMetrics({
             price: l.price,
             hoaMonthly: l.hoaMonthly,
             estimatedRent: l.estimatedRent,
-            conservativeRent,
+            conservativeRent: rent,
             propertyTaxAnnual: l.cmaPropertyTaxAnnual,  // use CMA estimated tax, not seller's bill
-            insuranceRate: assumptions.insuranceRate,
-            closingCostRate: assumptions.closingCostRate,
+            insuranceRate: a.insuranceRate,
+            closingCostRate: a.closingCostRate,
             repairs: l.repairs,
             superAnnualCost: l.superAnnualCost,
-            vacancyRate: assumptions.vacancyRate,
-            maintenanceRate: assumptions.maintenanceRate,
-            capExRate: assumptions.capExRate,
-            propertyManagementRate: assumptions.propertyManagementRate,
-            tenancyYears: assumptions.tenancyYears,
-            turnoverCost: assumptions.turnoverCost,
-            pestControlMonthly: assumptions.pestControlMonthly,
-            lawnCareMonthly: assumptions.lawnCareMonthly,
+            vacancyRate: a.vacancyRate,
+            maintenanceRate: a.maintenanceRate,
+            capExRate: a.capExRate,
+            propertyManagementRate: a.propertyManagementRate,
+            tenancyYears: a.tenancyYears,
+            turnoverCost: a.turnoverCost,
+            pestControlMonthly: a.pestControlMonthly,
+            lawnCareMonthly: a.lawnCareMonthly,
             appreciationRate: l.appreciationRate ?? 0.03,
-            targetYieldOnCost: assumptions.targetYieldOnCost,
-            rentGrowthRate: assumptions.rentGrowthRate,
-            expenseInflationRate: assumptions.expenseInflationRate,
+            targetYieldOnCost: a.targetYieldOnCost,
+            rentGrowthRate: a.rentGrowthRate,
+            expenseInflationRate: a.expenseInflationRate,
             rentalDemand: l.rentalDemand,
             rentConfidence: l.rentConfidence,
             rentalEvidence: l.rentalEvidence,
           })
+          const metrics = metricsFor(assumptions, conservativeRent)
+          // Realistic scenario: typical costs + comp-median rent (see REALISTIC in lib/investment)
+          const rRent = realisticRent(l)
+          const realistic = metricsFor(realisticAssumptions(assumptions, l.propertyType), rRent)
           return {
             ...l,
             ...metrics,
+            realisticRent: rRent,
+            realisticNetAnnualIncome: realistic.netAnnualIncome,
+            realisticNetCashYield: realistic.netCashYield,
+            realisticScore: realistic.investmentScore,
             conservativeRent,
             closingCostRate: assumptions.closingCostRate,
             vacancyRate: assumptions.vacancyRate,

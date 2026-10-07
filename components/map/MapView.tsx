@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useMemo, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useAppStore } from '@/lib/store'
 import { fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { HOME } from '@/lib/config'
 import type { SaleListing } from '@/lib/types'
+import { MIN_COMPS } from '@/lib/rent-comps'
 
 // ── Home marker ───────────────────────────────────────────────────────────────
 const homeIcon = L.divIcon({
@@ -70,35 +71,113 @@ function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; s
 }
 
 // ── Colored pin marker ────────────────────────────────────────────────────────
+const gradeHex = (s: number) =>
+  s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
+
+// Average of two #rrggbb colors — the pointer sits mid-gradient
+function mixHex(a: string, b: string) {
+  const ch = (h: string, i: number) => parseInt(h.slice(1 + i * 2, 3 + i * 2), 16)
+  return '#' + [0, 1, 2].map((i) => Math.round((ch(a, i) + ch(b, i)) / 2).toString(16).padStart(2, '0')).join('')
+}
+
 function makeIcon(listing: SaleListing, selected: boolean) {
-  const s = listing.investmentScore
-  const bg = s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
-  const border = selected ? '#facc15' : bg
-  const ring = selected ? 'box-shadow:0 0 0 3px #facc1580;' : ''
+  // Gradient from the conservative grade color (left) to the realistic grade color (right)
+  const cons = gradeHex(listing.investmentScore)
+  const real = gradeHex(listing.realisticScore ?? listing.investmentScore)
+  const bg = `linear-gradient(90deg, ${cons}, ${real})`
+  const pointer = mixHex(cons, real)
+  const yieldText = listing.realisticNetCashYield != null && Math.abs(listing.realisticNetCashYield - listing.netCashYield) >= 0.0005
+    ? `${fmtYield(listing.netCashYield)}–${fmtYield(listing.realisticNetCashYield)}`
+    : fmtYield(listing.netCashYield)
 
   const shadow = selected
     ? '0 0 0 3px #facc15, 0 4px 16px rgba(0,0,0,.45)'
     : '0 3px 10px rgba(0,0,0,.4)'
 
+  // Fixed-size box with content bottom-centered, so the pointer tip always sits on the
+  // anchor no matter how wide the bubble's text is
+  const W = 160, H = 70
   const html = `
-    <div style="
-      background:${bg};border:3px solid ${selected ? '#facc15' : 'rgba(255,255,255,0.35)'};
-      color:#fff;border-radius:10px;padding:5px 10px;
-      font-family:system-ui,sans-serif;font-size:13px;font-weight:800;
-      white-space:nowrap;box-shadow:${shadow};
-      transform:${selected ? 'scale(1.15)' : 'scale(1)'};
-      transform-origin:bottom center;letter-spacing:-0.3px;
-    ">
-      <div>${fmtPrice(listing.price)}</div>
-      <div style="font-weight:500;opacity:.95;font-size:11px;margin-top:1px">${listing.estimatedRent > 0 ? fmtRent(listing.estimatedRent) + ' · ' : ''}${fmtYield(listing.netCashYield)}</div>
-    </div>
-    <div style="
-      width:0;height:0;margin:0 auto;
-      border-left:7px solid transparent;border-right:7px solid transparent;
-      border-top:8px solid ${bg};
-    "></div>`
+    <div style="width:${W}px;height:${H}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none">
+      <div style="
+        pointer-events:auto;
+        background:${bg};
+        color:#fff;border-radius:10px;padding:5px 10px;text-align:center;
+        font-family:system-ui,sans-serif;font-size:13px;font-weight:800;
+        white-space:nowrap;box-shadow:${shadow};
+        transform:${selected ? 'scale(1.15)' : 'scale(1)'};
+        transform-origin:bottom center;letter-spacing:-0.3px;
+      ">
+        <div>${fmtPrice(listing.price)}</div>
+        ${listing.estimatedRent > 0 ? `<div style="font-weight:500;opacity:.95;font-size:11px;margin-top:1px">${fmtRent(listing.estimatedRent)}</div>` : ''}
+        <div style="font-weight:600;opacity:.95;font-size:11px;margin-top:1px">${yieldText}</div>
+      </div>
+      <div style="
+        width:0;height:0;
+        border-left:7px solid transparent;border-right:7px solid transparent;
+        border-top:8px solid ${pointer};
+      "></div>
+    </div>`
 
-  return L.divIcon({ html, className: '', iconAnchor: [60, 58], iconSize: [120, 58] })
+  return L.divIcon({ html, className: '', iconAnchor: [W / 2, H], iconSize: [W, H] })
+}
+
+// ── Rent comp coverage overlay ───────────────────────────────────────────────
+const COMP_RADIUS_M = 2414  // 1.5 mi — first search radius in lib/rent-comps
+const REDFIN_TYPE: Record<string, string> = { Townhouse: 'townhouse', 'Single Family': 'house', Condo: 'condo' }
+
+function coverageColor(count: number) {
+  if (count >= 5) return '#059669'          // solid
+  if (count >= MIN_COMPS) return '#f59e0b'  // thin — enough to use, worth adding more
+  return '#dc2626'                          // not enough — falling back to HUD
+}
+
+function CompCoverage({ listings }: { listings: SaleListing[] }) {
+  const rentals = useAppStore((s) => s.rentalListings)
+  return (
+    <>
+      {listings.filter((l) => l.propertyType !== 'Multi Family').map((l) => {
+        const count = l.rentCompCount ?? 0
+        const color = coverageColor(count)
+        const zip = l.city.match(/\b\d{5}\b/g)?.pop()
+        const type = REDFIN_TYPE[l.propertyType]
+        const redfinUrl = zip && type ? `https://www.redfin.com/zipcode/${zip}/rentals/filter/property-type=${type}` : null
+        return (
+          <Circle
+            key={`cov-${l.id}`}
+            center={[l.lat, l.lng]}
+            radius={COMP_RADIUS_M}
+            pathOptions={{ color, weight: 1.5, fillColor: color, fillOpacity: 0.12 }}
+          >
+            <Popup>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: 12, lineHeight: 1.4 }}>
+                <div style={{ fontWeight: 700 }}>{l.address}</div>
+                <div>
+                  {count} matching comp{count === 1 ? '' : 's'} ({l.beds}bd {l.propertyType.toLowerCase()}) ·{' '}
+                  {count >= MIN_COMPS ? 'using comps' : `needs ${MIN_COMPS} — using HUD`}
+                </div>
+                {redfinUrl && (
+                  <a href={redfinUrl} target="_blank" rel="noopener noreferrer">
+                    Find {type} rentals in {zip} on Redfin →
+                  </a>
+                )}
+              </div>
+            </Popup>
+          </Circle>
+        )
+      })}
+      {rentals.map((r) => (
+        <CircleMarker
+          key={`comp-${r.id}`}
+          center={[r.lat, r.lng]}
+          radius={4}
+          pathOptions={{ color: '#fff', weight: 1, fillColor: '#7c3aed', fillOpacity: 0.9 }}
+        >
+          <Tooltip direction="top">{fmtRent(r.monthlyRent)} · {r.beds}bd {r.propertyType.toLowerCase()} · {r.address}</Tooltip>
+        </CircleMarker>
+      ))}
+    </>
+  )
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -120,6 +199,8 @@ export default function MapView() {
   const gradeFilter = useAppStore((s) => s.gradeFilter)
 
   const assumptions = useAppStore((s) => s.assumptions)
+  const showComps = useAppStore((s) => s.layers.rentComps ?? false)
+  const setLayer = useAppStore((s) => s.setLayer)
 
   const listings = useMemo(
     () => {
@@ -130,6 +211,7 @@ export default function MapView() {
   )
 
   return (
+    <div className="relative w-full h-full">
     <MapContainer
       center={[39.30, -76.72]}
       zoom={10}
@@ -142,6 +224,7 @@ export default function MapView() {
       />
       <FitBounds listings={listings} />
       <CenterOnSelected listings={listings} selectedId={selectedId} />
+      {showComps && <CompCoverage listings={listings} />}
       <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} zIndexOffset={1000} />
       {listings.map((listing) => (
         <Marker
@@ -154,5 +237,24 @@ export default function MapView() {
         />
       ))}
     </MapContainer>
+    {/* Comp coverage toggle + legend */}
+    <div className="absolute top-3 right-3 z-[1000] bg-white/95 rounded-lg shadow-md border border-slate-200 text-xs">
+      <button
+        onClick={() => setLayer('rentComps', !showComps)}
+        className={`px-3 py-1.5 rounded-lg font-medium w-full text-left ${showComps ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}`}
+      >
+        Comp coverage
+      </button>
+      {showComps && (
+        <div className="px-3 py-2 space-y-1 text-slate-600">
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-[#059669]" /> 5+ comps</div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-[#f59e0b]" /> {MIN_COMPS}–4 comps (thin)</div>
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-[#dc2626]" /> Under {MIN_COMPS} — using HUD</div>
+          <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#7c3aed] ml-0.5" /> Saved rental</div>
+          <div className="text-[10px] text-slate-400 pt-0.5">Circles = 1.5 mi. Click one for a Redfin link.</div>
+        </div>
+      )}
+    </div>
+    </div>
   )
 }

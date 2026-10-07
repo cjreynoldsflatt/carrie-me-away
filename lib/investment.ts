@@ -18,6 +18,43 @@ export function computeConservativeRent(
   return estimatedRent > 0 ? Math.round(estimatedRent * 0.90) : 0
 }
 
+// ── Realistic scenario ───────────────────────────────────────────────────────
+// The main numbers use the user's (deliberately conservative) global assumptions.
+// The realistic scenario uses typical costs for a well-run, self-managed rental.
+// Each value is a ceiling: if the user's own setting is already lower, theirs wins.
+export const REALISTIC = {
+  maintenanceRate: 0.06,     // routine repairs; up-front repairs budget already covers move-in work
+  capExRate: 0.05,           // roof/HVAC/water heater sinking fund
+  insuranceRate: 0.0035,     // landlord (DP3) policy ≈ 0.35% of price for MD townhouses
+  pestControlMonthly: 25,    // quarterly service, not monthly
+  lawnCareMonthly: 0,        // townhouse/condo: tenant or HOA handles it (houses keep the user's value)
+}
+
+/** Rent for the realistic scenario: comp median when comps exist; HUD Low otherwise (HUD midpoints run high). */
+export function realisticRent(l: {
+  estimatedRent: number; rentLow: number; rentConfidence: string; rentSource?: string
+}): number {
+  if (l.rentConfidence === 'High') return l.estimatedRent            // user's own number
+  if (l.rentSource === 'comps') return l.estimatedRent               // median of nearby rentals
+  return l.rentLow > 0 ? l.rentLow : l.estimatedRent
+}
+
+/** Global assumptions with realistic ceilings applied. */
+export function realisticAssumptions<A extends {
+  maintenanceRate: number; capExRate: number; insuranceRate: number
+  pestControlMonthly: number; lawnCareMonthly: number
+}>(a: A, propertyType: string): A {
+  const attached = propertyType === 'Townhouse' || propertyType === 'Condo'
+  return {
+    ...a,
+    maintenanceRate: Math.min(a.maintenanceRate, REALISTIC.maintenanceRate),
+    capExRate: Math.min(a.capExRate, REALISTIC.capExRate),
+    insuranceRate: Math.min(a.insuranceRate, REALISTIC.insuranceRate),
+    pestControlMonthly: Math.min(a.pestControlMonthly, REALISTIC.pestControlMonthly),
+    lawnCareMonthly: attached ? Math.min(a.lawnCareMonthly, REALISTIC.lawnCareMonthly) : a.lawnCareMonthly,
+  }
+}
+
 interface RawListing {
   price: number
   hoaMonthly: number

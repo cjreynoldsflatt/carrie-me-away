@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
-import { computeMetrics, computeConservativeRent, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST } from '@/lib/investment'
+import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -289,31 +289,37 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
     : 'custom'
 
   // Recompute metrics live using global assumptions + current input values
-  const metrics = computeMetrics({
+  const metricsFor = (a: typeof assumptions, rent: number) => computeMetrics({
     price: listing.price,
     hoaMonthly: listing.hoaMonthly,
-    estimatedRent: effectiveRentInput,
+    estimatedRent: rent,
     propertyTaxAnnual: propertyTaxInput,
-    insuranceRate: assumptions.insuranceRate,
-    closingCostRate: assumptions.closingCostRate,
+    insuranceRate: a.insuranceRate,
+    closingCostRate: a.closingCostRate,
     repairs: repairsInput,
     superAnnualCost: superCostInput,
-    vacancyRate: assumptions.vacancyRate,
-    maintenanceRate: assumptions.maintenanceRate,
-    capExRate: assumptions.capExRate,
-    propertyManagementRate: assumptions.propertyManagementRate,
-    tenancyYears: assumptions.tenancyYears,
-    turnoverCost: assumptions.turnoverCost,
-    pestControlMonthly: assumptions.pestControlMonthly,
-    lawnCareMonthly: assumptions.lawnCareMonthly,
+    vacancyRate: a.vacancyRate,
+    maintenanceRate: a.maintenanceRate,
+    capExRate: a.capExRate,
+    propertyManagementRate: a.propertyManagementRate,
+    tenancyYears: a.tenancyYears,
+    turnoverCost: a.turnoverCost,
+    pestControlMonthly: a.pestControlMonthly,
+    lawnCareMonthly: a.lawnCareMonthly,
     appreciationRate: listing.appreciationRate ?? 0.03,
-    targetYieldOnCost: assumptions.targetYieldOnCost,
-    rentGrowthRate: assumptions.rentGrowthRate,
-    expenseInflationRate: assumptions.expenseInflationRate,
+    targetYieldOnCost: a.targetYieldOnCost,
+    rentGrowthRate: a.rentGrowthRate,
+    expenseInflationRate: a.expenseInflationRate,
     rentalDemand: listing.rentalDemand,
     rentConfidence: listing.rentConfidence,
     rentalEvidence: listing.rentalEvidence,
   })
+  const metrics = metricsFor(assumptions, effectiveRentInput)
+  // Realistic scenario — typical costs; on the default Low rent it also uses the realistic rent
+  // (comp median). If the user picked another rent, both scenarios use that rent.
+  const realisticRentValue = activeScenario === 'low' ? realisticRent(listing) : effectiveRentInput
+  const realA = realisticAssumptions(assumptions, listing.propertyType)
+  const realisticMetrics = metricsFor(realA, realisticRentValue)
 
   const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
   const closingCosts = listing.price * assumptions.closingCostRate
@@ -1117,22 +1123,65 @@ export default function PropertyDetail({ onBack }: { onBack?: () => void }) {
             />
           </Section>
 
-          {/* ── Net cash yield ────────────────────────────────── */}
-          <div className={cn('rounded-xl border p-4 space-y-1', yieldBg(metrics.investmentScore))}>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Net Cash Yield</div>
-            <div className="text-sm text-slate-600">
-              {fmtCurrency(metrics.netAnnualIncome)}/yr ÷ {fmtCurrency(totalCashRequired)} invested
-            </div>
-            <div className={cn('text-3xl font-bold', yieldColor(metrics.investmentScore))}>
-              {fmtYield(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0)}
-            </div>
-            <div className={cn('text-sm font-semibold', yieldColor(metrics.investmentScore))}>
-              {yieldLabel(totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0, assumptions.targetYieldOnCost)}
-            </div>
-            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-              Target: 6%+ for a strong cash-flow investment. At 7%+ the deal earns meaningfully more than most liquid alternatives without the same concentration risk.
-            </p>
-          </div>
+          {/* ── Net cash yield — conservative vs realistic ─────── */}
+          {(() => {
+            const consYield = totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0
+            const realCashRequired = realisticMetrics.totalCashInvested + PROPERTY_RESERVE
+            const realYield = realCashRequired > 0 ? realisticMetrics.netAnnualIncome / realCashRequired : 0
+            // Line-by-line differences between the two scenarios (only rows that actually differ)
+            const diffs: { label: string; detail: string; amount: number }[] = [
+              { label: 'Rent', detail: `${fmtRent(effectiveRentInput)} → ${fmtRent(realisticRentValue)}/mo${listing.rentSource === 'comps' ? ' (comp median)' : ''}`,
+                amount: realisticMetrics.grossAnnualRent - metrics.grossAnnualRent },
+              { label: 'Vacancy', detail: 'same rate, on the rent above',
+                amount: metrics.vacancyReserve - realisticMetrics.vacancyReserve },
+              { label: 'Maintenance', detail: `${Math.round(assumptions.maintenanceRate * 100)}% → ${Math.round(realA.maintenanceRate * 100)}% of rent`,
+                amount: metrics.maintenanceReserve - realisticMetrics.maintenanceReserve },
+              { label: 'CapEx', detail: `${Math.round(assumptions.capExRate * 100)}% → ${Math.round(realA.capExRate * 100)}% of rent`,
+                amount: metrics.capExReserve - realisticMetrics.capExReserve },
+              { label: 'Insurance', detail: `${(assumptions.insuranceRate * 100).toFixed(2)}% → ${(realA.insuranceRate * 100).toFixed(2)}% of price`,
+                amount: metrics.insuranceAnnual - realisticMetrics.insuranceAnnual },
+              { label: 'Pest control', detail: `$${assumptions.pestControlMonthly} → $${realA.pestControlMonthly}/mo`,
+                amount: metrics.pestControlAnnual - realisticMetrics.pestControlAnnual },
+              { label: 'Lawn care', detail: `$${assumptions.lawnCareMonthly} → $${realA.lawnCareMonthly}/mo`,
+                amount: metrics.lawnCareAnnual - realisticMetrics.lawnCareAnnual },
+            ].filter((d) => Math.abs(d.amount) >= 1)
+            return (
+              <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Net Cash Yield</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { label: 'Conservative', y: consYield, noi: metrics.netAnnualIncome, cash: totalCashRequired, score: metrics.investmentScore },
+                    { label: 'Realistic', y: realYield, noi: realisticMetrics.netAnnualIncome, cash: realCashRequired, score: realisticMetrics.investmentScore },
+                  ]).map((c) => (
+                    <div key={c.label} className={cn('rounded-lg p-3', yieldBg(c.score))}>
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{c.label}</div>
+                      <div className={cn('text-2xl font-bold', yieldColor(c.score))}>{fmtYield(c.y)}</div>
+                      <div className={cn('text-xs font-semibold', yieldColor(c.score))}>{yieldLabel(c.y, assumptions.targetYieldOnCost)}</div>
+                      <div className="text-[11px] text-slate-500 mt-1">{fmtCurrency(c.noi)}/yr ÷ {fmtCurrency(c.cash)}</div>
+                    </div>
+                  ))}
+                </div>
+                {diffs.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="text-[11px] font-medium text-slate-500">What realistic changes</div>
+                    {diffs.map((d) => (
+                      <div key={d.label} className="flex items-center justify-between gap-3 text-xs">
+                        <span className="text-slate-600"><span className="font-medium">{d.label}</span> <span className="text-slate-400">· {d.detail}</span></span>
+                        <span className={cn('tabular-nums font-medium shrink-0', d.amount >= 0 ? 'text-emerald-600' : 'text-red-600')}>
+                          {d.amount >= 0 ? '+' : '−'}{fmtCurrency(Math.abs(d.amount))}/yr
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Conservative uses your global assumptions. Realistic uses typical costs for a self-managed rental
+                  (caps: maintenance {Math.round(REALISTIC.maintenanceRate * 100)}%, CapEx {Math.round(REALISTIC.capExRate * 100)}%, insurance {(REALISTIC.insuranceRate * 100).toFixed(2)}% of price,
+                  pest ${REALISTIC.pestControlMonthly}/mo, no lawn care for townhouses/condos). Taxes, HOA, repairs, reserve and vacancy rate are the same in both.
+                </p>
+              </div>
+            )
+          })()}
 
           {/* ── Maximum Purchase Price / Stabilized Yield on Cost ── */}
           <Section title="Maximum Purchase Price">
