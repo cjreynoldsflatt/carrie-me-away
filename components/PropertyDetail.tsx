@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
+import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -472,6 +473,9 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     }
   }
   const mppCons = mpp(metrics.netAnnualIncome)
+  // Scenario colors = their grade colors (same as the grade circles at the top)
+  const consHex = GRADE_HEX[scoreToGrade(metrics.investmentScore)]
+  const realHex = GRADE_HEX[scoreToGrade(realisticMetrics.investmentScore)]
   const mppReal = mpp(realisticMetrics.netAnnualIncome)
   const priceStatus: 'below' | 'near' | 'above' =
     mppCons.price > 0 && listing.price <= mppCons.price ? 'below'
@@ -1377,36 +1381,43 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
               />
             </div>
 
-            {/* Price ladder: conservative max · asking · realistic max */}
+            {/* Price ladder: conservative max · asking · realistic max (dots use each scenario's grade color) */}
             {(() => {
               const pts = [mppCons.price, mppReal.price, listing.price].filter((v) => v > 0)
               const lo = Math.min(...pts) * 0.96, hi = Math.max(...pts) * 1.04
-              const pos = (v: number) => `${Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100))}%`
+              const pctOf = (v: number) => Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100))
+              const pos = (v: number) => `${pctOf(v)}%`
+              // Labels near either end align inward so they aren't clipped by the panel
+              const labelAlign = (v: number) => pctOf(v) < 18 ? 'left-0 text-left' : pctOf(v) > 82 ? 'right-0 text-right' : 'left-1/2 -translate-x-1/2 text-center'
               const marks = [
-                { label: 'Conservative max', v: mppCons.price, color: 'bg-emerald-600', text: 'text-emerald-700' },
-                { label: 'Realistic max', v: mppReal.price, color: 'bg-cyan-600', text: 'text-cyan-700' },
+                { label: 'Conservative max', v: mppCons.price, hex: consHex },
+                { label: 'Realistic max', v: mppReal.price, hex: realHex },
               ].filter((m) => m.v > 0)
               return (
-                <div className="pt-6 pb-9 px-1">
+                <div className="pt-6 pb-9 px-2">
                   <div className="relative h-2 rounded-full bg-slate-100">
                     {mppCons.price > 0 && (
                       <div
-                        className="absolute h-2 rounded-full bg-gradient-to-r from-emerald-200 to-cyan-200"
-                        style={{ left: pos(mppCons.price), width: `calc(${pos(Math.max(mppReal.price, mppCons.price))} - ${pos(mppCons.price)})` }}
+                        className="absolute h-2 rounded-full opacity-40"
+                        style={{
+                          left: pos(mppCons.price),
+                          width: `calc(${pos(Math.max(mppReal.price, mppCons.price))} - ${pos(mppCons.price)})`,
+                          backgroundImage: `linear-gradient(90deg, ${consHex}, ${realHex})`,
+                        }}
                       />
                     )}
                     {marks.map((m) => (
                       <div key={m.label} className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ left: pos(m.v) }}>
-                        <div className={cn('w-3 h-3 rounded-full ring-2 ring-white', m.color)} />
-                        <div className={cn('absolute top-4 left-1/2 -translate-x-1/2 text-center whitespace-nowrap', m.text)}>
+                        <div className="w-3 h-3 rounded-full ring-2 ring-white" style={{ background: m.hex }} />
+                        <div className={cn('absolute top-4 whitespace-nowrap', labelAlign(m.v))} style={{ color: m.hex }}>
                           <div className="text-xs font-bold tabular-nums">{fmtPrice(m.v)}</div>
-                          <div className="text-[10px] opacity-80">{m.label}</div>
+                          <div className="text-[10px] text-slate-500">{m.label}</div>
                         </div>
                       </div>
                     ))}
-                    <div className="absolute -translate-x-1/2" style={{ left: pos(listing.price), top: -22 }}>
-                      <div className="text-center whitespace-nowrap text-slate-700">
-                        <div className="text-xs font-bold tabular-nums">{fmtPrice(listing.price)}</div>
+                    <div className="absolute -translate-x-1/2" style={{ left: pos(listing.price), top: -6 }}>
+                      <div className={cn('absolute bottom-full mb-0.5 whitespace-nowrap text-slate-700', labelAlign(listing.price))}>
+                        <div className="text-xs font-bold tabular-nums">{fmtPrice(listing.price)} asking</div>
                       </div>
                       <div className="mx-auto w-0.5 h-5 bg-slate-800" />
                     </div>
@@ -1443,8 +1454,8 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
             <div className="mt-3">
               <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 gap-y-1.5 text-sm items-center">
                 <div />
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700 text-right">Conservative</div>
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-cyan-700 text-right">Realistic</div>
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-right" style={{ color: consHex }}>Conservative</div>
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-right" style={{ color: realHex }}>Realistic</div>
 
                 <div className="text-slate-600">Annual stabilized NOI</div>
                 <div className="text-right tabular-nums text-slate-800">{fmtCurrency(mppCons.noi)}</div>
@@ -1469,8 +1480,8 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                 <div className="col-span-3 border-t border-slate-200 my-0.5" />
 
                 <div className="font-semibold text-slate-900">Maximum purchase price</div>
-                <div className="text-right tabular-nums font-bold text-emerald-700">{mppCons.price > 0 ? fmtCurrency(mppCons.price) : '—'}</div>
-                <div className="text-right tabular-nums font-bold text-cyan-700">{mppReal.price > 0 ? fmtCurrency(mppReal.price) : '—'}</div>
+                <div className="text-right tabular-nums font-bold" style={{ color: consHex }}>{mppCons.price > 0 ? fmtCurrency(mppCons.price) : '—'}</div>
+                <div className="text-right tabular-nums font-bold" style={{ color: realHex }}>{mppReal.price > 0 ? fmtCurrency(mppReal.price) : '—'}</div>
 
               </div>
             </div>
