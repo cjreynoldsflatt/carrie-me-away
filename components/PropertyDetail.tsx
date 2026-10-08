@@ -1341,6 +1341,27 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
               <span className={cn('font-semibold', mppCons.yieldAtAsking >= targetYieldOnCost ? 'text-emerald-700' : 'text-red-600')}>{fmtYield(mppCons.yieldAtAsking)}</span> conservative to{' '}
               <span className={cn('font-semibold', mppReal.yieldAtAsking >= targetYieldOnCost ? 'text-emerald-700' : 'text-red-600')}>{fmtYield(mppReal.yieldAtAsking)}</span> realistic,
               vs your <span className="font-semibold">{fmtYield(targetYieldOnCost)}</span> target.
+              {/* How far the price has to move to reach the target, per scenario */}
+              <div className="mt-1.5 pt-1.5 border-t border-slate-200 space-y-0.5">
+                {([
+                  { label: 'Conservative', m: mppCons },
+                  { label: 'Realistic', m: mppReal },
+                ]).map(({ label, m }) => {
+                  const gap = listing.price - m.price
+                  return (
+                    <div key={label}>
+                      <span className="text-slate-500">{label}:</span>{' '}
+                      {m.price <= 0 ? (
+                        <span className="text-red-600">net income is too low to reach {fmtYield(targetYieldOnCost)} at any price</span>
+                      ) : gap > 0 ? (
+                        <>offer <span className="font-semibold text-red-600">{fmtCurrency(gap)} below asking</span> ({fmtCurrency(m.price)}) to get {fmtYield(targetYieldOnCost)}</>
+                      ) : (
+                        <>asking already beats {fmtYield(targetYieldOnCost)} — <span className="font-semibold text-emerald-700">{fmtCurrency(-gap)} of room</span></>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
             {/* Target yield — slider */}

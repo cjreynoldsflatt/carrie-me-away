@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { GitCompare, MapPin, Trash2, Activity, X } from 'lucide-react'
+import { GitCompare, MapPin, Trash2, Activity, X, ChevronDown } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
@@ -148,16 +148,21 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
           <div className="text-sm font-semibold text-slate-700">
             {listings.length} {listings.length === 1 ? 'Property' : 'Properties'}
           </div>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as import('@/lib/types').SortOption)}
-            className="text-xs border border-slate-200 rounded-md px-2 py-1 text-slate-600 bg-white outline-none focus:ring-1 focus:ring-blue-400"
-          >
-            <option value="best">Best</option>
-            <option value="worst">Worst</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-          </select>
+          {/* Native select with a custom chevron (the browser arrow sat flush against the edge) */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as import('@/lib/types').SortOption)}
+              className="appearance-none h-8 text-xs font-medium border border-slate-200 rounded-md pl-3 pr-8 text-slate-700 bg-white outline-none hover:border-slate-300 focus:ring-1 focus:ring-blue-400 cursor-pointer"
+              aria-label="Sort properties"
+            >
+              <option value="best">Best</option>
+              <option value="worst">Worst</option>
+              <option value="price-asc">Price ↑</option>
+              <option value="price-desc">Price ↓</option>
+            </select>
+            <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          </div>
         </div>
 
         {/* Row 2 (mobile): compare + filter + add + assumptions */}
