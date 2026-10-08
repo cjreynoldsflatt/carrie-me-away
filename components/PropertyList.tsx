@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { GitCompare, MapPin, Trash2, Activity, X, ChevronDown } from 'lucide-react'
+import { MapPin, Trash2, Activity, X, ChevronDown, Star } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
@@ -47,10 +47,6 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const sortedSaleListings = useAppStore((s) => s.sortedSaleListings)
-  const compareMode = useAppStore((s) => s.compareMode)
-  const setCompareMode = useAppStore((s) => s.setCompareMode)
-  const compareIds = useAppStore((s) => s.compareIds)
-  const toggleCompare = useAppStore((s) => s.toggleCompare)
   const rawSale = useAppStore((s) => s.saleListings)
   const assumptions = useAppStore((s) => s.assumptions)
   const sortBy = useAppStore((s) => s.sortBy)
@@ -122,11 +118,14 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
 
   const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
 
+  const favoritesOnly = useAppStore((s) => s.favoritesOnly)
+  const setFavoritesOnly = useAppStore((s) => s.setFavoritesOnly)
+  const favoriteCount = useMemo(() => allListings.filter((l) => l.isFavorite).length, [allListings])
   const listings = useMemo(
-    () => gradeFilter.length === 0
-      ? allListings
-      : allListings.filter((l) => gradeFilter.includes(gradePairKey(l))),
-    [allListings, gradeFilter],
+    () => allListings
+      .filter((l) => !favoritesOnly || l.isFavorite)
+      .filter((l) => gradeFilter.length === 0 || gradeFilter.includes(gradePairKey(l))),
+    [allListings, gradeFilter, favoritesOnly],
   )
 
   // One pill per conservative → realistic grade pair present, counted across ALL listings
@@ -165,23 +164,8 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
           </div>
         </div>
 
-        {/* Row 2 (mobile): compare + filter + add + assumptions */}
+        {/* Row 2 (mobile): filter + add + assumptions */}
         <div className="flex md:hidden items-center gap-1.5 mt-2">
-          <button
-            onClick={() => setCompareMode(!compareMode)}
-            title={compareMode ? 'Exit compare mode' : 'Compare properties'}
-            className={cn(
-              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
-              compareMode
-                ? 'bg-blue-50 border-blue-300 text-blue-600'
-                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
-            )}
-          >
-            <GitCompare size={14} />
-          </button>
-          {compareMode && compareIds.length > 0 && (
-            <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
-          )}
           {!readOnly && (
           <button
             onClick={toggleSelectMode}
@@ -219,21 +203,6 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
         {/* Desktop action buttons (hidden on mobile, shown inline) */}
         <div className="hidden md:flex items-center gap-1.5 mt-2">
           {!readOnly && <AssumptionsPopover />}
-          <button
-            onClick={() => setCompareMode(!compareMode)}
-            title={compareMode ? 'Exit compare mode' : 'Compare properties'}
-            className={cn(
-              'w-8 h-8 rounded-md flex items-center justify-center border transition-colors shrink-0',
-              compareMode
-                ? 'bg-blue-50 border-blue-300 text-blue-600'
-                : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700',
-            )}
-          >
-            <GitCompare size={14} />
-          </button>
-          {compareMode && compareIds.length > 0 && (
-            <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
-          )}
           {!readOnly && (
           <button
             onClick={toggleSelectMode}
@@ -265,15 +234,6 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
           )}
         </div>
       </div>
-
-      {compareMode && (
-        <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 text-xs text-blue-700">
-          Select 2–3 properties to compare.{' '}
-          {compareIds.length >= 2 && (
-            <span className="font-medium">Switch to Compare panel to view side-by-side.</span>
-          )}
-        </div>
-      )}
 
       {selectMode && (
         <div className="px-4 py-2.5 bg-red-50 border-b border-red-100 flex items-center justify-between gap-3">
@@ -358,11 +318,25 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
+        {favoriteCount > 0 && (
+          <button
+            onClick={() => setFavoritesOnly(!favoritesOnly)}
+            className={cn(
+              'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors whitespace-nowrap',
+              favoritesOnly ? 'bg-amber-400 text-white border-amber-400' : 'border-slate-200 text-slate-600 hover:border-slate-300',
+            )}
+            title="Show only starred properties"
+          >
+            <Star size={12} fill="currentColor" className={favoritesOnly ? '' : 'text-amber-400'} />
+            Favorites
+            <span className={cn('text-[10px]', favoritesOnly ? 'opacity-80' : 'text-slate-400')}>{favoriteCount}</span>
+          </button>
+        )}
         <button
-          onClick={() => { setGradeFilter([]); setSortBy('best') }}
+          onClick={() => { setGradeFilter([]); setFavoritesOnly(false); setSortBy('best') }}
           className={cn(
             'shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors',
-            gradeFilter.length === 0
+            gradeFilter.length === 0 && !favoritesOnly
               ? 'bg-slate-800 text-white border-slate-800'
               : 'border-slate-200 text-slate-500 hover:border-slate-300',
           )}
@@ -410,16 +384,12 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
                 key={listing.id}
                 listing={listing}
                 selected={listing.id === selectedId}
-                compareMode={compareMode}
-                compareSelected={compareIds.includes(listing.id)}
                 selectMode={selectMode}
                 selectSelected={selectedIds.includes(listing.id)}
                 listingStatus={statusMap[listing.id]}
                 onClick={() => {
                   if (selectMode) {
                     toggleSelectId(listing.id)
-                  } else if (compareMode) {
-                    toggleCompare(listing.id)
                   } else {
                     setSelectedId(listing.id === selectedId ? null : listing.id)
                   }

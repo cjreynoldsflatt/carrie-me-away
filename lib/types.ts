@@ -44,6 +44,7 @@ export interface SaleListing {
   rentCompCount?: number                   // rental comps behind the estimate (0 when HUD)
   autoRent?: number                        // automated estimate a manual override resets to
   excludedCompIds?: string[]               // rental comps ruled out for this property
+  isFavorite?: boolean                     // starred by the owner
   // Realistic scenario (typical costs + comp-median rent) — set by computedSaleListings
   realisticRent?: number
   realisticNetAnnualIncome?: number

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState, useRef } from 'react'
 import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText } from 'lucide-react'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
+import FavoriteButton from './FavoriteButton'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
@@ -15,8 +16,6 @@ interface Props {
   listing: SaleListing
   selected: boolean
   onClick: () => void
-  compareMode?: boolean
-  compareSelected?: boolean
   selectMode?: boolean
   selectSelected?: boolean
   listingStatus?: string   // from status check: 'Active' | 'Pending' | 'Sold' | 'Off Market' | 'Unknown'
@@ -51,7 +50,7 @@ function yieldText(score: number) {
 }
 
 
-export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false, listingStatus, readOnly = false }: Props) {
+export default function PropertyCard({ listing, selected, onClick, selectMode = false, selectSelected = false, listingStatus, readOnly = false }: Props) {
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
 
@@ -103,9 +102,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
         isNonActive && 'opacity-60',
         selectMode && selectSelected
           ? 'border-red-500 shadow-md ring-1 ring-red-200'
-          : compareMode && compareSelected
-          ? 'border-blue-500 shadow-md ring-1 ring-blue-200'
-          : selected && !compareMode && !selectMode
+          : selected && !selectMode
           ? 'border-blue-500 shadow-md ring-1 ring-blue-200'
           : 'border-slate-200 hover:border-slate-300',
       )}
@@ -134,22 +131,8 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
           </div>
         )}
 
-        {/* Compare checkbox (top-left, when compare mode) */}
-        {!selectMode && compareMode && (
-          <div className="absolute top-2 left-2">
-            <div className={cn(
-              'w-7 h-7 rounded-md flex items-center justify-center backdrop-blur-sm border transition-colors',
-              compareSelected
-                ? 'bg-blue-500 border-blue-500 text-white'
-                : 'bg-white/90 border-slate-200 text-slate-400',
-            )}>
-              {compareSelected ? <CheckSquare size={16} /> : <Square size={16} />}
-            </div>
-          </div>
-        )}
-
-        {/* Property type badge (hidden in compare/select mode to avoid overlap) */}
-        {!compareMode && !selectMode && (
+        {/* Property type badge (hidden in select mode to avoid overlap) */}
+        {!selectMode && (
           <div className="absolute top-2 left-2">
             <span className="bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
               {listing.propertyType === 'Condo' || listing.propertyType === 'Multi Family' ? <Building2 size={11} /> : <Home size={11} />}
@@ -253,6 +236,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
               })()}
             </div>
           </div>
+          <FavoriteButton id={listing.id} isFavorite={listing.isFavorite} readOnly={readOnly} size={20} className="w-8 h-8 -mr-1 -mt-1 shrink-0" />
         </div>
 
         {/* Specs */}

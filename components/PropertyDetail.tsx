@@ -7,6 +7,7 @@ import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
+import FavoriteButton from './FavoriteButton'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -502,9 +503,16 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
           <div className="text-sm font-semibold text-slate-900 truncate">{listing.address}</div>
           <div className="text-[11px] text-slate-400 truncate">{listing.city} · {fmtPrice(listing.price)}</div>
         </div>
-        {!shareMode
-          ? <DetailActionsMenu listingId={listing.id} onDelete={() => deleteListing(listing.id)} />
-          : <div className="w-[17px] shrink-0" aria-hidden />}
+        {!shareMode ? (
+          <div className="flex items-center gap-0.5 shrink-0">
+            <FavoriteButton id={listing.id} isFavorite={listing.isFavorite} className="w-8 h-8" />
+            <DetailActionsMenu listingId={listing.id} onDelete={() => deleteListing(listing.id)} />
+          </div>
+        ) : (
+          <div className="w-8 shrink-0 flex justify-end">
+            <FavoriteButton id={listing.id} isFavorite={listing.isFavorite} readOnly className="w-8 h-8" />
+          </div>
+        )}
       </div>
       )}
 

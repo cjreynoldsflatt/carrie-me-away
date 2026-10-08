@@ -8,7 +8,6 @@ import FilterPopover from '@/components/FilterPopover'
 import AddListingModal from '@/components/AddListingModal'
 import PropertyList from '@/components/PropertyList'
 import PropertyDetail from '@/components/PropertyDetail'
-import ComparePanel from '@/components/ComparePanel'
 import AppMenu from '@/components/AppMenu'
 import { useAppStore } from '@/lib/store'
 
@@ -26,11 +25,8 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
   const readOnly = !!realtorKey
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
-  const compareMode = useAppStore((s) => s.compareMode)
-  const compareIds = useAppStore((s) => s.compareIds)
   const initialize = useAppStore((s) => s.initialize)
   const initializeReadOnly = useAppStore((s) => s.initializeReadOnly)
-  const setCompareMode = useAppStore((s) => s.setCompareMode)
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -68,8 +64,7 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId])
 
-  const showDetail = !!selectedId && !compareMode
-  const showCompare = compareMode && compareIds.length >= 2
+  const showDetail = !!selectedId
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden">
@@ -78,7 +73,7 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
         {readOnly ? (
           // Realtor Version: logo + label, click to return to the list
           <button
-            onClick={() => { setSelectedId(null); setCompareMode(false); setMobileShowMap(false) }}
+            onClick={() => { setSelectedId(null); setMobileShowMap(false) }}
             className="flex items-center gap-2.5 focus:outline-none shrink-0"
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- static logo */}
@@ -91,7 +86,7 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
 
             {/* Title — click to reset to list view */}
             <button
-              onClick={() => { setSelectedId(null); setCompareMode(false); setMobileShowMap(false) }}
+              onClick={() => { setSelectedId(null); setMobileShowMap(false) }}
               className="flex items-center gap-2 focus:outline-none shrink-0 group/title"
             >
               <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
@@ -146,8 +141,6 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
               setSelectedId(null)
               if (mobileReturnToMap) setMobileShowMap(true)
             }} />
-          ) : showCompare ? (
-            <ComparePanel />
           ) : (
             <PropertyList readOnly={readOnly} onOpenMap={() => setMobileShowMap(true)} />
           )}

@@ -46,11 +46,6 @@ interface AppState {
   assumptions: GlobalAssumptions
   setAssumptions: (updates: Partial<GlobalAssumptions>) => void
 
-  // Compare mode
-  compareMode: boolean
-  compareIds: string[]
-  setCompareMode: (on: boolean) => void
-  toggleCompare: (id: string) => void
 
   // Multi-delete select mode — shared so both the list and map pins can select
   deleteSelectMode: boolean
@@ -63,6 +58,9 @@ interface AppState {
   // Grade filter
   gradeFilter: string[]
   setGradeFilter: (grades: string[]) => void
+  // Show only starred listings (list + map)
+  favoritesOnly: boolean
+  setFavoritesOnly: (on: boolean) => void
   toggleGradeFilter: (grade: string) => void
 
 
@@ -71,6 +69,8 @@ interface AppState {
 
   // Persist a rent value to Supabase and clear any local override
   saveRentToDb: (id: string, rent: number) => Promise<void>
+  // Star / unstar a listing (optimistic; reverts if the save fails)
+  toggleFavorite: (id: string) => Promise<void>
   // Rule a rental comp in/out of one property's rent estimate (persisted, then estimates reload)
   toggleExcludedComp: (listingId: string, compId: string) => Promise<void>
   // Drop a manual rent override so the automated estimate (listing.autoRent) applies again
@@ -218,6 +218,25 @@ export const useAppStore = create<AppState>()(
         }))
       },
 
+      toggleFavorite: async (id) => {
+        const l = get().saleListings.find((x) => x.id === id)
+        if (!l) return
+        const next = !l.isFavorite
+        const setFav = (v: boolean) => set((state) => ({
+          saleListings: state.saleListings.map((x) => (x.id === id ? { ...x, isFavorite: v } : x)),
+        }))
+        setFav(next)
+        const res = await fetch(`/api/listings/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_favorite: next }),
+        }).catch(() => null)
+        if (!res?.ok) {
+          setFav(!next)
+          alert('Could not save the favorite — the is_favorite column may be missing in Supabase (see supabase/migrations).')
+        }
+      },
+
       toggleExcludedComp: async (listingId, compId) => {
         const l = get().saleListings.find((x) => x.id === listingId)
         if (!l) return
@@ -259,7 +278,7 @@ export const useAppStore = create<AppState>()(
       deleteSelectMode: false,
       deleteSelectedIds: [],
       setDeleteSelectMode: (on) =>
-        set(on ? { deleteSelectMode: true, compareMode: false, compareIds: [] } : { deleteSelectMode: false, deleteSelectedIds: [] }),
+        set(on ? { deleteSelectMode: true } : { deleteSelectMode: false, deleteSelectedIds: [] }),
       toggleDeleteSelect: (id) =>
         set((state) => ({
           deleteSelectedIds: state.deleteSelectedIds.includes(id)
@@ -270,21 +289,10 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ deleteSelectedIds: [...new Set([...state.deleteSelectedIds, ...ids])] })),
       setDeleteSelectedIds: (ids) => set({ deleteSelectedIds: ids }),
 
-      compareMode: false,
-      compareIds: [],
-      setCompareMode: (on) =>
-        set({ compareMode: on, compareIds: on ? get().compareIds : [] }),
-      toggleCompare: (id) =>
-        set((state) => {
-          if (state.compareIds.includes(id)) {
-            return { compareIds: state.compareIds.filter((i) => i !== id) }
-          }
-          if (state.compareIds.length >= 3) return {}
-          return { compareIds: [...state.compareIds, id] }
-        }),
-
       gradeFilter: [],
       setGradeFilter: (grades) => set({ gradeFilter: grades }),
+      favoritesOnly: false,
+      setFavoritesOnly: (on) => set({ favoritesOnly: on }),
       toggleGradeFilter: (grade) =>
         set((state) => ({
           gradeFilter: state.gradeFilter.includes(grade)

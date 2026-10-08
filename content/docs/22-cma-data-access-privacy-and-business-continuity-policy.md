@@ -1,9 +1,9 @@
 # 22 — CMA Data Access, Privacy & Business Continuity Policy
 
 **Status:** Final internal security and continuity policy; implementation required  
-**Version:** 2026-08-26.5  
+**Version:** 2026-10-08.1  
 **Effective date:** [EFFECTIVE DATE]  
-**Last reviewed:** 2026-08-26  
+**Last reviewed:** 2026-10-08  
 **Document owner:** CMA-I / CMA-PM  
 **Approved by:** Pending annual consent  
 **Related documents:** 11, 12, 16, 19, 20, 23
@@ -50,6 +50,19 @@ High-sensitivity data includes:
 - deposit-bank and payment-account information.
 
 Collect only what is reasonably needed.
+
+### External sharing of property analysis
+
+The CMA app can share property analysis outside the company through signed links that need no login:
+
+- a **Realtor Version** of the property list (view-only), and
+- links that open a single property in that version.
+
+Shared views show listing facts, rent estimates and comps, expenses, returns, and maximum purchase price. They **must not** show CMA-I capital, member economics, vesting, reserve balances, the operator's home location, or any tenant, applicant, or banking data. Shared views cannot edit or delete data.
+
+Anyone holding a link can view it, so share links only with people working on the deal. Deleting a listing disables its link. Changing the app's authentication secret revokes all outstanding share links (and signs out internal users).
+
+Treat maximum purchase price and target yield as negotiation-sensitive: share them only when the recipient represents CMA.
 
 ## 4. AI Data Boundary
 

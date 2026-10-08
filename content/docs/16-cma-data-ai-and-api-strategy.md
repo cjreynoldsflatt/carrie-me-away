@@ -1,9 +1,9 @@
 # 16 — CMA Data, AI & API Strategy
 
 **Status:** Final internal technology strategy; security and retention rules are controlled by Doc 22  
-**Version:** 2026-08-26.5  
+**Version:** 2026-10-08.1  
 **Effective date:** [EFFECTIVE DATE]  
-**Last reviewed:** 2026-08-26  
+**Last reviewed:** 2026-10-08  
 **Document owner:** CMA-I / CMA-PM  
 **Approved by:** Pending  
 **Related documents:** 06, 11, 12, 22
@@ -28,7 +28,8 @@ Maryland Security Deposit Bank
 └── CMA-PM security-deposit account and liability support
 
 CMA App
-├── Property Analysis
+├── Property Analysis (conservative + realistic scenarios)
+├── rental comps collected from Redfin via bookmarklet
 ├── deal comparison
 ├── property subledgers
 ├── reserves
@@ -42,6 +43,19 @@ Google Drive
 ```
 
 Do not rebuild tenant operations in the CMA app when DoorLoop already handles them well.
+
+### Property-analysis data sources (current)
+
+| Data | Source | Cost |
+|---|---|---|
+| Sale listings and details (price, HOA, tax bill, year built) | Redfin pages, captured by the CMA bookmarklet from the operator's browser | $0 |
+| Rental comps | Redfin rental searches, captured by the bookmarklet | $0 |
+| Rent fallback when comps are thin | HUD Fair Market Rent API | $0 |
+| Geocoding | Redfin coordinates; US Census geocoder; OpenStreetMap | $0 |
+| Map tiles and jurisdiction boundaries | OpenStreetMap | $0 |
+| Local rental-licensing areas | Curated list in the app, verified against official sources | $0 |
+
+No paid listing-data API is currently used. Comp-based rent estimates and jurisdiction flags are underwriting aids — confirm by exact address under Doc 07 before an offer.
 
 ## 2. Stable Identifiers
 

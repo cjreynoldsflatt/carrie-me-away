@@ -83,7 +83,7 @@ function fmtAnnualK(n: number) {
   return `${n < 0 ? '−' : ''}$${k >= 100 ? Math.round(k) : k.toFixed(1)}K/yr`
 }
 
-function makeIcon(listing: SaleListing, selected: boolean, deleteSelected = false) {
+function makeIcon(listing: SaleListing, selected: boolean, deleteSelected = false, showFavorite = true) {
   // White bubble (price, conservative net income, yield range); header strip fades from the conservative to the realistic grade color
   // and reads "B+ → A" (single letter when both grades match)
   const consScore = listing.investmentScore
@@ -109,6 +109,8 @@ function makeIcon(listing: SaleListing, selected: boolean, deleteSelected = fals
   const W = 160, H = 100
   const html = `
     <div style="width:${W}px;height:${H}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none">
+      <div style="position:relative;pointer-events:auto">
+      ${showFavorite && listing.isFavorite ? `<div title="Favorite" style="position:absolute;top:-8px;right:-8px;z-index:2;width:20px;height:20px;border-radius:50%;background:#fbbf24;border:2px solid #fff;color:#fff;font-size:11px;line-height:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.3)">★</div>` : ''}
       <div style="
         pointer-events:auto;
         background:#fff;color:#0f172a;border-radius:10px;overflow:hidden;text-align:center;
@@ -122,6 +124,7 @@ function makeIcon(listing: SaleListing, selected: boolean, deleteSelected = fals
           <div style="font-weight:600;font-size:11px;margin-top:2px;color:${listing.netAnnualIncome >= 0 ? '#047857' : '#dc2626'}">${fmtAnnualK(listing.netAnnualIncome)}</div>
           <div style="font-weight:600;font-size:11px;margin-top:1px;color:#475569">${yieldText}</div>
         </div>
+      </div>
       </div>
       <div style="
         width:0;height:0;
@@ -295,6 +298,7 @@ export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
   const rawSale = useAppStore((s) => s.saleListings)
   const search = useAppStore((s) => s.search)
   const gradeFilter = useAppStore((s) => s.gradeFilter)
+  const favoritesOnly = useAppStore((s) => s.favoritesOnly)
 
   const assumptions = useAppStore((s) => s.assumptions)
   const showComps = useAppStore((s) => s.layers.rentComps ?? false)
@@ -308,9 +312,11 @@ export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
   const listings = useMemo(
     () => {
       const all = sortedSaleListings()
-      return gradeFilter.length === 0 ? all : all.filter((l) => gradeFilter.includes(gradePairKey(l)))
+      return all
+        .filter((l) => !favoritesOnly || l.isFavorite)
+        .filter((l) => gradeFilter.length === 0 || gradeFilter.includes(gradePairKey(l)))
     },
-    [rawSale, search, sortedSaleListings, assumptions, gradeFilter], // eslint-disable-line
+    [rawSale, search, sortedSaleListings, assumptions, gradeFilter, favoritesOnly], // eslint-disable-line
   )
 
   return (

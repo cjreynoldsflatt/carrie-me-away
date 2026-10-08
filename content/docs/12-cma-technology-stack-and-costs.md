@@ -1,8 +1,8 @@
 # 12 — CMA Technology Stack & Cost Plan
 
 **Status:** Final internal planning document; verify prices before purchase  
-**Version:** 2026-08-26.5
-**Last reviewed:** 2026-08-26
+**Version:** 2026-10-08.1
+**Last reviewed:** 2026-10-08
 **Document owner:** CMA-PM  
 **Supersedes:** All earlier versions of Doc 12  
 **Related documents:** 11, 16, 22
@@ -118,6 +118,8 @@ Use ChatGPT primarily for research, policy, analysis, and drafting. Use Claude p
 Initial planning range:
 
 ## $0–$25/month
+
+Current stack: Vercel (hosting), Supabase (database), OpenStreetMap (maps), and free public data (HUD Fair Market Rent API, US Census geocoder, Redfin pages captured by the CMA bookmarklet). No paid listing-data or map API is in use as of the last review.
 
 Potential future costs:
 
