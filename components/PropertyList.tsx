@@ -9,21 +9,10 @@ import AssumptionsPopover from './AssumptionsPopover'
 import FilterPopover from './FilterPopover'
 import AddListingModal from './AddListingModal'
 import { cn } from '@/lib/utils'
+import { GRADE_HEX, gradePairKey, compareGradePairs, type Grade } from '@/lib/grades'
 import type { SaleListing } from '@/lib/types'
 import type { StatusResult, ListingStatus } from '@/app/api/check-listing-status/route'
 
-const GRADES = [
-  { key: 'A+', min: 97,  max: Infinity, bg: 'bg-emerald-500', ring: 'ring-emerald-400', text: 'text-white' },
-  { key: 'A',  min: 88,  max: 96,       bg: 'bg-cyan-500',    ring: 'ring-cyan-400',    text: 'text-white' },
-  { key: 'B+', min: 76,  max: 87,       bg: 'bg-blue-500',    ring: 'ring-blue-400',    text: 'text-white' },
-  { key: 'B',  min: 60,  max: 75,       bg: 'bg-orange-400',  ring: 'ring-orange-300',  text: 'text-white' },
-  { key: 'C',  min: 40,  max: 59,       bg: 'bg-orange-600',  ring: 'ring-orange-500',  text: 'text-white' },
-  { key: 'D',  min: 0,   max: 39,       bg: 'bg-red-600',     ring: 'ring-red-500',     text: 'text-white' },
-] as const
-
-function scoreToGrade(score: number) {
-  return GRADES.find((g) => score >= g.min && score <= g.max)?.key ?? 'D'
-}
 
 const MiniMapView = dynamic(() => import('@/components/map/MiniMapView'), {
   ssr: false,
@@ -135,18 +124,18 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const listings = useMemo(
     () => gradeFilter.length === 0
       ? allListings
-      : allListings.filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore))),
+      : allListings.filter((l) => gradeFilter.includes(gradePairKey(l))),
     [allListings, gradeFilter],
   )
 
-  // Count per grade across ALL listings (not filtered)
-  const gradeCounts = useMemo(() => {
+  // One pill per conservative → realistic grade pair present, counted across ALL listings
+  const gradePills = useMemo(() => {
     const counts: Record<string, number> = {}
     for (const l of allListings) {
-      const g = scoreToGrade(l.investmentScore)
-      counts[g] = (counts[g] ?? 0) + 1
+      const k = gradePairKey(l)
+      counts[k] = (counts[k] ?? 0) + 1
     }
-    return counts
+    return Object.keys(counts).sort(compareGradePairs).map((key) => ({ key, count: counts[key] }))
   }, [allListings])
 
   return (
@@ -359,22 +348,23 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
         >
           All
         </button>
-        {GRADES.map((g) => {
-          const count = gradeCounts[g.key] ?? 0
-          if (count === 0) return null
-          const active = gradeFilter.includes(g.key)
+        {gradePills.map(({ key, count }) => {
+          const active = gradeFilter.includes(key)
+          const [cons, real = cons] = key.split('→') as Grade[]
           return (
             <button
-              key={g.key}
-              onClick={() => { toggleGradeFilter(g.key); setSortBy('yield') }}
+              key={key}
+              onClick={() => { toggleGradeFilter(key); setSortBy('yield') }}
+              title={cons === real ? `Grade ${cons} in both scenarios` : `Conservative ${cons} → realistic ${real}`}
+              style={active ? { backgroundImage: `linear-gradient(90deg, ${GRADE_HEX[cons]}, ${GRADE_HEX[real]})` } : undefined}
               className={cn(
-                'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all',
+                'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all whitespace-nowrap',
                 active
-                  ? `${g.bg} ${g.text} border-transparent ring-2 ${g.ring}`
+                  ? 'text-white border-transparent ring-2 ring-slate-300'
                   : 'border-slate-200 text-slate-600 hover:border-slate-300',
               )}
             >
-              {g.key}
+              {cons === real ? cons : `${cons} → ${real}`}
               <span className={cn('text-[10px]', active ? 'opacity-80' : 'text-slate-400')}>{count}</span>
             </button>
           )

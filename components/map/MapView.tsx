@@ -10,6 +10,7 @@ import { HOME } from '@/lib/config'
 import type { SaleListing } from '@/lib/types'
 import { MIN_COMPS, MAX_COMP_AGE_DAYS, isFreshComp, rentalRedfinUrl } from '@/lib/rent-comps'
 import { REGULATED_AREAS } from '@/lib/regulated-areas'
+import { gradePairKey } from '@/lib/grades'
 
 // ── Home marker ───────────────────────────────────────────────────────────────
 const homeIcon = L.divIcon({
@@ -305,7 +306,7 @@ export default function MapView() {
   const listings = useMemo(
     () => {
       const all = sortedSaleListings()
-      return gradeFilter.length === 0 ? all : all.filter((l) => gradeFilter.includes(scoreToGrade(l.investmentScore)))
+      return gradeFilter.length === 0 ? all : all.filter((l) => gradeFilter.includes(gradePairKey(l)))
     },
     [rawSale, search, sortedSaleListings, assumptions, gradeFilter], // eslint-disable-line
   )
