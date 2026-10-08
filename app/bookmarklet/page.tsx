@@ -23,18 +23,36 @@ document.querySelectorAll('.bp-Homecard').forEach(function(c){
   items.push({url:href,text:lines.slice(i).join('\\n'),photoUrl:img?img.src:null,lat:g.latitude,lng:g.longitude});
 });
 if(!items.length){n.style.background='#dc2626';n.textContent='No listings found on this page.';setTimeout(function(){n.remove();},5000);return;}
-var added=0,existed=0,failed=0;
+var added=0,existed=0,failed=0,filled=0;
+function pageText(html){
+  var doc=new DOMParser().parseFromString(html,'text/html');
+  doc.querySelectorAll('script,style,noscript,svg').forEach(function(e){e.remove();});
+  var w=doc.createTreeWalker(doc.body,4),parts=[],x;
+  while((x=w.nextNode())){var t=x.nodeValue.trim();if(t)parts.push(t);}
+  return parts.join(' ');
+}
+function enrich(it,setType){
+  return fetch(it.url).then(function(r){return r.text();})
+    .then(function(h){return fetch('__BASE__/api/enrich-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:it.url,text:pageText(h),setType:setType})});})
+    .then(function(r){return r.json();})
+    .then(function(e){if(e.updated&&Object.keys(e.updated).length)filled++;})
+    .catch(function(){});
+}
 function next(k){
   if(k>=items.length){
     n.style.background=failed?'#d97706':'#059669';
-    n.textContent='\\u2713 Added '+added+' \\u00b7 '+existed+' already saved'+(failed?' \\u00b7 '+failed+' failed':'');
-    setTimeout(function(){n.remove();},8000);return;
+    n.textContent='\\u2713 Added '+added+' \\u00b7 '+existed+' already saved \\u00b7 details filled for '+filled+(failed?' \\u00b7 '+failed+' failed':'');
+    setTimeout(function(){n.remove();},10000);return;
   }
-  n.textContent='Adding '+(k+1)+' of '+items.length+' to Carrie Me Away\\u2026';
+  n.textContent='Adding '+(k+1)+' of '+items.length+' to Carrie Me Away + filling in details\\u2026';
   var it=items[k];
   fetch('__BASE__/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:it.url,text:it.text,photoUrl:it.photoUrl,lat:it.lat,lng:it.lng,skipExisting:true})})
     .then(function(r){return r.json();})
-    .then(function(d){if(d.error)failed++;else if(d.alreadyExists)existed++;else added++;})
+    .then(function(d){
+      if(d.error){failed++;return;}
+      if(d.alreadyExists)existed++;else added++;
+      return enrich(it,!d.alreadyExists);
+    })
     .catch(function(){failed++;})
     .then(function(){next(k+1);});
 }
@@ -72,9 +90,9 @@ fetch('__BASE__/api/add-rentals',{method:'POST',headers:{'Content-Type':'applica
 `
 
 function buildBookmarklet(baseUrl: string): string {
-  const searchJs = SEARCH_PAGE_JS.replace(/\n\s*/g, '').replace('__BASE__', baseUrl)
-  const rentalsJs = RENTALS_PAGE_JS.replace(/\n\s*/g, '').replace('__BASE__', baseUrl)
-  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&location.pathname.includes('/rentals')){${rentalsJs}return;}if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var gp=(document.querySelector('meta[name="geo.position"]')?.content||'').split(/[;,]/);var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType,lat:gp[0]?Number(gp[0]):null,lng:gp[1]?Number(gp[1]):null})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;}else if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address;}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
+  const searchJs = SEARCH_PAGE_JS.replace(/\n\s*/g, '').replaceAll('__BASE__', baseUrl)
+  const rentalsJs = RENTALS_PAGE_JS.replace(/\n\s*/g, '').replaceAll('__BASE__', baseUrl)
+  return `javascript:(function(){if(location.hostname.includes('redfin.com')&&location.pathname.includes('/rentals')){${rentalsJs}return;}if(location.hostname.includes('redfin.com')&&!location.pathname.includes('/home/')){${searchJs}return;}var url=location.href;var text=document.body.innerText;var gp=(document.querySelector('meta[name="geo.position"]')?.content||'').split(/[;,]/);var photoUrl=document.querySelector('meta[property="og:image"]')?.content||null;var propertyType=null;try{document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){if(propertyType)return;var d=JSON.parse(s.textContent);[].concat(d['@type']||[]).forEach(function(t){if(propertyType)return;var tl=t.toLowerCase();if(tl.includes('condominium'))propertyType='Condo';else if(tl.includes('singlefamily')||tl==='house'||tl.includes('single_family'))propertyType='Single Family';else if(tl.includes('townhouse')||tl.includes('townhome'))propertyType='Townhouse';});});}catch(e){}var n=document.createElement('div');n.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e40af;color:#fff;padding:12px 20px;border-radius:12px;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 24px rgba(0,0,0,.35)';n.textContent='Adding to Carrie Me Away\u2026';document.body.appendChild(n);fetch('${baseUrl}/api/add-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,photoUrl:photoUrl,propertyType:propertyType,lat:gp[0]?Number(gp[0]):null,lng:gp[1]?Number(gp[1]):null,skipExisting:true})}).then(function(r){return r.json()}).then(function(d){if(d.error){n.style.background='#dc2626';n.textContent='Error: '+d.error;setTimeout(function(){n.remove()},5000);return;}return fetch('${baseUrl}/api/enrich-listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url,text:text,setType:!d.alreadyExists})}).then(function(r){return r.json()}).catch(function(){return {};}).then(function(e){var u=e&&e.updated?Object.keys(e.updated).length:0;if(d.alreadyExists){n.style.background='#7c3aed';n.textContent='\u2713 Already saved: '+d.parsed.address+(u?' \u00b7 filled in '+u+' detail'+(u>1?'s':''):' \u00b7 nothing new');}else{n.style.background='#059669';n.textContent='\u2713 Added: '+d.parsed.address+' \u00b7 $'+(d.parsed.price||0).toLocaleString();}setTimeout(function(){n.remove()},5000);});}).catch(function(){n.style.background='#dc2626';n.textContent='Could not reach app \u2014 check your connection.';setTimeout(function(){n.remove()},5000);});})();`
 }
 
 export default function BookmarkletPage() {

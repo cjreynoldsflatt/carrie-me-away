@@ -13,7 +13,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/api/share/') ||
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/add-listing') ||
-    pathname.startsWith('/api/add-rentals')
+    pathname.startsWith('/api/add-rentals') ||
+    pathname.startsWith('/api/enrich-listing')
   ) {
     return NextResponse.next()
   }
