@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
-import { isFreshComp, MAX_COMP_AGE_DAYS, rentalRedfinUrl } from '@/lib/rent-comps'
+import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
@@ -922,7 +922,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
           </Section>
 
           {/* ── Rent comparables ─────────────────────────────── */}
-          <RentCompsSection listing={listing} />
+          <RentCompsSection listing={listing} shareMode={shareMode} />
 
           {/* ── Step 3: Annual expenses ───────────────────────── */}
           <Section title="Step 3 — Annual Expenses">
@@ -2023,76 +2023,105 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
 }
 
 // ── Rent comparables ─────────────────────────────────────────────────────────
-function RentCompsSection({ listing }: { listing: SaleListing }) {
+function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing; shareMode?: boolean }) {
   const rentalListings = useAppStore((s) => s.rentalListings)
+  const toggleExcludedComp = useAppStore((s) => s.toggleExcludedComp)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const excluded = new Set(listing.excludedCompIds ?? [])
 
-  const comps = rentalListings
-    .map((r) => ({ ...r, dist: distanceMiles(listing.lat, listing.lng, r.lat, r.lng) }))
-    .filter((r) => r.dist <= 2.0 && Math.abs(r.beds - listing.beds) <= 1 && isFreshComp(r.fetchedAt))
+  // Exactly the pool the estimate draws from: same beds + type, fresh, within 3 mi
+  const pool = rentalListings
+    .map((r) => ({
+      ...r,
+      dist: distanceMiles(listing.lat, listing.lng, r.lat, r.lng),
+      adjusted: sizeAdjustedRent(r.monthlyRent, r.sqft, listing.sqft),
+    }))
+    .filter((r) => r.dist <= 3 && r.beds === listing.beds && r.propertyType === listing.propertyType && isFreshComp(r.fetchedAt))
     .sort((a, b) => a.dist - b.dist)
+  if (pool.length === 0) return null
 
-  if (comps.length === 0) return null
-
-  const avgRent = Math.round(comps.reduce((sum, r) => sum + r.monthlyRent, 0) / comps.length)
-  const diff = listing.estimatedRent - avgRent
-  const diffPct = avgRent > 0 ? diff / avgRent : 0
+  // Mirror lib/rent-comps: 1.5 mi first, widened to 3 mi when fewer than MIN_COMPS remain
+  const near = pool.filter((r) => r.dist <= 1.5 && !excluded.has(r.id)).length
+  const radius = near >= MIN_COMPS ? 1.5 : 3
+  const usedCount = pool.filter((r) => r.dist <= radius && !excluded.has(r.id)).length
 
   return (
-    <Section title={`Rent Comps · ${comps.length} nearby`}>
+    <Section title={`Rent Comps · ${usedCount} used`}>
       <div className="py-1">
         <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-          Redfin rentals seen in the last {MAX_COMP_AGE_DAYS} days within 2 mi with ±1 bed. The estimate uses same-bed, same-type comps within 1.5 mi (3 mi if fewer than 3).
+          Same-bed {listing.propertyType.toLowerCase()} rentals seen on Redfin in the last {MAX_COMP_AGE_DAYS} days, within {radius} mi
+          {radius === 3 ? ' (widened — fewer than 3 within 1.5 mi)' : ''}. Each rent is adjusted for size at ${SIZE_ADJ_PER_SQFT.toFixed(2)}/sqft
+          of difference{listing.sqft ? ` from this home's ${listing.sqft.toLocaleString()} sqft` : ' (size unknown — no adjustment)'}.
+          {!shareMode && ' Exclude any that aren’t a fair match.'}
         </p>
 
         <div className="divide-y divide-slate-100">
-          {comps.map((r) => (
-            <div key={r.id} className="flex items-center justify-between gap-3 py-2">
-              <div className="min-w-0">
-                {rentalRedfinUrl(r) ? (
-                  <a
-                    href={rentalRedfinUrl(r)!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline truncate flex items-center gap-1"
-                  >
-                    <span className="truncate">{r.address}</span>
-                    <ExternalLink size={11} className="shrink-0" />
-                  </a>
-                ) : (
-                  <div className="text-sm text-slate-700 truncate">{r.address}</div>
-                )}
-                <div className="text-xs text-slate-400 mt-0.5">
-                  {r.beds}bd · {r.baths}ba · {r.sqft.toLocaleString()} sqft
-                  <span className="mx-1">·</span>{r.dist.toFixed(1)} mi
-                  <span className="mx-1">·</span>{fmtDom(r.daysOnMarket)}
+          {pool.map((r) => {
+            const isExcluded = excluded.has(r.id)
+            const inRange = r.dist <= radius
+            const used = inRange && !isExcluded
+            return (
+              <div key={r.id} className={cn('flex items-center justify-between gap-3 py-2', !used && 'opacity-50')}>
+                <div className="min-w-0">
+                  {rentalRedfinUrl(r) ? (
+                    <a
+                      href={rentalRedfinUrl(r)!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline truncate flex items-center gap-1"
+                    >
+                      <span className={cn('truncate', isExcluded && 'line-through')}>{r.address}</span>
+                      <ExternalLink size={11} className="shrink-0" />
+                    </a>
+                  ) : (
+                    <div className={cn('text-sm text-slate-700 truncate', isExcluded && 'line-through')}>{r.address}</div>
+                  )}
+                  <div className="text-xs text-slate-400 mt-0.5">
+                    {r.baths}ba{r.sqft ? ` · ${r.sqft.toLocaleString()} sqft` : ''}
+                    <span className="mx-1">·</span>{r.dist.toFixed(1)} mi
+                    {isExcluded ? <span className="mx-1">· excluded</span> : !inRange ? <span className="mx-1">· outside {radius} mi</span> : null}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-slate-800 tabular-nums">{fmtRent(r.adjusted)}</div>
+                    {r.adjusted !== r.monthlyRent && (
+                      <div className="text-[10px] text-slate-400 tabular-nums">listed {fmtRent(r.monthlyRent)}</div>
+                    )}
+                  </div>
+                  {!shareMode && (
+                    <button
+                      onClick={async () => { setBusyId(r.id); await toggleExcludedComp(listing.id, r.id); setBusyId(null) }}
+                      disabled={busyId === r.id}
+                      className={cn('text-xs px-1.5 py-0.5 rounded-md border transition-colors disabled:opacity-40',
+                        isExcluded ? 'border-blue-200 text-blue-600 hover:bg-blue-50' : 'border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200')}
+                      title={isExcluded ? 'Use this comp again' : 'Exclude this comp from the estimate'}
+                    >
+                      {isExcluded ? 'Undo' : '×'}
+                    </button>
+                  )}
                 </div>
               </div>
-              <span className="text-sm font-semibold text-slate-800 tabular-nums shrink-0">
-                {fmtRent(r.monthlyRent)}
-              </span>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
-        <div className="mt-3 pt-3 border-t border-slate-200 space-y-1.5">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-slate-500">Comp average</span>
-            <span className="text-sm font-semibold text-slate-700 tabular-nums">{fmtRent(avgRent)}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-slate-500">This estimate</span>
-            <div className="flex items-center gap-2">
-              {Math.abs(diffPct) >= 0.03 && (
-                <span className={cn(
-                  'text-xs font-medium',
-                  diff > 0 ? 'text-amber-600' : 'text-emerald-600',
-                )}>
-                  {diff > 0 ? '+' : ''}{(diffPct * 100).toFixed(0)}% vs comps
-                </span>
-              )}
-              <span className="text-sm font-bold text-slate-800 tabular-nums">{fmtRent(listing.estimatedRent)}</span>
+        <div className="mt-3 pt-3 border-t border-slate-200 space-y-1.5 text-sm">
+          {listing.rentSource === 'comps' ? (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-slate-500">Estimate from {usedCount} comps</span>
+              <span className="tabular-nums text-slate-700">
+                Low <span className="font-semibold">{fmtRent(listing.rentLow)}</span> · Median <span className="font-semibold">{fmtRent(listing.estimatedRent)}</span>
+              </span>
             </div>
-          </div>
+          ) : (
+            <div className="text-xs text-amber-600">
+              {listing.rentSource === 'manual' ? 'Rent is set manually — comps are for reference.' : `Fewer than ${MIN_COMPS} usable comps — the estimate falls back to HUD.`}
+            </div>
+          )}
+          {listing.rentSource === 'comps' && usedCount < 5 && (
+            <div className="text-xs text-amber-600">Only {usedCount} comps — save more rentals nearby for a firmer estimate.</div>
+          )}
         </div>
       </div>
     </Section>

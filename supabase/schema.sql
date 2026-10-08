@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS sale_listings (
   rental_evidence      TEXT DEFAULT 'Unknown',
   rental_demand        TEXT DEFAULT 'Insufficient Data',
   appreciation_rate    DOUBLE PRECISION DEFAULT 0.03,
+  excluded_comp_ids    TEXT[] NOT NULL DEFAULT '{}',        -- rental comps ruled out for this listing
   -- Metadata
   fetched_at           TIMESTAMPTZ DEFAULT NOW(),
   avm_fetched_at       TIMESTAMPTZ,

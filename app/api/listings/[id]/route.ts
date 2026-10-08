@@ -27,6 +27,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     updates.estimated_rent = body.estimated_rent
     updates.rent_confidence = 'High'
   }
+  if (Array.isArray(body.excluded_comp_ids) && body.excluded_comp_ids.every((x: unknown) => typeof x === 'string')) {
+    updates.excluded_comp_ids = body.excluded_comp_ids
+  }
   if (typeof body.repairs === 'number' && body.repairs >= 0) {
     updates.repairs = body.repairs
   }

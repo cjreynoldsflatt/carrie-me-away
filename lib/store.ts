@@ -71,6 +71,8 @@ interface AppState {
 
   // Persist a rent value to Supabase and clear any local override
   saveRentToDb: (id: string, rent: number) => Promise<void>
+  // Rule a rental comp in/out of one property's rent estimate (persisted, then estimates reload)
+  toggleExcludedComp: (listingId: string, compId: string) => Promise<void>
   // Drop a manual rent override so the automated estimate (listing.autoRent) applies again
   resetRentToOriginal: (id: string) => Promise<void>
   // Persist repairs value to Supabase
@@ -212,6 +214,24 @@ export const useAppStore = create<AppState>()(
             l.id === id ? { ...l, lat, lng } : l
           ),
         }))
+      },
+
+      toggleExcludedComp: async (listingId, compId) => {
+        const l = get().saleListings.find((x) => x.id === listingId)
+        if (!l) return
+        const current = l.excludedCompIds ?? []
+        const next = current.includes(compId) ? current.filter((c) => c !== compId) : [...current, compId]
+        const res = await fetch(`/api/listings/${encodeURIComponent(listingId)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ excluded_comp_ids: next }),
+        })
+        if (!res.ok) {
+          alert('Could not save — the excluded_comp_ids column may be missing in Supabase (see supabase/migrations).')
+          return
+        }
+        const data = await fetch('/api/listings').then((r) => r.json())
+        if (data?.saleListings) set({ saleListings: data.saleListings })
       },
 
       resetRentToOriginal: async (id) => {

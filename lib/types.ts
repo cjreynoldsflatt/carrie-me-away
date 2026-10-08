@@ -43,6 +43,7 @@ export interface SaleListing {
   rentSource?: 'comps' | 'hud' | 'manual' // where estimatedRent / rentLow / rentHigh came from
   rentCompCount?: number                   // rental comps behind the estimate (0 when HUD)
   autoRent?: number                        // automated estimate a manual override resets to
+  excludedCompIds?: string[]               // rental comps ruled out for this property
   // Realistic scenario (typical costs + comp-median rent) — set by computedSaleListings
   realisticRent?: number
   realisticNetAnnualIncome?: number

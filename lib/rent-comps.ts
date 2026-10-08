@@ -26,6 +26,19 @@ export function rentalRedfinUrl(r: { id: string; address: string; city: string }
     : `https://www.redfin.com/home/${homeId}`
 }
 
+// Size adjustment: rent doesn't scale linearly with size, so each comp's rent moves by a modest
+// amount per square foot of difference from the subject, capped so one huge/tiny comp can't swing it.
+export const SIZE_ADJ_PER_SQFT = 0.5
+const MAX_SIZE_ADJ = 0.30
+
+/** A comp's rent adjusted to the subject property's size (unchanged if either size is unknown). */
+export function sizeAdjustedRent(compRent: number, compSqft: number | null | undefined, subjectSqft: number | null | undefined): number {
+  if (!compSqft || !subjectSqft) return compRent
+  const adj = (subjectSqft - compSqft) * SIZE_ADJ_PER_SQFT
+  const cap = compRent * MAX_SIZE_ADJ
+  return Math.round(compRent + Math.max(-cap, Math.min(cap, adj)))
+}
+
 type Row = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export interface CompEstimate {
@@ -44,16 +57,18 @@ function percentile(sorted: number[], p: number): number {
 export function estimateFromComps(sale: Row, rentals: Row[]): CompEstimate | null {
   // Multi-family is priced per unit — single-home comps don't apply
   if (sale.property_type === 'Multi Family' || !sale.beds) return null
+  const excluded = new Set<string>(sale.excluded_comp_ids ?? [])   // comps the user ruled out for this property
   const candidates = rentals.filter((r) =>
     r.beds === sale.beds &&
     r.property_type === sale.property_type &&
     r.monthly_rent > 0 &&
-    isFreshComp(r.fetched_at),
+    isFreshComp(r.fetched_at) &&
+    !excluded.has(r.id),
   )
   for (const radius of RADII_MILES) {
     const rents = candidates
       .filter((r) => distanceMiles(sale.lat, sale.lng, r.lat, r.lng) <= radius)
-      .map((r) => r.monthly_rent as number)
+      .map((r) => sizeAdjustedRent(r.monthly_rent, r.sqft, sale.sqft))
       .sort((a, b) => a - b)
     if (rents.length >= MIN_COMPS) {
       return { low: percentile(rents, 0.25), mid: percentile(rents, 0.5), high: percentile(rents, 0.75), count: rents.length }
