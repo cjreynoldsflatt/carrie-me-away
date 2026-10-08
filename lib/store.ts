@@ -88,6 +88,8 @@ interface AppState {
 
   // Actions
   initialize: () => Promise<void>
+  // Realtor Version: load everything from the read-only public endpoint (no login)
+  initializeReadOnly: (key: string) => Promise<void>
   deleteListing: (id: string) => Promise<void>
   deleteListings: (ids: string[]) => Promise<void>
 
@@ -291,6 +293,22 @@ export const useAppStore = create<AppState>()(
         })),
 
       isLoading: false,
+
+      initializeReadOnly: async (key) => {
+        set({ isLoading: true })
+        try {
+          const data = await fetch(`/api/realtor/${key}`).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+          set({
+            saleListings: data.saleListings ?? [],
+            rentalListings: data.rentalListings ?? [],
+            assumptions: { ...DEFAULT_ASSUMPTIONS, ...data.assumptions },
+          })
+        } catch (err) {
+          console.error('[store] initializeReadOnly failed:', err)
+        } finally {
+          set({ isLoading: false })
+        }
+      },
 
       initialize: async () => {
         set({ isLoading: true })

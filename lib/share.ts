@@ -14,3 +14,9 @@ export function isValidShareKey(listingId: string, key: string): boolean {
   const given = Buffer.from(key)
   return expected.length === given.length && timingSafeEqual(expected, given)
 }
+
+// The read-only Realtor Version of the whole finder uses one key, derived like a listing key
+// but from a reserved scope so it can never collide with a listing ID.
+const REALTOR_SCOPE = '__realtor_view__'
+export const realtorKey = () => shareKey(REALTOR_SCOPE)
+export const isValidRealtorKey = (key: string) => isValidShareKey(REALTOR_SCOPE, key)

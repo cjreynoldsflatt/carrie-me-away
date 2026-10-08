@@ -48,6 +48,20 @@ function Row({ label, note, cons, real, bold }: { label: string; note?: string; 
   )
 }
 
+// Blank expense line: write the item name and amounts by hand
+function WriteInRow() {
+  return (
+    <tr className="border-b border-slate-200 align-bottom">
+      <td className="py-1.5 pr-2">
+        <div className="flex items-end gap-1 text-slate-400">Other:<div className="flex-1 h-5 border-b border-slate-400" /></div>
+      </td>
+      <td className="py-1.5 px-2"><div className="h-5 border-b border-slate-300" /></td>
+      <td className="py-1.5 px-2"><div className="h-5 border-b border-slate-300" /></td>
+      <td className="py-1.5 pl-2 w-[1.6in]"><div className="h-5 border-b border-slate-400" /></td>
+    </tr>
+  )
+}
+
 function SectionTable({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-4 break-inside-avoid">
@@ -184,6 +198,7 @@ export default function PrintWorksheetPage() {
           <Row label="Lawn care" note={`$${assumptions.lawnCareMonthly} → $${realA.lawnCareMonthly}/mo`} cons={money(c.lawnCareAnnual)} real={money(r.lawnCareAnnual)} />
           <Row label="Super (maintenance protection)" cons={money(c.superAnnual)} real={money(r.superAnnual)} />
           <Row label="LLC fee" cons={money(LLC_ANNUAL_COST)} />
+          {Array.from({ length: 3 }).map((_, i) => <WriteInRow key={i} />)}
           <Row label="Total expenses" cons={money(expenses(c))} real={money(expenses(r))} bold />
         </SectionTable>
 
@@ -253,16 +268,11 @@ export default function PrintWorksheetPage() {
           </div>
         </section>
 
-        {/* Notes */}
-        <section className="break-inside-avoid">
-          <h2 className="text-xs font-bold uppercase tracking-wide border-b-2 border-slate-800 py-1 mb-1">7 · Notes</h2>
-          {Array.from({ length: 14 }).map((_, i) => <div key={i} className="h-7 border-b border-slate-300" />)}
-        </section>
       </div>
 
       {/* Page: appliances & systems inventory */}
       <div className="mx-auto my-6 print:my-0 bg-white shadow print:shadow-none w-[8.5in] max-w-full p-[0.5in] print:p-0 text-slate-900 break-before-page">
-        <PageHeading title="8 · Appliances & systems" address={`${l.address}, ${l.city}`} />
+        <PageHeading title="7 · Appliances & systems" address={`${l.address}, ${l.city}`} />
         <p className="text-[10px] text-slate-500 mb-2">
           Serial numbers usually encode the manufacture year. Condition: G = good, F = fair, P = poor / replace soon.
         </p>
@@ -293,7 +303,7 @@ export default function PrintWorksheetPage() {
 
       {/* Page: more notes */}
       <div className="mx-auto my-6 print:my-0 bg-white shadow print:shadow-none w-[8.5in] max-w-full p-[0.5in] print:p-0 text-slate-900 break-before-page">
-        <PageHeading title="9 · Notes (continued)" address={`${l.address}, ${l.city}`} />
+        <PageHeading title="8 · Notes" address={`${l.address}, ${l.city}`} />
         {Array.from({ length: 30 }).map((_, i) => <div key={i} className="h-[0.31in] border-b border-slate-300" />)}
       </div>
     </div>

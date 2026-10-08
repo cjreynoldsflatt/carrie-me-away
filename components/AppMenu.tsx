@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, Map, FileText, Heart } from 'lucide-react'
+import { Menu, Map, FileText, Heart, Share2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
@@ -15,6 +15,7 @@ const ITEMS = [
 
 export default function AppMenu() {
   const [open, setOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
   const pathname = usePathname()
   const ref = useRef<HTMLDivElement>(null)
 
@@ -66,6 +67,22 @@ export default function AppMenu() {
               </Link>
             )
           })}
+          <div className="my-1.5 border-t border-slate-100" />
+          {/* Public, view-only version of the finder for realtors (no CMA-I details, no editing) */}
+          <button
+            onClick={async () => {
+              const { path } = await fetch('/api/realtor-link').then((r) => r.json())
+              await navigator.clipboard.writeText(`${window.location.origin}${path}`)
+              setCopied(true)
+              setTimeout(() => { setCopied(false); setOpen(false) }, 1200)
+            }}
+            className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+          >
+            <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-violet-50 text-violet-500">
+              {copied ? <Check size={15} /> : <Share2 size={15} />}
+            </span>
+            {copied ? 'Copied realtor link' : 'Copy realtor link'}
+          </button>
         </div>
       )}
     </div>

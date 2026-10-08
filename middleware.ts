@@ -11,6 +11,8 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/login') ||
     pathname.startsWith('/share/') ||
+    pathname.startsWith('/realtor/') ||        // read-only Realtor Version (key checked by the page + API)
+    pathname.startsWith('/api/realtor/') ||
     pathname === '/cma-logo.png' ||   // shown on public share pages
     pathname === '/icon.png' || pathname === '/apple-icon.png' ||   // favicons
     pathname.startsWith('/api/share/') ||

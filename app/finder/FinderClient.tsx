@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, Suspense } from 'react'
 import { Bookmark, ChevronLeft, Map } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import FilterPopover from '@/components/FilterPopover'
 import AddListingModal from '@/components/AddListingModal'
@@ -21,14 +21,18 @@ const MapView = dynamic(() => import('@/components/map/MapView'), {
   ),
 })
 
-function FinderContent() {
+// realtorKey set = read-only Realtor Version: public data, no CMA-I details, no editing tools
+function FinderContent({ realtorKey }: { realtorKey?: string }) {
+  const readOnly = !!realtorKey
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const compareMode = useAppStore((s) => s.compareMode)
   const compareIds = useAppStore((s) => s.compareIds)
   const initialize = useAppStore((s) => s.initialize)
+  const initializeReadOnly = useAppStore((s) => s.initializeReadOnly)
   const setCompareMode = useAppStore((s) => s.setCompareMode)
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const [mobileShowMap, setMobileShowMap] = useState(false)
   const [mobileReturnToMap, setMobileReturnToMap] = useState(false)
@@ -40,7 +44,8 @@ function FinderContent() {
   useEffect(() => {
     initialSection.current = decodeURIComponent(window.location.hash.slice(1))
     const id = searchParams.get('id')
-    initialize().then(() => { if (id) setSelectedId(id) })
+    const load = realtorKey ? initializeReadOnly(realtorKey) : initialize()
+    load.then(() => { if (id) setSelectedId(id) })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -49,7 +54,7 @@ function FinderContent() {
     if (selectedId) {
       router.replace(`?id=${encodeURIComponent(selectedId)}`, { scroll: false })
     } else {
-      router.replace('/finder', { scroll: false })
+      router.replace(pathname, { scroll: false })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId])
@@ -70,24 +75,38 @@ function FinderContent() {
     <div className="flex flex-col h-dvh overflow-hidden">
       {/* Top bar */}
       <header className="min-h-14 shrink-0 bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3 relative z-30">
-        <AppMenu />
+        {readOnly ? (
+          // Realtor Version: logo + label, click to return to the list
+          <button
+            onClick={() => { setSelectedId(null); setCompareMode(false); setMobileShowMap(false) }}
+            className="flex items-center gap-2.5 focus:outline-none shrink-0"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element -- static logo */}
+            <img src="/cma-logo.png" alt="CMA Investments" className="h-6 w-auto" />
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5 whitespace-nowrap">Realtor Version</span>
+          </button>
+        ) : (
+          <>
+            <AppMenu />
 
-        {/* Title — click to reset to list view */}
-        <button
-          onClick={() => { setSelectedId(null); setCompareMode(false); setMobileShowMap(false) }}
-          className="flex items-center gap-2 focus:outline-none shrink-0 group/title"
-        >
-          <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
-            <Map size={15} className="text-sky-500" />
-          </div>
-          <span className="text-lg font-bold text-slate-900 group-hover/title:text-slate-700 transition-colors">Property Finder</span>
-        </button>
+            {/* Title — click to reset to list view */}
+            <button
+              onClick={() => { setSelectedId(null); setCompareMode(false); setMobileShowMap(false) }}
+              className="flex items-center gap-2 focus:outline-none shrink-0 group/title"
+            >
+              <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
+                <Map size={15} className="text-sky-500" />
+              </div>
+              <span className="text-lg font-bold text-slate-900 group-hover/title:text-slate-700 transition-colors">Property Finder</span>
+            </button>
+          </>
+        )}
 
         {/* Desktop tools */}
         <div className="ml-auto hidden md:flex items-center gap-3 shrink-0">
           <FilterPopover />
-          <AddListingModal />
-          <a
+          {!readOnly && <AddListingModal />}
+          {!readOnly && <a
             href="/bookmarklet"
             target="_blank"
             rel="noopener noreferrer"
@@ -95,7 +114,7 @@ function FinderContent() {
           >
             <Bookmark size={13} />
             Bookmarklet
-          </a>
+          </a>}
         </div>
       </header>
 
@@ -103,13 +122,13 @@ function FinderContent() {
       <main className="flex flex-1 overflow-hidden relative">
         {/* Desktop map — always rendered */}
         <div className="hidden md:block flex-1 relative isolate">
-          <MapView />
+          <MapView readOnly={readOnly} />
         </div>
 
         {/* Mobile full-screen map — only mounted when active, so Leaflet sizes correctly */}
         {mobileShowMap && (
           <div className="md:hidden absolute inset-0 z-20 isolate">
-            <MapView />
+            <MapView readOnly={readOnly} />
             <button
               onClick={() => setMobileShowMap(false)}
               className="absolute top-3 left-3 z-[1000] bg-white/95 backdrop-blur-sm shadow-md rounded-full pl-2.5 pr-3.5 py-2 text-sm font-semibold text-slate-700 flex items-center gap-1.5 border border-slate-200"
@@ -123,14 +142,14 @@ function FinderContent() {
         {/* Right panel — full width on mobile, fixed 420px on desktop */}
         <aside className="w-full md:w-[420px] shrink-0 md:border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden isolate z-0">
           {showDetail ? (
-            <PropertyDetail takeScrollTarget={() => { const t = initialSection.current; initialSection.current = ''; return t }} onBack={() => {
+            <PropertyDetail shareMode={readOnly} takeScrollTarget={() => { const t = initialSection.current; initialSection.current = ''; return t }} onBack={() => {
               setSelectedId(null)
               if (mobileReturnToMap) setMobileShowMap(true)
             }} />
           ) : showCompare ? (
             <ComparePanel />
           ) : (
-            <PropertyList onOpenMap={() => setMobileShowMap(true)} />
+            <PropertyList readOnly={readOnly} onOpenMap={() => setMobileShowMap(true)} />
           )}
         </aside>
       </main>
@@ -138,10 +157,10 @@ function FinderContent() {
   )
 }
 
-export default function FinderClient() {
+export default function FinderClient({ realtorKey }: { realtorKey?: string }) {
   return (
     <Suspense>
-      <FinderContent />
+      <FinderContent realtorKey={realtorKey} />
     </Suspense>
   )
 }

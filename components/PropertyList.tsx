@@ -42,7 +42,8 @@ function MiniMapStrip({ listings, onOpenMap }: { listings: SaleListing[]; onOpen
   )
 }
 
-export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) {
+// readOnly = Realtor Version: no delete, status check, add listing, assumptions or rent editing
+export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMap?: () => void; readOnly?: boolean }) {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const sortedSaleListings = useAppStore((s) => s.sortedSaleListings)
@@ -176,6 +177,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           {compareMode && compareIds.length > 0 && (
             <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
           )}
+          {!readOnly && (
           <button
             onClick={toggleSelectMode}
             title={selectMode ? 'Exit select mode' : 'Select to delete'}
@@ -188,6 +190,8 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           >
             <Trash2 size={14} />
           </button>
+          )}
+          {!readOnly && (
           <button
             onClick={handleCheckStatus}
             disabled={statusChecking}
@@ -201,14 +205,15 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           >
             <Activity size={14} />
           </button>
+          )}
           <FilterPopover />
-          <AddListingModal />
-          <AssumptionsPopover />
+          {!readOnly && <AddListingModal />}
+          {!readOnly && <AssumptionsPopover />}
         </div>
 
         {/* Desktop action buttons (hidden on mobile, shown inline) */}
         <div className="hidden md:flex items-center gap-1.5 mt-2">
-          <AssumptionsPopover />
+          {!readOnly && <AssumptionsPopover />}
           <button
             onClick={() => setCompareMode(!compareMode)}
             title={compareMode ? 'Exit compare mode' : 'Compare properties'}
@@ -224,6 +229,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           {compareMode && compareIds.length > 0 && (
             <span className="text-xs text-blue-600 font-medium shrink-0">{compareIds.length}/3</span>
           )}
+          {!readOnly && (
           <button
             onClick={toggleSelectMode}
             title={selectMode ? 'Exit select mode' : 'Select to delete'}
@@ -236,6 +242,8 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           >
             <Trash2 size={14} />
           </button>
+          )}
+          {!readOnly && (
           <button
             onClick={handleCheckStatus}
             disabled={statusChecking}
@@ -249,6 +257,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           >
             <Activity size={14} />
           </button>
+          )}
         </div>
       </div>
 
@@ -385,6 +394,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
           ) : (
             listings.map((listing) => (
               <PropertyCard
+                readOnly={readOnly}
                 key={listing.id}
                 listing={listing}
                 selected={listing.id === selectedId}

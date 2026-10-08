@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
@@ -195,6 +195,62 @@ function GearRow({
   )
 }
 
+// ⋯ menu in the detail header: print worksheet, copy in-app link, copy public share link, delete
+function DetailActionsMenu({ listingId, onDelete }: { listingId: string; onDelete: () => void }) {
+  const [open, setOpen] = useState(false)
+  const [copied, setCopied] = useState<'link' | 'share' | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false) }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
+  }, [open])
+
+  async function copy(kind: 'link' | 'share') {
+    const { path, appPath } = await fetch(`/api/share-link?id=${encodeURIComponent(listingId)}`).then((r) => r.json())
+    await navigator.clipboard.writeText(`${window.location.origin}${kind === 'link' ? appPath : path}`)
+    setCopied(kind)
+    setTimeout(() => { setCopied(null); setOpen(false) }, 1200)
+  }
+
+  const item = 'w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left rounded-md hover:bg-slate-50'
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-8 h-8 -mr-1.5 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+        aria-label="More actions"
+        aria-expanded={open}
+      >
+        <MoreHorizontal size={18} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl border border-slate-200 shadow-lg p-1 z-50">
+          <a href={`/print/${encodeURIComponent(listingId)}`} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className={cn(item, 'text-slate-700')}>
+            <Printer size={15} className="text-slate-400" /> Print worksheet
+          </a>
+          <button onClick={() => copy('link')} className={cn(item, 'text-slate-700')} title="Link to this property in the app (requires login)">
+            {copied === 'link' ? <Check size={15} className="text-emerald-600" /> : <Link2 size={15} className="text-slate-400" />}
+            {copied === 'link' ? 'Copied' : 'Copy link'}
+          </button>
+          <button onClick={() => copy('share')} className={cn(item, 'text-slate-700')} title="Public link without CMA-I details — no login needed">
+            {copied === 'share' ? <Check size={15} className="text-emerald-600" /> : <Share2 size={15} className="text-slate-400" />}
+            {copied === 'share' ? 'Copied' : 'Share externally'}
+          </button>
+          <div className="my-1 border-t border-slate-100" />
+          <button onClick={() => { setOpen(false); if (confirm('Delete this listing?')) onDelete() }} className={cn(item, 'text-red-600 hover:bg-red-50')}>
+            <Trash2 size={15} /> Delete listing
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // Stable anchor for a card title: "Step 1 — Total Cash Required" → "total-cash-required",
 // "Rent Comps · 36 nearby" → "rent-comps"
 function sectionSlug(title: string) {
@@ -206,19 +262,23 @@ function sectionSlug(title: string) {
 function CardLinkButton({ slug, label }: { slug: string; label: string }) {
   const [copied, setCopied] = useState(false)
   return (
-    <button
+    // A span (not a button) so it keeps working inside the read-only view's disabled fieldset
+    <span
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (e.currentTarget as HTMLElement).click() } }}
       onClick={async () => {
         const { origin, pathname, search } = window.location
         await navigator.clipboard.writeText(`${origin}${pathname}${search}#${slug}`)
         setCopied(true)
         setTimeout(() => setCopied(false), 1500)
       }}
-      className={cn('transition-colors', copied ? 'text-emerald-600' : 'text-slate-300 group-hover/card:text-slate-500 hover:text-slate-800')}
+      className={cn('cursor-pointer transition-colors', copied ? 'text-emerald-600' : 'text-slate-300 group-hover/card:text-slate-500 hover:text-slate-800')}
       title={`Copy link to “${label}”`}
       aria-label={`Copy link to ${label}`}
     >
       {copied ? <Check size={13} /> : <Link2 size={13} />}
-    </button>
+    </span>
   )
 }
 
@@ -276,7 +336,6 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const [superCostInput, setSuperCostInput] = useState(listing?.superAnnualCost ?? 1449)
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
   const [regeocodeBusy, setRegeocodeBusy] = useState(false)
-  const [copied, setCopied] = useState<'link' | 'share' | null>(null)
   // Who the numbers are for — CMA-I internally, a generic investor on shared pages
   const owner = shareMode ? 'investor' : 'CMA'
 
@@ -423,8 +482,8 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     // flex-1 + min-h-0 (not just h-full): Safari won't size % heights inside flex items, which
     // left the scroll area as tall as its content — i.e. unscrollable on iPhone
     <div className="flex flex-col h-full flex-1 min-h-0">
-      {/* Back header (owner view only) */}
-      {!shareMode && (
+      {/* Back header — owner view gets the ⋯ actions menu; read-only views just the back arrow */}
+      {(!shareMode || onBack) && (
       <div className="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
         <button
           onClick={() => onBack ? onBack() : setSelectedId(null)}
@@ -434,59 +493,15 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
         >
           <ArrowLeft size={17} />
         </button>
-        <div className="flex items-center gap-3.5">
-          <a
-            href={`/print/${encodeURIComponent(listing.id)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
-            title="Printable worksheet with a blank column for your own numbers and notes"
-          >
-            <Printer size={14} />
-            Print
-          </a>
-          <button
-            onClick={async () => {
-              const { appPath } = await fetch(`/api/share-link?id=${encodeURIComponent(listing.id)}`).then((r) => r.json())
-              await navigator.clipboard.writeText(`${window.location.origin}${appPath}`)
-              setCopied('link')
-              setTimeout(() => setCopied(null), 2000)
-            }}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
-            title="Copy a link to this property in the app (requires login)"
-          >
-            {copied === 'link' ? <Check size={14} className="text-emerald-600" /> : <Link2 size={14} />}
-            {copied === 'link' ? 'Copied' : 'Copy link'}
-          </button>
-          <button
-            onClick={async () => {
-              const { path } = await fetch(`/api/share-link?id=${encodeURIComponent(listing.id)}`).then((r) => r.json())
-              await navigator.clipboard.writeText(`${window.location.origin}${path}`)
-              setCopied('share')
-              setTimeout(() => setCopied(null), 2000)
-            }}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
-            title="Copies a public link without CMA-I details — no login needed"
-          >
-            {copied === 'share' ? <Check size={14} className="text-emerald-600" /> : <Share2 size={14} />}
-            {copied === 'share' ? 'Copied' : 'Share externally'}
-          </button>
-          <button
-            onClick={() => {
-              if (confirm('Delete this listing?')) deleteListing(listing.id)
-            }}
-            className="text-red-400 hover:text-red-600 transition-colors"
-            title="Delete listing"
-            aria-label="Delete listing"
-          >
-            <Trash2 size={15} />
-          </button>
-        </div>
+        {!shareMode && <DetailActionsMenu listingId={listing.id} onDelete={() => deleteListing(listing.id)} />}
       </div>
       )}
 
       {/* Scrollable content */}
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+        {/* Shared / Realtor views are view-only: a disabled fieldset turns every input and button
+            inside into read-only (links still work; card link icons are spans, not buttons) */}
+        <fieldset disabled={shareMode} className="contents">
         <div className="p-4 space-y-4">
 
           {/* ── Photo + overview ─────────────────────────────── */}
@@ -2027,6 +2042,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
           {/* Bottom padding */}
           <div className="h-4" />
         </div>
+        </fieldset>
       </div>
     </div>
   )

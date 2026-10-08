@@ -20,6 +20,7 @@ interface Props {
   selectMode?: boolean
   selectSelected?: boolean
   listingStatus?: string   // from status check: 'Active' | 'Pending' | 'Sold' | 'Off Market' | 'Unknown'
+  readOnly?: boolean       // Realtor Version: no rent editing
 }
 
 // ── Grade scale (A+, A, B+, B, C, D) ────────────────────────────────────────
@@ -50,7 +51,7 @@ function yieldText(score: number) {
 }
 
 
-export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false, listingStatus }: Props) {
+export default function PropertyCard({ listing, selected, onClick, compareMode = false, compareSelected = false, selectMode = false, selectSelected = false, listingStatus, readOnly = false }: Props) {
   const saveRentToDb = useAppStore((s) => s.saveRentToDb)
   const resetRentToOriginal = useAppStore((s) => s.resetRentToOriginal)
 
@@ -158,10 +159,12 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
         )}
 
         <div className="absolute top-2 right-2 flex gap-1.5">
-          <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
-            <Navigation size={10} />
-            {distFromHome.toFixed(1)} mi
-          </span>
+          {!readOnly && (
+            <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+              <Navigation size={10} />
+              {distFromHome.toFixed(1)} mi
+            </span>
+          )}
           {listing.daysOnMarket > 0 && (
             <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
               <Clock size={10} />
@@ -323,17 +326,19 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
                 ) : (
                   <div className="text-sm font-medium text-slate-400 italic">Set rent</div>
                 )}
-                <button
-                  onClick={startEditRent}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-blue-500"
-                  title="Edit rent"
-                >
-                  <Pencil size={11} />
-                </button>
+                {!readOnly && (
+                  <button
+                    onClick={startEditRent}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-blue-500"
+                    title="Edit rent"
+                  >
+                    <Pencil size={11} />
+                  </button>
+                )}
               </div>
             )}
             <div className="text-xs text-slate-400 flex items-center gap-1.5">
-              {isRentEdited ? (
+              {isRentEdited && !readOnly ? (
                 <>
                   <span className="text-slate-400">was {fmtRent(listing.autoRent ?? 0)}</span>
                   <button

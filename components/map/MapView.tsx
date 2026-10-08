@@ -28,7 +28,8 @@ const homeIcon = L.divIcon({
 // ── Auto-fit map to listings ──────────────────────────────────────────────────
 // Only re-fits when the set of listing IDs changes (new listing, filter change),
 // NOT when assumption edits change computed values on the same listings.
-function FitBounds({ listings }: { listings: SaleListing[] }) {
+// includeHome: frame the owner's home too (off in the Realtor Version so it isn't revealed)
+function FitBounds({ listings, includeHome = true }: { listings: SaleListing[]; includeHome?: boolean }) {
   const map = useMap()
   const fittedKeyRef = useRef('')
   useEffect(() => {
@@ -36,17 +37,17 @@ function FitBounds({ listings }: { listings: SaleListing[] }) {
     const key = listings.map((l) => l.id).join(',')
     if (key === fittedKeyRef.current) return
     fittedKeyRef.current = key
-    const points: [number, number][] = [...listings.map((l): [number, number] => [l.lat, l.lng]), [HOME.lat, HOME.lng]]
+    const points: [number, number][] = [...listings.map((l): [number, number] => [l.lat, l.lng]), ...(includeHome ? [[HOME.lat, HOME.lng] as [number, number]] : [])]
     const bounds = L.latLngBounds(points)
     map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 })
-  }, [listings, map])
+  }, [listings, map, includeHome])
   return null
 }
 
 // ── Center map on selected listing, or fit-all when deselected ───────────────
 // listings kept in a ref so the effect only re-runs on selectedId changes,
 // not on assumption edits that recompute the same listings.
-function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; selectedId: string | null }) {
+function CenterOnSelected({ listings, selectedId, includeHome = true }: { listings: SaleListing[]; selectedId: string | null; includeHome?: boolean }) {
   const map = useMap()
   const prevId = useRef<string | null>(null)
   const listingsRef = useRef(listings)
@@ -60,7 +61,7 @@ function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; s
         if (ls.length === 1) {
           map.setView([ls[0].lat, ls[0].lng], 13, { animate: true })
         } else {
-          const points: [number, number][] = [...ls.map((l): [number, number] => [l.lat, l.lng]), [HOME.lat, HOME.lng]]
+          const points: [number, number][] = [...ls.map((l): [number, number] => [l.lat, l.lng]), ...(includeHome ? [[HOME.lat, HOME.lng] as [number, number]] : [])]
           map.fitBounds(L.latLngBounds(points), { padding: [60, 60], maxZoom: 14 })
         }
       }
@@ -68,7 +69,7 @@ function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; s
     }
     const listing = listingsRef.current.find((l) => l.id === selectedId)
     if (listing) map.setView([listing.lat, listing.lng], Math.max(map.getZoom(), 14), { animate: true })
-  }, [selectedId, map])
+  }, [selectedId, map, includeHome])
   return null
 }
 
@@ -286,7 +287,8 @@ function scoreToGrade(score: number) {
   return 'D'
 }
 
-export default function MapView() {
+// readOnly = Realtor Version: no home marker / home-inclusive framing
+export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const sortedSaleListings = useAppStore((s) => s.sortedSaleListings)
@@ -323,12 +325,12 @@ export default function MapView() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
-      <FitBounds listings={listings} />
+      <FitBounds listings={listings} includeHome={!readOnly} />
       <BoxSelect listings={listings} enabled={deleteSelectMode} onSelect={addDeleteSelected} />
-      <CenterOnSelected listings={listings} selectedId={selectedId} />
+      <CenterOnSelected listings={listings} selectedId={selectedId} includeHome={!readOnly} />
       {showRules && <RentalRulesOverlay />}
       {showComps && <CompCoverage listings={listings} />}
-      <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} zIndexOffset={1000} />
+      {!readOnly && <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} zIndexOffset={1000} />}
       {listings.map((listing) => (
         <Marker
           key={listing.id}
