@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import { Bookmark, ChevronLeft, Map } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -33,8 +33,12 @@ function FinderContent() {
   const [mobileShowMap, setMobileShowMap] = useState(false)
   const [mobileReturnToMap, setMobileReturnToMap] = useState(false)
 
+  // #section from a copied card link — held until the first listing opens, which then scrolls to it
+  const initialSection = useRef('')
+
   // On mount: load data, then restore selected listing from URL
   useEffect(() => {
+    initialSection.current = decodeURIComponent(window.location.hash.slice(1))
     const id = searchParams.get('id')
     initialize().then(() => { if (id) setSelectedId(id) })
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,7 +123,7 @@ function FinderContent() {
         {/* Right panel — full width on mobile, fixed 420px on desktop */}
         <aside className="w-full md:w-[420px] shrink-0 md:border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden isolate z-0">
           {showDetail ? (
-            <PropertyDetail onBack={() => {
+            <PropertyDetail takeScrollTarget={() => { const t = initialSection.current; initialSection.current = ''; return t }} onBack={() => {
               setSelectedId(null)
               if (mobileReturnToMap) setMobileShowMap(true)
             }} />

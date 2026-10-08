@@ -195,11 +195,40 @@ function GearRow({
   )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+// Stable anchor for a card title: "Step 1 — Total Cash Required" → "total-cash-required",
+// "Rent Comps · 36 nearby" → "rent-comps"
+function sectionSlug(title: string) {
+  return title.replace(/^Step \d+\s*—\s*/i, '').split(' · ')[0]
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+// Copies the current page URL pointing at this card (#slug)
+function CardLinkButton({ slug, label }: { slug: string; label: string }) {
+  const [copied, setCopied] = useState(false)
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+    <button
+      onClick={async () => {
+        const { origin, pathname, search } = window.location
+        await navigator.clipboard.writeText(`${origin}${pathname}${search}#${slug}`)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      }}
+      className={cn('transition-opacity', copied ? 'opacity-100 text-emerald-600' : 'opacity-0 group-hover/card:opacity-100 text-slate-400 hover:text-slate-700')}
+      title={`Copy link to “${label}”`}
+      aria-label={`Copy link to ${label}`}
+    >
+      {copied ? <Check size={13} /> : <Link2 size={13} />}
+    </button>
+  )
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const slug = sectionSlug(title)
+  return (
+    <div id={slug} className="group/card bg-white rounded-xl border border-slate-200 overflow-hidden scroll-mt-4">
+      <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
         <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</h2>
+        <CardLinkButton slug={slug} label={title.split(' · ')[0]} />
       </div>
       <div className="px-4 py-2">{children}</div>
     </div>
@@ -208,7 +237,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 // ── Main component ────────────────────────────────────────────────────────────
 // shareMode: public realtor view — hides CMA-I sections, home distance, and owner-only controls
-export default function PropertyDetail({ onBack, shareMode = false }: { onBack?: () => void; shareMode?: boolean }) {
+export default function PropertyDetail({ onBack, shareMode = false, takeScrollTarget }: {
+  onBack?: () => void
+  shareMode?: boolean
+  takeScrollTarget?: () => string   // one-time card anchor to jump to on open (share page uses the URL #hash)
+}) {
   const selectedId = useAppStore((s) => s.selectedId)
   const setSelectedId = useAppStore((s) => s.setSelectedId)
   const saleListings = useAppStore((s) => s.saleListings)
@@ -276,6 +309,16 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
     } else {
       setUnitRents([])
     }
+  }, [listing?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Jump to a linked card (#slug) once the listing has rendered
+  useEffect(() => {
+    if (!listing) return
+    // Finder hands over the hash captured on load (once); the share page keeps it in the URL
+    const target = takeScrollTarget?.() || (shareMode ? decodeURIComponent(window.location.hash.slice(1)) : '')
+    if (!target) return
+    // Not cancelled on cleanup: the target is taken once, so a dev double-mount must not drop the scroll
+    setTimeout(() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
   }, [listing?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const effectiveRentInput = isMultiFamily && unitRents.length > 0
@@ -1215,8 +1258,11 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
                 amount: metrics.lawnCareAnnual - realisticMetrics.lawnCareAnnual },
             ].filter((d) => Math.abs(d.amount) >= 1)
             return (
-              <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Net Cash Yield</div>
+              <div id="net-cash-yield" className="group/card rounded-xl border border-slate-200 p-4 space-y-3 scroll-mt-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Net Cash Yield</div>
+                  <CardLinkButton slug="net-cash-yield" label="Net Cash Yield" />
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {([
                     { label: 'Conservative', y: consYield, noi: metrics.netAnnualIncome, cash: totalCashRequired, score: metrics.investmentScore },
