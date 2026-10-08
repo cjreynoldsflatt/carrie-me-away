@@ -1,10 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
-import { isFreshComp, MAX_COMP_AGE_DAYS } from '@/lib/rent-comps'
+import { isFreshComp, MAX_COMP_AGE_DAYS, rentalRedfinUrl } from '@/lib/rent-comps'
+import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -243,6 +244,8 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
   const [regeocodeBusy, setRegeocodeBusy] = useState(false)
   const [copied, setCopied] = useState<'link' | 'share' | null>(null)
+  // Maximum Purchase Price can be solved from either scenario's stabilized NOI
+  const [mppBasis, setMppBasis] = useState<'conservative' | 'realistic'>('conservative')
   // Who the numbers are for — CMA-I internally, a generic investor on shared pages
   const owner = shareMode ? 'investor' : 'CMA'
 
@@ -356,7 +359,7 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
   const repairsIsEdited = repairsInput !== (20000)
 
   // Maximum Purchase Price — Stabilized Yield on Cost
-  const annualStabilizedNOI = metrics.netAnnualIncome
+  const annualStabilizedNOI = mppBasis === 'realistic' ? realisticMetrics.netAnnualIncome : metrics.netAnnualIncome
   const targetYieldOnCost = assumptions.targetYieldOnCost ?? 0.05
   const maxTotalProjectCost = targetYieldOnCost > 0 && annualStabilizedNOI > 0
     ? Math.round(annualStabilizedNOI / targetYieldOnCost) : 0
@@ -390,7 +393,8 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
         <div className="flex items-center gap-3.5">
           <button
             onClick={async () => {
-              await navigator.clipboard.writeText(`${window.location.origin}/finder?id=${encodeURIComponent(listing.id)}`)
+              const { appPath } = await fetch(`/api/share-link?id=${encodeURIComponent(listing.id)}`).then((r) => r.json())
+              await navigator.clipboard.writeText(`${window.location.origin}${appPath}`)
               setCopied('link')
               setTimeout(() => setCopied(null), 2000)
             }}
@@ -564,6 +568,20 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
                 )}
                 {listing.hoaMonthly > 0 && <span>HOA {fmtCurrency(listing.hoaMonthly)}/mo</span>}
               </div>
+              {/* Extra rental licensing/registration where this property sits */}
+              {regulatedAreasAt(listing.lat, listing.lng).map((area) => (
+                <a
+                  key={area.id}
+                  href={area.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={area.summary.join(' · ')}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-purple-700 bg-purple-50 border border-purple-200 rounded-full px-2.5 py-0.5 mr-1.5 hover:bg-purple-100"
+                >
+                  <ScrollText size={12} />
+                  {area.short} required
+                </a>
+              ))}
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
                 {listing.listingUrl && (
                   <a
@@ -1237,6 +1255,25 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
               Stabilized yield on cost — the highest price you can pay and still hit your target return. NOI excludes debt payments.
             </p>
 
+            {/* NOI basis — conservative vs realistic scenario */}
+            <div className="flex items-center justify-between gap-3 py-1.5">
+              <span className="text-sm text-slate-600">Stabilized NOI basis</span>
+              <div className="grid grid-cols-2 gap-1 bg-slate-100 rounded-lg p-0.5 text-xs">
+                {(['conservative', 'realistic'] as const).map((b) => (
+                  <button
+                    key={b}
+                    onClick={() => setMppBasis(b)}
+                    className={cn(
+                      'px-2.5 py-1 rounded-md font-medium capitalize transition-colors',
+                      mppBasis === b ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700',
+                    )}
+                  >
+                    {b}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Target yield — slider */}
             <div className="py-1.5">
               <InlineSlider
@@ -1250,7 +1287,7 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
               />
             </div>
 
-            <Row label="Annual stabilized NOI" value={fmtCurrency(annualStabilizedNOI)} />
+            <Row label={`Annual stabilized NOI (${mppBasis})`} value={fmtCurrency(annualStabilizedNOI)} />
             <Row
               label="Max total project cost"
               value={maxTotalProjectCost > 0 ? fmtCurrency(maxTotalProjectCost) : '—'}
@@ -1946,7 +1983,19 @@ function RentCompsSection({ listing }: { listing: SaleListing }) {
           {comps.map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-3 py-2">
               <div className="min-w-0">
-                <div className="text-sm text-slate-700 truncate">{r.address}</div>
+                {rentalRedfinUrl(r) ? (
+                  <a
+                    href={rentalRedfinUrl(r)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline truncate flex items-center gap-1"
+                  >
+                    <span className="truncate">{r.address}</span>
+                    <ExternalLink size={11} className="shrink-0" />
+                  </a>
+                ) : (
+                  <div className="text-sm text-slate-700 truncate">{r.address}</div>
+                )}
                 <div className="text-xs text-slate-400 mt-0.5">
                   {r.beds}bd · {r.baths}ba · {r.sqft.toLocaleString()} sqft
                   <span className="mx-1">·</span>{r.dist.toFixed(1)} mi

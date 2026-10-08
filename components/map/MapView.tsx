@@ -1,14 +1,15 @@
 'use client'
 
 import { useEffect, useMemo, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Circle, CircleMarker, GeoJSON, Popup, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useAppStore } from '@/lib/store'
 import { fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { HOME } from '@/lib/config'
 import type { SaleListing } from '@/lib/types'
-import { MIN_COMPS, MAX_COMP_AGE_DAYS, isFreshComp } from '@/lib/rent-comps'
+import { MIN_COMPS, MAX_COMP_AGE_DAYS, isFreshComp, rentalRedfinUrl } from '@/lib/rent-comps'
+import { REGULATED_AREAS } from '@/lib/regulated-areas'
 
 // ── Home marker ───────────────────────────────────────────────────────────────
 const homeIcon = L.divIcon({
@@ -175,6 +176,31 @@ function BoxSelect({ listings, enabled, onSelect }: {
   return null
 }
 
+// ── Rental regulation areas overlay ──────────────────────────────────────────
+function RentalRulesOverlay() {
+  return (
+    <>
+      {REGULATED_AREAS.map((area) => (
+        <GeoJSON
+          key={area.id}
+          data={area.geometry}
+          style={{ color: '#9333ea', weight: 2, dashArray: '6 4', fillColor: '#9333ea', fillOpacity: 0.06 }}
+        >
+          <Popup>
+            <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: 12, lineHeight: 1.45, maxWidth: 260 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>{area.name}</div>
+              <ul style={{ margin: '0 0 6px', paddingLeft: 16 }}>
+                {area.summary.map((s) => <li key={s}>{s}</li>)}
+              </ul>
+              <a href={area.url} target="_blank" rel="noopener noreferrer">Read the ordinance →</a>
+            </div>
+          </Popup>
+        </GeoJSON>
+      ))}
+    </>
+  )
+}
+
 // ── Rent comp coverage overlay ───────────────────────────────────────────────
 const COMP_RADIUS_M = 2414  // 1.5 mi — first search radius in lib/rent-comps
 const REDFIN_TYPE: Record<string, string> = { Townhouse: 'townhouse', 'Single Family': 'house', Condo: 'condo' }
@@ -233,6 +259,15 @@ function CompCoverage({ listings }: { listings: SaleListing[] }) {
               {fmtRent(r.monthlyRent)} · {r.beds}bd {r.propertyType.toLowerCase()} · {r.address}
               {!fresh && ` · expired (not seen in ${MAX_COMP_AGE_DAYS}+ days)`}
             </Tooltip>
+            {rentalRedfinUrl(r) && (
+              <Popup>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: 12, lineHeight: 1.4 }}>
+                  <div style={{ fontWeight: 700 }}>{fmtRent(r.monthlyRent)} · {r.beds}bd {r.baths}ba</div>
+                  <div>{r.address}</div>
+                  <a href={rentalRedfinUrl(r)!} target="_blank" rel="noopener noreferrer">View rental on Redfin →</a>
+                </div>
+              </Popup>
+            )}
           </CircleMarker>
         )
       })}
@@ -260,6 +295,7 @@ export default function MapView() {
 
   const assumptions = useAppStore((s) => s.assumptions)
   const showComps = useAppStore((s) => s.layers.rentComps ?? false)
+  const showRules = useAppStore((s) => s.layers.rentalRules ?? false)
   const deleteSelectMode = useAppStore((s) => s.deleteSelectMode)
   const deleteSelectedIds = useAppStore((s) => s.deleteSelectedIds)
   const toggleDeleteSelect = useAppStore((s) => s.toggleDeleteSelect)
@@ -289,6 +325,7 @@ export default function MapView() {
       <FitBounds listings={listings} />
       <BoxSelect listings={listings} enabled={deleteSelectMode} onSelect={addDeleteSelected} />
       <CenterOnSelected listings={listings} selectedId={selectedId} />
+      {showRules && <RentalRulesOverlay />}
       {showComps && <CompCoverage listings={listings} />}
       <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} zIndexOffset={1000} />
       {listings.map((listing) => (
@@ -304,8 +341,23 @@ export default function MapView() {
         />
       ))}
     </MapContainer>
-    {/* Comp coverage toggle + legend */}
-    <div className="absolute top-3 right-3 z-[1000] bg-white/95 rounded-lg shadow-md border border-slate-200 text-xs">
+    {/* Map overlay toggles + legends */}
+    <div className="absolute top-3 right-3 z-[1000] flex flex-col items-end gap-2 text-xs">
+    <div className="bg-white/95 rounded-lg shadow-md border border-slate-200">
+      <button
+        onClick={() => setLayer('rentalRules', !showRules)}
+        className={`px-3 py-1.5 rounded-lg font-medium w-full text-left ${showRules ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}`}
+      >
+        Rental rules
+      </button>
+      {showRules && (
+        <div className="px-3 py-2 space-y-1 text-slate-600 max-w-[200px]">
+          <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm border-2 border-dashed border-[#9333ea] bg-[#9333ea]/10" /> Extra rental licensing</div>
+          <div className="text-[10px] text-slate-400 pt-0.5">Click an area for its rules.</div>
+        </div>
+      )}
+    </div>
+    <div className="bg-white/95 rounded-lg shadow-md border border-slate-200">
       <button
         onClick={() => setLayer('rentComps', !showComps)}
         className={`px-3 py-1.5 rounded-lg font-medium w-full text-left ${showComps ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}`}
@@ -322,6 +374,7 @@ export default function MapView() {
           <div className="text-[10px] text-slate-400 pt-0.5">Circles = 1.5 mi. Click one for a Redfin link.</div>
         </div>
       )}
+    </div>
     </div>
     </div>
   )

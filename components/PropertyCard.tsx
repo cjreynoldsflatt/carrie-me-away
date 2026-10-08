@@ -2,7 +2,8 @@
 
 import Image from 'next/image'
 import { useState, useRef } from 'react'
-import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert } from 'lucide-react'
+import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText } from 'lucide-react'
+import { regulatedAreasAt } from '@/lib/regulated-areas'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
@@ -259,6 +260,14 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
           {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
           <span>{listing.hoaMonthly > 0 ? `HOA ${fmtCurrency(listing.hoaMonthly)}/mo` : 'No HOA'}</span>
         </div>
+
+        {/* Extra rental licensing/registration where this property sits */}
+        {regulatedAreasAt(listing.lat, listing.lng).map((area) => (
+          <div key={area.id} className="flex items-center gap-1.5 text-xs font-medium text-purple-700" title={area.summary.join(' · ')}>
+            <ScrollText size={12} />
+            {area.short} required
+          </div>
+        ))}
 
         {listing.community && (
           <div className="text-sm text-slate-500 flex items-center gap-1">

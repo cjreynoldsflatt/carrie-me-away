@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+const PREVIEW_BOT = /facebookexternalhit|Facebot|Twitterbot|Slackbot|LinkedInBot|WhatsApp|Discordbot|TelegramBot|Applebot|SkypeUriPreview|Iframely|Embedly|Pinterest|redditbot|Mattermost|Google-PageRenderer|bingbot|Googlebot/i
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -10,11 +12,23 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/share/') ||
     pathname === '/cma-logo.png' ||   // shown on public share pages
+    pathname === '/icon.png' || pathname === '/apple-icon.png' ||   // favicons
     pathname.startsWith('/api/share/') ||
+    pathname.startsWith('/api/og/') ||          // link-preview images (signed key)
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/add-listing') ||
     pathname.startsWith('/api/add-rentals') ||
     pathname.startsWith('/api/enrich-listing')
+  ) {
+    return NextResponse.next()
+  }
+
+  // Link-preview bots (iMessage, Slack, etc.) may fetch a signed in-app link to read its
+  // preview tags. The page shell holds no data — listings still come from the login-only API.
+  if (
+    pathname === '/finder' &&
+    request.nextUrl.searchParams.has('k') &&
+    PREVIEW_BOT.test(request.headers.get('user-agent') ?? '')
   ) {
     return NextResponse.next()
   }

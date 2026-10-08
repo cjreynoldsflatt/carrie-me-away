@@ -12,6 +12,20 @@ export function isFreshComp(fetchedAt: string | null | undefined): boolean {
   return !fetchedAt || Date.now() - new Date(fetchedAt).getTime() <= MAX_COMP_AGE_DAYS * 86_400_000
 }
 
+/**
+ * Redfin page for a saved rental comp. Only the home ID matters — Redfin redirects any
+ * /STATE/City/slug/home/<id> path to the right listing — so the slug is best-effort.
+ */
+export function rentalRedfinUrl(r: { id: string; address: string; city: string }): string | null {
+  const homeId = r.id.match(/^redfin-rental-(\d+)$/)?.[1]
+  if (!homeId) return null
+  const m = r.city.match(/^(.*?),\s*([A-Z]{2})\s+(\d{5})/)   // "Frederick, MD 21704"
+  const slug = (s: string) => s.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  return m
+    ? `https://www.redfin.com/${m[2]}/${slug(m[1])}/${slug(r.address)}-${m[3]}/home/${homeId}`
+    : `https://www.redfin.com/home/${homeId}`
+}
+
 type Row = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export interface CompEstimate {

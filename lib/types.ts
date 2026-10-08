@@ -139,4 +139,5 @@ export interface LayerSettings {
   communities: boolean
   investmentScore: boolean
   rentComps?: boolean   // map overlay: rent comp coverage around each listing
+  rentalRules?: boolean // map overlay: jurisdictions with extra rental regulations
 }
