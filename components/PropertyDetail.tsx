@@ -487,13 +487,20 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
       <div className="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
         <button
           onClick={() => onBack ? onBack() : setSelectedId(null)}
-          className="text-slate-500 hover:text-slate-800 transition-colors"
+          className="text-slate-500 hover:text-slate-800 transition-colors shrink-0"
           title="All properties"
           aria-label="Back to all properties"
         >
           <ArrowLeft size={17} />
         </button>
-        {!shareMode && <DetailActionsMenu listingId={listing.id} onDelete={() => deleteListing(listing.id)} />}
+        {/* Address stays visible while the detail scrolls */}
+        <div className="flex-1 min-w-0 text-center leading-tight">
+          <div className="text-sm font-semibold text-slate-900 truncate">{listing.address}</div>
+          <div className="text-[11px] text-slate-400 truncate">{listing.city} · {fmtPrice(listing.price)}</div>
+        </div>
+        {!shareMode
+          ? <DetailActionsMenu listingId={listing.id} onDelete={() => deleteListing(listing.id)} />
+          : <div className="w-[17px] shrink-0" aria-hidden />}
       </div>
       )}
 
