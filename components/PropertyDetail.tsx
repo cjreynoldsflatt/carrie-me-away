@@ -1260,7 +1260,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                 amount: metrics.lawnCareAnnual - realisticMetrics.lawnCareAnnual },
             ].filter((d) => Math.abs(d.amount) >= 1)
             return (
-              <div id="net-cash-yield" className="group/card rounded-xl border border-slate-200 p-4 space-y-3 scroll-mt-4">
+              <div id="net-cash-yield" className="group/card bg-white rounded-xl border border-slate-200 p-4 space-y-3 scroll-mt-4">
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Net Cash Yield</div>
                   <CardLinkButton slug="net-cash-yield" label="Net Cash Yield" />
