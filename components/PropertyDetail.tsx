@@ -244,8 +244,6 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
   const [superBeforeDisable, setSuperBeforeDisable] = useState(listing?.superAnnualCost ?? 1449)
   const [regeocodeBusy, setRegeocodeBusy] = useState(false)
   const [copied, setCopied] = useState<'link' | 'share' | null>(null)
-  // Maximum Purchase Price can be solved from either scenario's stabilized NOI
-  const [mppBasis, setMppBasis] = useState<'conservative' | 'realistic'>('conservative')
   // Who the numbers are for — CMA-I internally, a generic investor on shared pages
   const owner = shareMode ? 'investor' : 'CMA'
 
@@ -358,23 +356,28 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
   const rentIsEdited = listing.rentSource === 'manual' && originalRent != null && originalRent > 0 && listing.estimatedRent !== originalRent
   const repairsIsEdited = repairsInput !== (20000)
 
-  // Maximum Purchase Price — Stabilized Yield on Cost
-  const annualStabilizedNOI = mppBasis === 'realistic' ? realisticMetrics.netAnnualIncome : metrics.netAnnualIncome
+  // Maximum Purchase Price — Stabilized Yield on Cost, solved for both scenarios.
+  // Total cash includes the Day 1 reserve so the max price lines up with the Net Cash Yield shown above.
   const targetYieldOnCost = assumptions.targetYieldOnCost ?? 0.05
-  const maxTotalProjectCost = targetYieldOnCost > 0 && annualStabilizedNOI > 0
-    ? Math.round(annualStabilizedNOI / targetYieldOnCost) : 0
-  // Solve for max price with closing costs as % of price: price * (1 + rate) + repairs + other = maxTotal
-  const maxPurchasePrice = maxTotalProjectCost > 0
-    ? Math.round((maxTotalProjectCost - repairsInput - otherCostsInput) / (1 + assumptions.closingCostRate)) : 0
-  const maxClosingCosts = Math.round(Math.max(maxPurchasePrice, 0) * assumptions.closingCostRate)
-  const marketCapRate = listing.price > 0 ? annualStabilizedNOI / listing.price : 0
-  const priceDelta = listing.price - maxPurchasePrice
-  const priceDeltaPct = maxPurchasePrice > 0 && listing.price > 0
-    ? Math.round(Math.abs(priceDelta) / listing.price * 100) : 0
+  const mpp = (noi: number) => {
+    const maxTotal = targetYieldOnCost > 0 && noi > 0 ? Math.round(noi / targetYieldOnCost) : 0
+    // price * (1 + closing) + repairs + other + reserve = maxTotal
+    const price = maxTotal > 0
+      ? Math.round((maxTotal - repairsInput - otherCostsInput - PROPERTY_RESERVE) / (1 + assumptions.closingCostRate)) : 0
+    return {
+      noi,
+      maxTotal,
+      price,
+      closing: Math.round(Math.max(price, 0) * assumptions.closingCostRate),
+      yieldAtAsking: totalCashRequired > 0 ? noi / totalCashRequired : 0,
+      capRate: listing.price > 0 ? noi / listing.price : 0,
+    }
+  }
+  const mppCons = mpp(metrics.netAnnualIncome)
+  const mppReal = mpp(realisticMetrics.netAnnualIncome)
   const priceStatus: 'below' | 'near' | 'above' =
-    maxPurchasePrice <= 0 ? 'above'
-    : listing.price <= maxPurchasePrice ? 'below'
-    : listing.price <= maxPurchasePrice * 1.05 ? 'near'
+    mppCons.price > 0 && listing.price <= mppCons.price ? 'below'
+    : mppReal.price > 0 && listing.price <= mppReal.price ? 'near'
     : 'above'
 
   return (
@@ -1252,30 +1255,20 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
           {/* ── Maximum Purchase Price / Stabilized Yield on Cost ── */}
           <Section title="Maximum Purchase Price">
             <p className="text-xs text-slate-400 leading-relaxed pt-1 pb-2">
-              Stabilized yield on cost — the highest price you can pay and still hit your target return. NOI excludes debt payments.
+              The highest price you can pay and still earn your target yield, for both scenarios.
+              Total cash includes closing, repairs and the {fmtCurrency(PROPERTY_RESERVE)} reserve — the same basis as Net Cash Yield above. NOI excludes debt payments.
             </p>
 
-            {/* NOI basis — conservative vs realistic scenario */}
-            <div className="flex items-center justify-between gap-3 py-1.5">
-              <span className="text-sm text-slate-600">Stabilized NOI basis</span>
-              <div className="grid grid-cols-2 gap-1 bg-slate-100 rounded-lg p-0.5 text-xs">
-                {(['conservative', 'realistic'] as const).map((b) => (
-                  <button
-                    key={b}
-                    onClick={() => setMppBasis(b)}
-                    className={cn(
-                      'px-2.5 py-1 rounded-md font-medium capitalize transition-colors',
-                      mppBasis === b ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700',
-                    )}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
+            {/* Plain-English answer first: what you'd earn at the asking price */}
+            <div className="rounded-lg bg-slate-50 px-3 py-2.5 text-sm text-slate-700 leading-relaxed">
+              At the asking price of <span className="font-semibold">{fmtCurrency(listing.price)}</span> you&apos;d earn{' '}
+              <span className={cn('font-semibold', mppCons.yieldAtAsking >= targetYieldOnCost ? 'text-emerald-700' : 'text-red-600')}>{fmtYield(mppCons.yieldAtAsking)}</span> conservative to{' '}
+              <span className={cn('font-semibold', mppReal.yieldAtAsking >= targetYieldOnCost ? 'text-emerald-700' : 'text-red-600')}>{fmtYield(mppReal.yieldAtAsking)}</span> realistic,
+              vs your <span className="font-semibold">{fmtYield(targetYieldOnCost)}</span> target.
             </div>
 
             {/* Target yield — slider */}
-            <div className="py-1.5">
+            <div className="py-1.5 mt-1">
               <InlineSlider
                 label="Target yield on cost"
                 value={parseFloat((targetYieldOnCost * 100).toFixed(1))}
@@ -1287,74 +1280,122 @@ export default function PropertyDetail({ onBack, shareMode = false }: { onBack?:
               />
             </div>
 
-            <Row label={`Annual stabilized NOI (${mppBasis})`} value={fmtCurrency(annualStabilizedNOI)} />
-            <Row
-              label="Max total project cost"
-              value={maxTotalProjectCost > 0 ? fmtCurrency(maxTotalProjectCost) : '—'}
-              sub={`NOI ÷ ${(targetYieldOnCost * 100).toFixed(1)}%`}
-            />
+            {/* Price ladder: conservative max · asking · realistic max */}
+            {(() => {
+              const pts = [mppCons.price, mppReal.price, listing.price].filter((v) => v > 0)
+              const lo = Math.min(...pts) * 0.96, hi = Math.max(...pts) * 1.04
+              const pos = (v: number) => `${Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100))}%`
+              const marks = [
+                { label: 'Conservative max', v: mppCons.price, color: 'bg-emerald-600', text: 'text-emerald-700' },
+                { label: 'Realistic max', v: mppReal.price, color: 'bg-cyan-600', text: 'text-cyan-700' },
+              ].filter((m) => m.v > 0)
+              return (
+                <div className="pt-6 pb-9 px-1">
+                  <div className="relative h-2 rounded-full bg-slate-100">
+                    {mppCons.price > 0 && (
+                      <div
+                        className="absolute h-2 rounded-full bg-gradient-to-r from-emerald-200 to-cyan-200"
+                        style={{ left: pos(mppCons.price), width: `calc(${pos(Math.max(mppReal.price, mppCons.price))} - ${pos(mppCons.price)})` }}
+                      />
+                    )}
+                    {marks.map((m) => (
+                      <div key={m.label} className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ left: pos(m.v) }}>
+                        <div className={cn('w-3 h-3 rounded-full ring-2 ring-white', m.color)} />
+                        <div className={cn('absolute top-4 left-1/2 -translate-x-1/2 text-center whitespace-nowrap', m.text)}>
+                          <div className="text-xs font-bold tabular-nums">{fmtPrice(m.v)}</div>
+                          <div className="text-[10px] opacity-80">{m.label}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="absolute -translate-x-1/2" style={{ left: pos(listing.price), top: -22 }}>
+                      <div className="text-center whitespace-nowrap text-slate-700">
+                        <div className="text-xs font-bold tabular-nums">{fmtPrice(listing.price)}</div>
+                      </div>
+                      <div className="mx-auto w-0.5 h-5 bg-slate-800" />
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
 
-            <div className="border-t border-slate-100 my-1.5" />
-            <p className="text-xs font-medium text-slate-500 pb-1">Less other project costs</p>
-
-            <Row label="Closing costs" value={fmtCurrency(maxClosingCosts)} prefix="−" sub={`${(assumptions.closingCostRate * 100).toFixed(0)}% of max price`} />
-            <Row label="Repairs / rehab" value={fmtCurrency(repairsInput)} prefix="−" />
-
-            {/* Permits / legal / contingency — editable */}
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-sm text-slate-700">
-                <span className="inline-block w-4 text-slate-400 text-sm">−</span>
-                Permits, legal, contingency
-              </span>
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-slate-400">$</span>
-                <input
-                  type="number"
-                  min={0}
-                  step={1000}
-                  value={otherCostsInput}
-                  onChange={(e) => setOtherCostsInput(Math.max(0, Number(e.target.value)))}
-                  className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-              </div>
-            </div>
-
-            <Divider />
-            <TotalRow
-              label="Maximum Purchase Price"
-              value={maxPurchasePrice > 0 ? fmtCurrency(maxPurchasePrice) : '—'}
-              color={priceStatus === 'below' ? 'text-emerald-700' : priceStatus === 'near' ? 'text-orange-600' : 'text-red-600'}
-            />
-
-            {/* Asking price vs maximum */}
+            {/* Asking price vs both maximums */}
             <div className={cn(
-              'mt-2 rounded-lg px-3 py-2.5',
+              'rounded-lg px-3 py-2.5',
               priceStatus === 'below' ? 'bg-emerald-50' : priceStatus === 'near' ? 'bg-orange-50' : 'bg-red-50'
             )}>
               <div className={cn('text-sm font-semibold', priceStatus === 'below' ? 'text-emerald-700' : priceStatus === 'near' ? 'text-orange-700' : 'text-red-700')}>
-                {priceStatus === 'below' ? 'Below maximum' : priceStatus === 'near' ? 'Near maximum' : 'Above maximum'}
-                {priceDeltaPct > 0 && (
-                  <span className="ml-1.5 font-normal opacity-75">
-                    ({priceDeltaPct}% {priceDelta > 0 ? 'over' : 'under'} asking)
-                  </span>
-                )}
+                {priceStatus === 'below' ? 'Asking is within the conservative max'
+                  : priceStatus === 'near' ? 'Asking works only if things go typically'
+                  : 'Asking is above both maximums'}
               </div>
-              <div className={cn('text-xs mt-0.5', priceStatus === 'below' ? 'text-emerald-600' : priceStatus === 'near' ? 'text-orange-600' : 'text-red-600')}>
-                {maxPurchasePrice > 0 ? (
-                  priceDelta > 0
-                    ? `Asking ${fmtPrice(listing.price)} · needs to drop ${fmtCurrency(priceDelta)} to hit target`
-                    : `Asking ${fmtPrice(listing.price)} · ${fmtCurrency(Math.abs(priceDelta))} below maximum`
-                ) : 'NOI too low to support any purchase price at this target yield'}
+              <div className={cn('text-xs mt-0.5 leading-relaxed', priceStatus === 'below' ? 'text-emerald-600' : priceStatus === 'near' ? 'text-orange-600' : 'text-red-600')}>
+                {mppCons.price > 0
+                  ? (listing.price > mppCons.price
+                    ? `${fmtCurrency(listing.price - mppCons.price)} over the conservative max`
+                    : `${fmtCurrency(mppCons.price - listing.price)} under the conservative max`)
+                  : 'Conservative NOI is too low to support any price at this target'}
+                {mppReal.price > 0 && (
+                  ` · ${listing.price > mppReal.price
+                    ? `${fmtCurrency(listing.price - mppReal.price)} over`
+                    : `${fmtCurrency(mppReal.price - listing.price)} under`} the realistic max`
+                )}
               </div>
             </div>
 
-            {/* Market cap rate — separate metric */}
-            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-700">Market Cap Rate</div>
-                <div className="text-xs text-slate-400 mt-0.5">NOI ÷ asking price</div>
+            {/* How the maximums are built — both scenarios side by side */}
+            <div className="mt-3">
+              <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 gap-y-1.5 text-sm items-center">
+                <div />
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700 text-right">Conservative</div>
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-cyan-700 text-right">Realistic</div>
+
+                <div className="text-slate-600">Annual stabilized NOI</div>
+                <div className="text-right tabular-nums text-slate-800">{fmtCurrency(mppCons.noi)}</div>
+                <div className="text-right tabular-nums text-slate-800">{fmtCurrency(mppReal.noi)}</div>
+
+                <div className="text-slate-600">Max total cash <span className="text-xs text-slate-400">NOI ÷ {fmtYield(targetYieldOnCost)}</span></div>
+                <div className="text-right tabular-nums text-slate-800">{mppCons.maxTotal > 0 ? fmtCurrency(mppCons.maxTotal) : '—'}</div>
+                <div className="text-right tabular-nums text-slate-800">{mppReal.maxTotal > 0 ? fmtCurrency(mppReal.maxTotal) : '—'}</div>
+
+                <div className="text-slate-500">− Closing costs <span className="text-xs text-slate-400">{(assumptions.closingCostRate * 100).toFixed(0)}% of max price</span></div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(mppCons.closing)}</div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(mppReal.closing)}</div>
+
+                <div className="text-slate-500">− Repairs / rehab</div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(repairsInput)}</div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(repairsInput)}</div>
+
+                <div className="text-slate-500 flex items-center gap-2">
+                  − Permits, legal, contingency
+                  <span className="flex items-center gap-0.5">
+                    <span className="text-xs text-slate-400">$</span>
+                    <input
+                      type="number"
+                      min={0}
+                      step={1000}
+                      value={otherCostsInput}
+                      onChange={(e) => setOtherCostsInput(Math.max(0, Number(e.target.value)))}
+                      className="w-20 text-xs text-right tabular-nums border border-slate-200 rounded-md px-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </span>
+                </div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(otherCostsInput)}</div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(otherCostsInput)}</div>
+
+                <div className="text-slate-500">− Day 1 operating reserve</div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(PROPERTY_RESERVE)}</div>
+                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(PROPERTY_RESERVE)}</div>
+
+                <div className="col-span-3 border-t border-slate-200 my-0.5" />
+
+                <div className="font-semibold text-slate-900">Maximum purchase price</div>
+                <div className="text-right tabular-nums font-bold text-emerald-700">{mppCons.price > 0 ? fmtCurrency(mppCons.price) : '—'}</div>
+                <div className="text-right tabular-nums font-bold text-cyan-700">{mppReal.price > 0 ? fmtCurrency(mppReal.price) : '—'}</div>
+
+                <div className="text-slate-600 pt-1">Market cap rate <span className="text-xs text-slate-400">NOI ÷ asking</span></div>
+                <div className="text-right tabular-nums text-slate-700 pt-1">{fmtYield(mppCons.capRate)}</div>
+                <div className="text-right tabular-nums text-slate-700 pt-1">{fmtYield(mppReal.capRate)}</div>
               </div>
-              <div className="text-base font-semibold text-slate-700 tabular-nums">{fmtYield(marketCapRate)}</div>
             </div>
           </Section>
 
