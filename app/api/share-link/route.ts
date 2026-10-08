@@ -1,7 +1,7 @@
 // GET /api/share-link?id=... — returns the public realtor share path for a listing.
 // Behind the app login (middleware); the share page itself is public.
 import { NextRequest, NextResponse } from 'next/server'
-import { shareKey } from '@/lib/share'
+import { shareKey, realtorKey } from '@/lib/share'
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id')
@@ -10,5 +10,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     path: `/share/${encodeURIComponent(id)}/${key}`,              // public realtor page
     appPath: `/finder?id=${encodeURIComponent(id)}&k=${key}`,      // in-app link (login), key enables link preview
+    realtorPath: `/realtor/${realtorKey()}?id=${encodeURIComponent(id)}`, // Realtor Version opened on this listing
   })
 }

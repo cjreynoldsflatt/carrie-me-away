@@ -211,8 +211,8 @@ function DetailActionsMenu({ listingId, onDelete }: { listingId: string; onDelet
   }, [open])
 
   async function copy(kind: 'link' | 'share') {
-    const { path, appPath } = await fetch(`/api/share-link?id=${encodeURIComponent(listingId)}`).then((r) => r.json())
-    await navigator.clipboard.writeText(`${window.location.origin}${kind === 'link' ? appPath : path}`)
+    const { appPath, realtorPath } = await fetch(`/api/share-link?id=${encodeURIComponent(listingId)}`).then((r) => r.json())
+    await navigator.clipboard.writeText(`${window.location.origin}${kind === 'link' ? appPath : realtorPath}`)
     setCopied(kind)
     setTimeout(() => { setCopied(null); setOpen(false) }, 1200)
   }
@@ -237,7 +237,7 @@ function DetailActionsMenu({ listingId, onDelete }: { listingId: string; onDelet
             {copied === 'link' ? <Check size={15} className="text-emerald-600" /> : <Link2 size={15} className="text-slate-400" />}
             {copied === 'link' ? 'Copied' : 'Copy link'}
           </button>
-          <button onClick={() => copy('share')} className={cn(item, 'text-slate-700')} title="Public link without CMA-I details — no login needed">
+          <button onClick={() => copy('share')} className={cn(item, 'text-slate-700')} title="Realtor Version opened on this property — no CMA-I details, no login needed">
             {copied === 'share' ? <Check size={15} className="text-emerald-600" /> : <Share2 size={15} className="text-slate-400" />}
             {copied === 'share' ? 'Copied' : 'Share externally'}
           </button>
@@ -2088,13 +2088,11 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
           {!shareMode && ' Exclude any that aren’t a fair match.'}
         </p>
 
-        <div className="divide-y divide-slate-100">
-          {pool.map((r) => {
+        {(() => {
+          const renderRow = (r: (typeof pool)[number]) => {
             const isExcluded = excluded.has(r.id)
-            const inRange = r.dist <= radius
-            const used = inRange && !isExcluded
             return (
-              <div key={r.id} className={cn('flex items-center justify-between gap-3 py-2', !used && 'opacity-50')}>
+              <div key={r.id} className="flex items-center justify-between gap-3 py-2">
                 <div className="min-w-0">
                   {rentalRedfinUrl(r) ? (
                     <a
@@ -2112,7 +2110,7 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
                   <div className="text-xs text-slate-400 mt-0.5">
                     {r.baths}ba{r.sqft ? ` · ${r.sqft.toLocaleString()} sqft` : ''}
                     <span className="mx-1">·</span>{r.dist.toFixed(1)} mi
-                    {isExcluded ? <span className="mx-1">· excluded</span> : !inRange ? <span className="mx-1">· outside {radius} mi</span> : null}
+                    {isExcluded && <span className="mx-1">· excluded</span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -2136,8 +2134,24 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
                 </div>
               </div>
             )
-          })}
-        </div>
+          }
+          const used = pool.filter((r) => r.dist <= radius && !excluded.has(r.id))
+          const notUsed = pool.filter((r) => !(r.dist <= radius && !excluded.has(r.id)))
+          return (
+            <>
+              <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 mb-0.5">Used in estimate ({used.length})</div>
+              <div className="divide-y divide-slate-100">{used.map(renderRow)}</div>
+              {notUsed.length > 0 && (
+                <>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mt-4 mb-0.5">
+                    Nearby, not used — beyond {radius} mi{excluded.size > 0 ? ' or excluded' : ''} ({notUsed.length})
+                  </div>
+                  <div className="divide-y divide-slate-100">{notUsed.map(renderRow)}</div>
+                </>
+              )}
+            </>
+          )
+        })()}
 
         <div className="mt-3 pt-3 border-t border-slate-200 space-y-1.5 text-sm">
           {listing.rentSource === 'comps' ? (
