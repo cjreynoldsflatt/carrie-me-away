@@ -150,7 +150,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   }, [allListings])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full flex-1 min-h-0">
       {/* Header */}
       <div className="px-4 pt-3 pb-2 border-b border-slate-200 bg-white">
         {/* Row 1: count (left) + sort (right) */}
@@ -382,7 +382,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
       </div>
 
       {/* List */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         {/* Mini map strip — inside scroll so it scrolls away */}
         {onOpenMap && <MiniMapStrip listings={listings} onOpenMap={onOpenMap} />}
 

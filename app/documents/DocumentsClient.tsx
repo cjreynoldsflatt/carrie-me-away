@@ -156,7 +156,7 @@ export default function DocumentsClient({ documents }: { documents: Document[] }
   }
 
   return (
-    <div className="h-screen flex flex-col print:h-auto print:overflow-visible">
+    <div className="h-dvh flex flex-col print:h-auto print:overflow-visible">
       {/* ── Header ── */}
       <header className="bg-white border-b border-slate-200 px-5 py-3 flex flex-wrap items-center gap-3 shrink-0 print:hidden">
         <AppMenu />

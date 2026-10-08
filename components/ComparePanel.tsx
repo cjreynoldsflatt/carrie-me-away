@@ -117,7 +117,7 @@ export default function ComparePanel() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full flex-1 min-h-0">
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200 bg-white flex items-center justify-between shrink-0">
         <div>
@@ -133,7 +133,7 @@ export default function ComparePanel() {
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 min-h-0 overflow-auto overscroll-contain">
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50">

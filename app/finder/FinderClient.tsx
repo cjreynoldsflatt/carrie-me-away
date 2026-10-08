@@ -67,7 +67,7 @@ function FinderContent() {
   const showCompare = compareMode && compareIds.length >= 2
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-dvh overflow-hidden">
       {/* Top bar */}
       <header className="min-h-14 shrink-0 bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3 relative z-30">
         <AppMenu />

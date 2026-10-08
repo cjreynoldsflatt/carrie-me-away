@@ -213,7 +213,7 @@ function CardLinkButton({ slug, label }: { slug: string; label: string }) {
         setCopied(true)
         setTimeout(() => setCopied(false), 1500)
       }}
-      className={cn('transition-opacity', copied ? 'opacity-100 text-emerald-600' : 'opacity-0 group-hover/card:opacity-100 text-slate-400 hover:text-slate-700')}
+      className={cn('transition-colors', copied ? 'text-emerald-600' : 'text-slate-300 group-hover/card:text-slate-500 hover:text-slate-800')}
       title={`Copy link to “${label}”`}
       aria-label={`Copy link to ${label}`}
     >
@@ -424,7 +424,9 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     : 'above'
 
   return (
-    <div className="flex flex-col h-full">
+    // flex-1 + min-h-0 (not just h-full): Safari won't size % heights inside flex items, which
+    // left the scroll area as tall as its content — i.e. unscrollable on iPhone
+    <div className="flex flex-col h-full flex-1 min-h-0">
       {/* Back header (owner view only) */}
       {!shareMode && (
       <div className="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
@@ -478,7 +480,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
       )}
 
       {/* Scrollable content */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         <div className="p-4 space-y-4">
 
           {/* ── Photo + overview ─────────────────────────────── */}

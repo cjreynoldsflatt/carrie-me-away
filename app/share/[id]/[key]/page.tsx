@@ -35,14 +35,14 @@ export default function SharePage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
+    <div className="h-dvh flex flex-col bg-slate-50">
       <header className="shrink-0 bg-white border-b border-slate-200">
         <div className="max-w-2xl mx-auto px-5 py-3">
           {/* eslint-disable-next-line @next/next/no-img-element -- matches the home page logo */}
           <img src="/cma-logo.png" alt="CMA Investments" className="h-6 w-auto" />
         </div>
       </header>
-      <div className="flex-1 min-h-0 w-full max-w-2xl mx-auto">
+      <div className="flex-1 min-h-0 w-full max-w-2xl mx-auto flex flex-col">
         <PropertyDetail shareMode />
       </div>
     </div>
