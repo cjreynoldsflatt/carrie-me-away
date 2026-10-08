@@ -50,7 +50,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
           ? <img src={photo} width={560} height={630} style={{ objectFit: 'cover' }} alt="" />
           : <div style={{ width: 560, height: 630, background: '#e2e8f0', display: 'flex' }} />}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '48px 52px', color: '#0f172a' }}>
-          <img src={logo} height={34} width={260} style={{ objectFit: 'contain', objectPosition: 'left' }} alt="" />
+          {/* Header: logo left, conservative → realistic grade right */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <img src={logo} height={34} width={260} style={{ objectFit: 'contain', objectPosition: 'left' }} alt="" />
+            <div style={{ display: 'flex', alignItems: 'center', borderRadius: 999, padding: '8px 20px', color: '#fff', fontSize: 28, fontWeight: 800, whiteSpace: 'nowrap', backgroundImage: `linear-gradient(90deg, ${gradeHex(c.investmentScore)}, ${gradeHex(r.investmentScore)})` }}>
+              {gradeOf(c.investmentScore) === gradeOf(r.investmentScore) ? gradeOf(c.investmentScore) : `${gradeOf(c.investmentScore)} → ${gradeOf(r.investmentScore)}`}
+            </div>
+          </div>
           <div style={{ fontSize: 76, fontWeight: 800, marginTop: 44, letterSpacing: -2 }}>{fmtPrice(l.price)}</div>
           <div style={{ fontSize: 32, fontWeight: 600, marginTop: 6 }}>{l.address}</div>
           <div style={{ fontSize: 26, color: '#64748b', marginTop: 4 }}>{l.city}</div>
@@ -60,14 +66,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
               { label: 'Est. rent', value: `$${summary.consRent.toLocaleString()}/mo` },
               { label: 'Net yield', value: `${fmtYield(c.netCashYield).replace('%', '')}–${fmtYield(r.netCashYield)}` },
             ].map((s) => (
-              <div key={s.label} style={{ display: 'flex', flexDirection: 'column', background: '#f1f5f9', borderRadius: 16, padding: '14px 18px' }}>
+              <div key={s.label} style={{ display: 'flex', flexDirection: 'column', background: '#f1f5f9', borderRadius: 16, padding: '14px 20px', flex: 1 }}>
                 <div style={{ fontSize: 16, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</div>
                 <div style={{ fontSize: 28, fontWeight: 800, marginTop: 4, whiteSpace: 'nowrap' }}>{s.value}</div>
               </div>
             ))}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 16, padding: '0 20px', color: '#fff', fontSize: 30, fontWeight: 800, whiteSpace: 'nowrap', backgroundImage: `linear-gradient(90deg, ${gradeHex(c.investmentScore)}, ${gradeHex(r.investmentScore)})` }}>
-              {gradeOf(c.investmentScore) === gradeOf(r.investmentScore) ? gradeOf(c.investmentScore) : `${gradeOf(c.investmentScore)} → ${gradeOf(r.investmentScore)}`}
-            </div>
           </div>
         </div>
       </div>
