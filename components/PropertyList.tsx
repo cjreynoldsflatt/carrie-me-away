@@ -271,21 +271,28 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
       )}
 
       {selectMode && (
-        <div className="px-4 py-2 bg-red-50 border-b border-red-100 text-xs text-red-700 flex items-center justify-between">
-          <span>{selectedIds.length === 0 ? 'Tap cards or map pins to select · shift-drag on the map for an area' : `${selectedIds.length} selected`}</span>
-          <div className="flex items-center gap-3">
+        <div className="px-4 py-2.5 bg-red-50 border-b border-red-100 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-red-800 whitespace-nowrap">
+              {selectedIds.length === 0 ? 'Select to delete' : `${selectedIds.length} selected`}
+            </div>
+            <div className="text-[11px] text-red-600/80 leading-snug whitespace-nowrap" title="On the map, hold Shift and drag to select every pin in an area">Tap cards or map pins</div>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setSelectedIds(selectedIds.length === listings.length ? [] : listings.map((l) => l.id))}
-              className="text-red-600 hover:text-red-800"
+              className="text-xs font-medium px-2.5 py-1 rounded-md border border-red-200 bg-white text-red-700 hover:bg-red-100 whitespace-nowrap"
             >
               {selectedIds.length === listings.length ? 'Deselect all' : 'Select all'}
             </button>
-            {selectedIds.length > 0 && (
-              <button onClick={handleDeleteSelected} className="font-semibold text-red-700 hover:text-red-900">
-                Delete {selectedIds.length}
-              </button>
-            )}
-            <button onClick={toggleSelectMode} className="text-red-500 hover:text-red-700">
+            <button
+              onClick={handleDeleteSelected}
+              disabled={selectedIds.length === 0}
+              className="text-xs font-semibold px-2.5 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-40 disabled:hover:bg-red-600 whitespace-nowrap"
+            >
+              Delete{selectedIds.length > 0 ? ` ${selectedIds.length}` : ''}
+            </button>
+            <button onClick={toggleSelectMode} className="text-xs font-medium px-1.5 py-1 text-red-700 hover:text-red-900 whitespace-nowrap">
               Cancel
             </button>
           </div>
