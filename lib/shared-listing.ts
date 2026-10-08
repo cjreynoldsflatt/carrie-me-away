@@ -4,25 +4,12 @@
 import { supabase } from './supabase'
 import { rowToSaleListing, rowToRentalListing } from './db-mappers'
 import { applyRentComps } from './rent-comps'
-import { computeMetrics, computeConservativeRent, distanceMiles, realisticAssumptions, realisticRent } from './investment'
+import { computeConservativeRent, distanceMiles, realisticAssumptions, realisticRent } from './investment'
+import { scenarioMetrics as scenario } from './scenario'
 import { rowToAssumptions } from './settings'
 import { DEFAULT_ASSUMPTIONS } from './defaults'
-import type { GlobalAssumptions, SaleListing } from './types'
 
 const COMP_RADIUS_MILES = 3  // matches the widest radius used for estimates
-
-function scenario(l: SaleListing, a: GlobalAssumptions, rent: number) {
-  return computeMetrics({
-    price: l.price, hoaMonthly: l.hoaMonthly, estimatedRent: l.estimatedRent, conservativeRent: rent,
-    propertyTaxAnnual: l.cmaPropertyTaxAnnual, insuranceRate: a.insuranceRate, closingCostRate: a.closingCostRate,
-    repairs: l.repairs, superAnnualCost: l.superAnnualCost, vacancyRate: a.vacancyRate,
-    maintenanceRate: a.maintenanceRate, capExRate: a.capExRate, propertyManagementRate: a.propertyManagementRate,
-    tenancyYears: a.tenancyYears, turnoverCost: a.turnoverCost, pestControlMonthly: a.pestControlMonthly,
-    lawnCareMonthly: a.lawnCareMonthly, appreciationRate: l.appreciationRate ?? 0.03,
-    targetYieldOnCost: a.targetYieldOnCost, rentGrowthRate: a.rentGrowthRate, expenseInflationRate: a.expenseInflationRate,
-    rentalDemand: l.rentalDemand, rentConfidence: l.rentConfidence, rentalEvidence: l.rentalEvidence,
-  })
-}
 
 export async function loadSharedListing(id: string) {
   const [saleRes, rentalRes, settingsRes] = await Promise.all([

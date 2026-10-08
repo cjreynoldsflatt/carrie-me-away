@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
@@ -435,6 +435,16 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
           <ArrowLeft size={17} />
         </button>
         <div className="flex items-center gap-3.5">
+          <a
+            href={`/print/${encodeURIComponent(listing.id)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap"
+            title="Printable worksheet with a blank column for your own numbers and notes"
+          >
+            <Printer size={14} />
+            Print
+          </a>
           <button
             onClick={async () => {
               const { appPath } = await fetch(`/api/share-link?id=${encodeURIComponent(listing.id)}`).then((r) => r.json())
