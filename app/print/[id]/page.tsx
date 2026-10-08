@@ -16,6 +16,23 @@ import { fmtCurrency, fmtPrice, fmtYield } from '@/lib/format'
 const money = (n: number) => fmtCurrency(Math.round(n))
 const pct = (n: number) => `${(n * 100).toFixed(n * 100 < 10 ? 1 : 0)}%`
 
+// Appliances / systems to record on a walkthrough; blank rows follow for extras
+const APPLIANCES = [
+  'Furnace / air handler', 'AC / heat pump', 'Water heater', 'Roof', 'Electrical panel',
+  'Refrigerator', 'Range / oven', 'Microwave', 'Dishwasher', 'Garbage disposal',
+  'Washer', 'Dryer', 'Sump pump', 'Windows', 'Smoke / CO detectors',
+]
+
+// Title line for the extra pages, so loose sheets stay matched to the property
+function PageHeading({ title, address }: { title: string; address: string }) {
+  return (
+    <div className="flex items-end justify-between border-b-2 border-slate-800 pb-1 mb-2">
+      <h2 className="text-xs font-bold uppercase tracking-wide">{title}</h2>
+      <span className="text-[10px] text-slate-500">{address}</span>
+    </div>
+  )
+}
+
 // One worksheet row: label (+ note) | conservative | realistic | blank write-in box
 function Row({ label, note, cons, real, bold }: { label: string; note?: string; cons: string; real?: string; bold?: boolean }) {
   return (
@@ -221,9 +238,7 @@ export default function PrintWorksheetPage() {
               'HOA allows rentals? Any rental cap / waitlist?',
               'Actual annual tax bill (city vs county)',
               'Rental license / registration needed',
-              'Roof age',
-              'HVAC age',
-              'Water heater age',
+              'Appliances & systems recorded (appliance page)',
               'Lead paint (built before 1978?)',
               'Flood zone / insurance quote',
               'School assignments',
@@ -243,6 +258,43 @@ export default function PrintWorksheetPage() {
           <h2 className="text-xs font-bold uppercase tracking-wide border-b-2 border-slate-800 py-1 mb-1">7 · Notes</h2>
           {Array.from({ length: 14 }).map((_, i) => <div key={i} className="h-7 border-b border-slate-300" />)}
         </section>
+      </div>
+
+      {/* Page: appliances & systems inventory */}
+      <div className="mx-auto my-6 print:my-0 bg-white shadow print:shadow-none w-[8.5in] max-w-full p-[0.5in] print:p-0 text-slate-900 break-before-page">
+        <PageHeading title="8 · Appliances & systems" address={`${l.address}, ${l.city}`} />
+        <p className="text-[10px] text-slate-500 mb-2">
+          Serial numbers usually encode the manufacture year. Condition: G = good, F = fair, P = poor / replace soon.
+        </p>
+        <table className="w-full text-[10px] border-collapse">
+          <thead>
+            <tr className="border-b-2 border-slate-800 text-left text-[9px] uppercase text-slate-500">
+              <th className="py-1 pr-1 w-[1.5in] text-slate-900 text-[10px]">Item</th>
+              <th className="py-1 px-1 w-[0.85in]">Brand</th>
+              <th className="py-1 px-1 w-[0.95in]">Model #</th>
+              <th className="py-1 px-1 w-[1.1in]">Serial #</th>
+              <th className="py-1 px-1 w-[0.55in]">Year / age</th>
+              <th className="py-1 px-1 w-[0.55in] text-center">G / F / P</th>
+              <th className="py-1 pl-1">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...APPLIANCES, ...Array(6).fill('')].map((item, i) => (
+              <tr key={i} className="border-b border-slate-300 h-[0.4in]">
+                <td className="pr-1 font-medium leading-tight">{item}</td>
+                {Array.from({ length: 4 }).map((_, j) => <td key={j} className="px-1 border-l border-slate-200" />)}
+                <td className="px-1 border-l border-slate-200 text-center text-slate-400 tracking-widest">G F P</td>
+                <td className="pl-1 border-l border-slate-200" />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Page: more notes */}
+      <div className="mx-auto my-6 print:my-0 bg-white shadow print:shadow-none w-[8.5in] max-w-full p-[0.5in] print:p-0 text-slate-900 break-before-page">
+        <PageHeading title="9 · Notes (continued)" address={`${l.address}, ${l.city}`} />
+        {Array.from({ length: 30 }).map((_, i) => <div key={i} className="h-[0.31in] border-b border-slate-300" />)}
       </div>
     </div>
   )
