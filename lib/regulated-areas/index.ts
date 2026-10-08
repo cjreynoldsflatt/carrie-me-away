@@ -6,6 +6,7 @@ import frederickCity from './frederick-city.json'
 import howardCounty from './howard-county.json'
 import montgomeryCounty from './montgomery-county.json'
 import baltimoreCounty from './baltimore-county.json'
+import westminsterCity from './westminster-city.json'
 
 export interface RegulatedArea {
   id: string
@@ -29,6 +30,18 @@ export const REGULATED_AREAS: RegulatedArea[] = [
     ],
     url: 'https://www.cityoffrederickmd.gov/1588/Rental-Licensing-Ordinance',
     geometry: frederickCity as Polygon, // OSM relation 133229
+  },
+  {
+    id: 'westminster-city',
+    name: 'City of Westminster — Rental Housing License',
+    short: 'City of Westminster rental license',
+    summary: [
+      'Every rental unit needs a city rental housing license, renewed yearly',
+      'Lead inspection certificate required for each unit',
+      'About $20 per unit if renewed early; fees rise after July 1 (confirm with the city, 410-848-9000)',
+    ],
+    url: 'https://www.westminstermd.gov/DocumentCenter/View/206/Rental-Housing-Licensing-Application-Form',
+    geometry: westminsterCity as Polygon, // OSM relation 133570
   },
   {
     id: 'howard-county',
