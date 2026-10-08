@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef } from 'react'
-import Link from 'next/link'
-import { ChevronLeft, FileText, Search, X, ChevronRight } from 'lucide-react'
+import { FileText, Search, X, ChevronRight } from 'lucide-react'
+import AppMenu from '@/components/AppMenu'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { Document } from '@/lib/documents'
@@ -159,9 +159,7 @@ export default function DocumentsClient({ documents }: { documents: Document[] }
     <div className="h-screen flex flex-col print:h-auto print:overflow-visible">
       {/* ── Header ── */}
       <header className="bg-white border-b border-slate-200 px-5 py-3 flex flex-wrap items-center gap-3 shrink-0 print:hidden">
-        <Link href="/" className="text-slate-400 hover:text-slate-700 transition-colors shrink-0">
-          <ChevronLeft size={20} />
-        </Link>
+        <AppMenu />
 
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">

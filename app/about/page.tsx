@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronLeft, Heart } from 'lucide-react'
+import AppMenu from '@/components/AppMenu'
 
 export const metadata: Metadata = {
   title: 'About — CMA Investments',
@@ -12,9 +13,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3">
-        <Link href="/" className="text-slate-400 hover:text-slate-700 transition-colors">
-          <ChevronLeft size={20} />
-        </Link>
+        <AppMenu />
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center">
             <Heart size={15} className="text-rose-500" />
@@ -69,11 +68,11 @@ export default function AboutPage() {
         {/* Back CTA */}
         <div className="pt-4 border-t border-slate-200">
           <Link
-            href="/"
+            href="/finder"
             className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
           >
             <ChevronLeft size={16} />
-            Back to home
+            Back to Property Finder
           </Link>
         </div>
       </main>

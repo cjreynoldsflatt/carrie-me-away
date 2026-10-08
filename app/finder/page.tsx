@@ -4,12 +4,12 @@ import { useEffect, useState, Suspense } from 'react'
 import { Bookmark, ChevronLeft, Map } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import FilterPopover from '@/components/FilterPopover'
 import AddListingModal from '@/components/AddListingModal'
 import PropertyList from '@/components/PropertyList'
 import PropertyDetail from '@/components/PropertyDetail'
 import ComparePanel from '@/components/ComparePanel'
+import AppMenu from '@/components/AppMenu'
 import { useAppStore } from '@/lib/store'
 
 const MapView = dynamic(() => import('@/components/map/MapView'), {
@@ -66,10 +66,7 @@ function FinderContent() {
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Top bar */}
       <header className="min-h-14 shrink-0 bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3 z-10">
-        {/* Back to home */}
-        <Link href="/" className="shrink-0 text-slate-400 hover:text-slate-700 transition-colors">
-          <ChevronLeft size={20} />
-        </Link>
+        <AppMenu />
 
         {/* Title — click to reset to list view */}
         <button
