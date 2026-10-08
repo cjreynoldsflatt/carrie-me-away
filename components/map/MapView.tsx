@@ -74,8 +74,14 @@ function CenterOnSelected({ listings, selectedId }: { listings: SaleListing[]; s
 const gradeHex = (s: number) =>
   s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
 
-function makeIcon(listing: SaleListing, selected: boolean) {
-  // White bubble (price + yield range); header strip fades from the conservative to the realistic grade color
+// Compact yearly amount for pins, e.g. "$15.9K/yr"
+function fmtAnnualK(n: number) {
+  const k = Math.abs(n) / 1000
+  return `${n < 0 ? '−' : ''}$${k >= 100 ? Math.round(k) : k.toFixed(1)}K/yr`
+}
+
+function makeIcon(listing: SaleListing, selected: boolean, deleteSelected = false) {
+  // White bubble (price, conservative net income, yield range); header strip fades from the conservative to the realistic grade color
   // and reads "B+ → A" (single letter when both grades match)
   const consScore = listing.investmentScore
   const realScore = listing.realisticScore ?? consScore
@@ -88,13 +94,16 @@ function makeIcon(listing: SaleListing, selected: boolean) {
     ? `${fmtYield(listing.netCashYield)}–${fmtYield(listing.realisticNetCashYield)}`
     : fmtYield(listing.netCashYield)
 
-  const shadow = selected
-    ? '0 0 0 3px #facc15, 0 4px 16px rgba(0,0,0,.45)'
-    : '0 3px 10px rgba(0,0,0,.35)'
+  // Yellow ring = open in detail panel; red ring = picked for multi-delete
+  const shadow = deleteSelected
+    ? '0 0 0 3px #dc2626, 0 4px 16px rgba(0,0,0,.45)'
+    : selected
+      ? '0 0 0 3px #facc15, 0 4px 16px rgba(0,0,0,.45)'
+      : '0 3px 10px rgba(0,0,0,.35)'
 
   // Fixed-size box with content bottom-centered, so the pointer tip always sits on the
   // anchor no matter how wide the bubble's text is
-  const W = 160, H = 84
+  const W = 160, H = 100
   const html = `
     <div style="width:${W}px;height:${H}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none">
       <div style="
@@ -104,10 +113,11 @@ function makeIcon(listing: SaleListing, selected: boolean) {
         transform:${selected ? 'scale(1.15)' : 'scale(1)'};
         transform-origin:bottom center;letter-spacing:-0.3px;
       ">
-        <div style="background:linear-gradient(90deg, ${cons}, ${real});color:#fff;font-size:11px;font-weight:800;padding:2px 10px;text-shadow:0 1px 1px rgba(0,0,0,.25)">${grades}</div>
+        <div style="background:linear-gradient(90deg, ${cons}, ${real});color:#fff;font-size:11px;font-weight:800;padding:2px 10px;text-shadow:0 1px 1px rgba(0,0,0,.25)">${deleteSelected ? '✓ ' : ''}${grades}</div>
         <div style="padding:6px 12px 9px">
           <div style="font-size:13px;font-weight:800">${fmtPrice(listing.price)}</div>
-          <div style="font-weight:600;font-size:11px;margin-top:2px;color:#475569">${yieldText}</div>
+          <div style="font-weight:600;font-size:11px;margin-top:2px;color:${listing.netAnnualIncome >= 0 ? '#047857' : '#dc2626'}">${fmtAnnualK(listing.netAnnualIncome)}</div>
+          <div style="font-weight:600;font-size:11px;margin-top:1px;color:#475569">${yieldText}</div>
         </div>
       </div>
       <div style="
@@ -119,6 +129,50 @@ function makeIcon(listing: SaleListing, selected: boolean) {
     </div>`
 
   return L.divIcon({ html, className: '', iconAnchor: [W / 2, H], iconSize: [W, H] })
+}
+
+// ── Shift-drag box select (multi-delete mode) ───────────────────────────────
+// Replaces Leaflet's shift-drag box zoom while select mode is on; adds every pin inside the box.
+function BoxSelect({ listings, enabled, onSelect }: {
+  listings: SaleListing[]; enabled: boolean; onSelect: (ids: string[]) => void
+}) {
+  const map = useMap()
+  useEffect(() => {
+    if (!enabled) return
+    map.boxZoom.disable()
+    let start: L.LatLng | null = null
+    let rect: L.Rectangle | null = null
+    const onDown = (e: L.LeafletMouseEvent) => {
+      if (!e.originalEvent.shiftKey) return
+      start = e.latlng
+      map.dragging.disable()
+      rect = L.rectangle(L.latLngBounds(start, start), { color: '#dc2626', weight: 1.5, fillOpacity: 0.08, dashArray: '4 3' }).addTo(map)
+    }
+    const onMove = (e: L.LeafletMouseEvent) => {
+      if (start && rect) rect.setBounds(L.latLngBounds(start, e.latlng))
+    }
+    const onUp = () => {
+      if (!start || !rect) return
+      const bounds = rect.getBounds()
+      onSelect(listings.filter((l) => bounds.contains([l.lat, l.lng])).map((l) => l.id))
+      rect.remove()
+      rect = null
+      start = null
+      map.dragging.enable()
+    }
+    map.on('mousedown', onDown)
+    map.on('mousemove', onMove)
+    map.on('mouseup', onUp)
+    return () => {
+      map.off('mousedown', onDown)
+      map.off('mousemove', onMove)
+      map.off('mouseup', onUp)
+      rect?.remove()
+      map.dragging.enable()
+      map.boxZoom.enable()
+    }
+  }, [map, enabled, listings, onSelect])
+  return null
 }
 
 // ── Rent comp coverage overlay ───────────────────────────────────────────────
@@ -206,6 +260,10 @@ export default function MapView() {
 
   const assumptions = useAppStore((s) => s.assumptions)
   const showComps = useAppStore((s) => s.layers.rentComps ?? false)
+  const deleteSelectMode = useAppStore((s) => s.deleteSelectMode)
+  const deleteSelectedIds = useAppStore((s) => s.deleteSelectedIds)
+  const toggleDeleteSelect = useAppStore((s) => s.toggleDeleteSelect)
+  const addDeleteSelected = useAppStore((s) => s.addDeleteSelected)
   const setLayer = useAppStore((s) => s.setLayer)
 
   const listings = useMemo(
@@ -229,6 +287,7 @@ export default function MapView() {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
       <FitBounds listings={listings} />
+      <BoxSelect listings={listings} enabled={deleteSelectMode} onSelect={addDeleteSelected} />
       <CenterOnSelected listings={listings} selectedId={selectedId} />
       {showComps && <CompCoverage listings={listings} />}
       <Marker position={[HOME.lat, HOME.lng]} icon={homeIcon} zIndexOffset={1000} />
@@ -236,9 +295,11 @@ export default function MapView() {
         <Marker
           key={listing.id}
           position={[listing.lat, listing.lng]}
-          icon={makeIcon(listing, listing.id === selectedId)}
+          icon={makeIcon(listing, listing.id === selectedId, deleteSelectMode && deleteSelectedIds.includes(listing.id))}
           eventHandlers={{
-            click: () => setSelectedId(listing.id === selectedId ? null : listing.id),
+            click: () => deleteSelectMode
+              ? toggleDeleteSelect(listing.id)
+              : setSelectedId(listing.id === selectedId ? null : listing.id),
           }}
         />
       ))}

@@ -71,8 +71,11 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   const toggleGradeFilter = useAppStore((s) => s.toggleGradeFilter)
   const deleteListings = useAppStore((s) => s.deleteListings)
 
-  const [selectMode, setSelectMode] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const selectMode = useAppStore((s) => s.deleteSelectMode)
+  const selectedIds = useAppStore((s) => s.deleteSelectedIds)
+  const setDeleteSelectMode = useAppStore((s) => s.setDeleteSelectMode)
+  const setSelectedIds = useAppStore((s) => s.setDeleteSelectedIds)
+  const toggleSelectId = useAppStore((s) => s.toggleDeleteSelect)
 
   const [statusChecking, setStatusChecking] = useState(false)
   const [statusResults, setStatusResults] = useState<StatusResult[] | null>(null)
@@ -83,27 +86,14 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
   }, [statusResults])
 
   function toggleSelectMode() {
-    if (selectMode) {
-      setSelectMode(false)
-      setSelectedIds([])
-    } else {
-      setSelectMode(true)
-      setCompareMode(false)
-    }
-  }
-
-  function toggleSelectId(id: string) {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    )
+    setDeleteSelectMode(!selectMode)
   }
 
   async function handleDeleteSelected() {
     if (selectedIds.length === 0) return
     if (!confirm(`Delete ${selectedIds.length} propert${selectedIds.length === 1 ? 'y' : 'ies'}? This cannot be undone.`)) return
     await deleteListings(selectedIds)
-    setSelectedIds([])
-    setSelectMode(false)
+    setDeleteSelectMode(false)
   }
 
   async function handleCheckStatus() {
@@ -284,7 +274,7 @@ export default function PropertyList({ onOpenMap }: { onOpenMap?: () => void }) 
 
       {selectMode && (
         <div className="px-4 py-2 bg-red-50 border-b border-red-100 text-xs text-red-700 flex items-center justify-between">
-          <span>{selectedIds.length === 0 ? 'Tap to select' : `${selectedIds.length} selected`}</span>
+          <span>{selectedIds.length === 0 ? 'Tap cards or map pins to select · shift-drag on the map for an area' : `${selectedIds.length} selected`}</span>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSelectedIds(selectedIds.length === listings.length ? [] : listings.map((l) => l.id))}

@@ -52,6 +52,14 @@ interface AppState {
   setCompareMode: (on: boolean) => void
   toggleCompare: (id: string) => void
 
+  // Multi-delete select mode — shared so both the list and map pins can select
+  deleteSelectMode: boolean
+  deleteSelectedIds: string[]
+  setDeleteSelectMode: (on: boolean) => void
+  toggleDeleteSelect: (id: string) => void
+  addDeleteSelected: (ids: string[]) => void
+  setDeleteSelectedIds: (ids: string[]) => void
+
   // Grade filter
   gradeFilter: string[]
   setGradeFilter: (grades: string[]) => void
@@ -225,6 +233,20 @@ export const useAppStore = create<AppState>()(
           scheduleSaveSettings(assumptions)
           return { assumptions }
         }),
+
+      deleteSelectMode: false,
+      deleteSelectedIds: [],
+      setDeleteSelectMode: (on) =>
+        set(on ? { deleteSelectMode: true, compareMode: false, compareIds: [] } : { deleteSelectMode: false, deleteSelectedIds: [] }),
+      toggleDeleteSelect: (id) =>
+        set((state) => ({
+          deleteSelectedIds: state.deleteSelectedIds.includes(id)
+            ? state.deleteSelectedIds.filter((i) => i !== id)
+            : [...state.deleteSelectedIds, id],
+        })),
+      addDeleteSelected: (ids) =>
+        set((state) => ({ deleteSelectedIds: [...new Set([...state.deleteSelectedIds, ...ids])] })),
+      setDeleteSelectedIds: (ids) => set({ deleteSelectedIds: ids }),
 
       compareMode: false,
       compareIds: [],
