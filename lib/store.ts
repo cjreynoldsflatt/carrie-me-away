@@ -96,6 +96,8 @@ interface AppState {
   // Computed selectors
   computedSaleListings: () => SaleListing[]
   filteredSaleListings: () => SaleListing[]
+  // Realtor Version: no filter controls, so the owner's search filters don't apply
+  ignoreSearchFilters: boolean
   filteredRentalListings: () => RentalListing[]
   sortedSaleListings: () => SaleListing[]
 }
@@ -303,7 +305,7 @@ export const useAppStore = create<AppState>()(
       isLoading: false,
 
       initializeReadOnly: async (key) => {
-        set({ isLoading: true })
+        set({ isLoading: true, ignoreSearchFilters: true })
         try {
           const data = await fetch(`/api/realtor/${key}`).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
           set({
@@ -427,8 +429,11 @@ export const useAppStore = create<AppState>()(
         })
       },
 
+      ignoreSearchFilters: false,
+
       filteredSaleListings: () => {
-        const { search } = get()
+        const { search, ignoreSearchFilters } = get()
+        if (ignoreSearchFilters) return get().computedSaleListings()
         return get()
           .computedSaleListings()
           .filter((l) => (

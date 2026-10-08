@@ -195,7 +195,7 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
             <Activity size={14} />
           </button>
           )}
-          <FilterPopover />
+          {!readOnly && <FilterPopover />}
           {!readOnly && <AddListingModal />}
           {!readOnly && <AssumptionsPopover />}
         </div>

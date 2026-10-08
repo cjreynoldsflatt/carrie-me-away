@@ -99,7 +99,7 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
 
         {/* Desktop tools */}
         <div className="ml-auto hidden md:flex items-center gap-3 shrink-0">
-          <FilterPopover />
+          {!readOnly && <FilterPopover />}
           {!readOnly && <AddListingModal />}
           {!readOnly && <a
             href="/bookmarklet"
