@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, rentalRedfinUrl } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
-import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST } from '@/lib/investment'
+import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -281,7 +281,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const owner = shareMode ? 'investor' : 'CMA'
 
   // Operating reserve — CMA funds $20k reserve per property at acquisition
-  const PROPERTY_RESERVE = 20_000
+  const PROPERTY_RESERVE = OPERATING_RESERVE
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
   // Maximum Purchase Price — other costs (permits/legal/contingency); target yield lives in global assumptions
   const [otherCostsInput, setOtherCostsInput] = useState(0)
@@ -413,7 +413,6 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
       price,
       closing: Math.round(Math.max(price, 0) * assumptions.closingCostRate),
       yieldAtAsking: totalCashRequired > 0 ? noi / totalCashRequired : 0,
-      capRate: listing.price > 0 ? noi / listing.price : 0,
     }
   }
   const mppCons = mpp(metrics.netAnnualIncome)
@@ -547,7 +546,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                 ) : null}
                 <span>{listing.beds} bed{isMultiFamily ? '/unit' : ''}</span>
                 <span>{listing.baths} bath{isMultiFamily ? '/unit' : ''}</span>
-                <span>{listing.sqft.toLocaleString()} sqft</span>
+                {listing.sqft > 0 && <span>{listing.sqft.toLocaleString()} sqft</span>}
                 {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -1239,12 +1238,12 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
 
           {/* ── Net cash yield — conservative vs realistic ─────── */}
           {(() => {
-            const consYield = totalCashRequired > 0 ? metrics.netAnnualIncome / totalCashRequired : 0
+            const consYield = metrics.netCashYield
             const realCashRequired = realisticMetrics.totalCashInvested + PROPERTY_RESERVE
             const realYield = realCashRequired > 0 ? realisticMetrics.netAnnualIncome / realCashRequired : 0
             // Line-by-line differences between the two scenarios (only rows that actually differ)
             const diffs: { label: string; detail: string; amount: number }[] = [
-              { label: 'Rent', detail: `${fmtRent(effectiveRentInput)} → ${fmtRent(realisticRentValue)}/mo${listing.rentSource === 'comps' ? ' (comp median)' : ''}`,
+              { label: 'Rent', detail: `${fmtRent(effectiveRentInput)} → ${fmtRent(realisticRentValue)}${listing.rentSource === 'comps' ? ' (comp median)' : ''}`,
                 amount: realisticMetrics.grossAnnualRent - metrics.grossAnnualRent },
               { label: 'Vacancy', detail: 'same rate, on the rent above',
                 amount: metrics.vacancyReserve - realisticMetrics.vacancyReserve },
@@ -1440,9 +1439,6 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                 <div className="text-right tabular-nums font-bold text-emerald-700">{mppCons.price > 0 ? fmtCurrency(mppCons.price) : '—'}</div>
                 <div className="text-right tabular-nums font-bold text-cyan-700">{mppReal.price > 0 ? fmtCurrency(mppReal.price) : '—'}</div>
 
-                <div className="text-slate-600 pt-1">Market cap rate <span className="text-xs text-slate-400">NOI ÷ asking</span></div>
-                <div className="text-right tabular-nums text-slate-700 pt-1">{fmtYield(mppCons.capRate)}</div>
-                <div className="text-right tabular-nums text-slate-700 pt-1">{fmtYield(mppReal.capRate)}</div>
               </div>
             </div>
           </Section>

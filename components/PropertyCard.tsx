@@ -256,7 +256,7 @@ export default function PropertyCard({ listing, selected, onClick, compareMode =
         <div className="flex gap-3 text-sm text-slate-500">
           <span>{listing.beds}bd</span>
           <span>{listing.baths}ba</span>
-          <span>{listing.sqft.toLocaleString()} sqft</span>
+          {listing.sqft > 0 && <span>{listing.sqft.toLocaleString()} sqft</span>}
           {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
           <span>{listing.hoaMonthly > 0 ? `HOA ${fmtCurrency(listing.hoaMonthly)}/mo` : 'No HOA'}</span>
         </div>

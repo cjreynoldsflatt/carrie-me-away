@@ -1,6 +1,9 @@
 import type { RentalDemand, RentalEvidence, RentConfidence } from './types'
 
 export const LLC_ANNUAL_COST = 300  // CMA Investments LLC fixed annual fee
+// Day 1 operating reserve funded at acquisition. Counted in the cash basis for every yield,
+// payback and grade so all percentages in the app divide by the same total cash.
+export const OPERATING_RESERVE = 20_000
 
 // Returns the rent used for grading — the low end of the HUD range.
 // When the user has manually set rent (High confidence) we trust their value directly.
@@ -113,8 +116,10 @@ export function computeMetrics(listing: RawListing) {
     lawnCareAnnual -
     superAnnual -
     LLC_ANNUAL_COST
-  const netCashYield = totalCashInvested > 0 ? netAnnualIncome / totalCashInvested : 0
-  const paybackYears = netAnnualIncome > 0 ? totalCashInvested / netAnnualIncome : Infinity
+  // Yield basis = all cash committed: price + closing + repairs + operating reserve
+  const cashBasis = totalCashInvested + OPERATING_RESERVE
+  const netCashYield = cashBasis > 0 ? netAnnualIncome / cashBasis : 0
+  const paybackYears = netAnnualIncome > 0 ? cashBasis / netAnnualIncome : Infinity
 
   // ── 5-year year-by-year model ───────────────────────────────────────────
   const varExpRate = (listing.vacancyRate ?? 0.05) + (listing.maintenanceRate ?? 0.05) +
@@ -132,7 +137,7 @@ export function computeMetrics(listing: RawListing) {
   const investmentScore = computeScore({
     netCashYield,
     netAnnualIncome,
-    totalCashInvested,
+    totalCashInvested: cashBasis,
     price: listing.price,
     closingCostRate: listing.closingCostRate,
     repairs: listing.repairs,
