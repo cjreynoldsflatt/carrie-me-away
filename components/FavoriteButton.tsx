@@ -20,7 +20,7 @@ export default function FavoriteButton({ id, isFavorite, size = 18, className, r
   return (
     <button
       onClick={(e) => { e.stopPropagation(); toggleFavorite(id) }}
-      className={cn('rounded-lg flex items-center justify-center transition-colors', isFavorite ? 'text-amber-400 hover:text-amber-500' : 'text-slate-300 hover:text-amber-400', className)}
+      className={cn('rounded-lg flex items-center justify-center transition-colors', isFavorite ? 'text-amber-400 hover:text-amber-500' : 'text-slate-500 hover:text-amber-400', className)}
       title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       aria-pressed={!!isFavorite}
