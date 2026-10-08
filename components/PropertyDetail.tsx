@@ -283,8 +283,6 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   // Operating reserve — CMA funds $20k reserve per property at acquisition
   const PROPERTY_RESERVE = OPERATING_RESERVE
   const [currentReserveInput, setCurrentReserveInput] = useState(PROPERTY_RESERVE)
-  // Maximum Purchase Price — other costs (permits/legal/contingency); target yield lives in global assumptions
-  const [otherCostsInput, setOtherCostsInput] = useState(0)
 
   useEffect(() => {
     const dbRent = listing?.estimatedRent ?? 0
@@ -302,7 +300,6 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     setSuperCostInput(dbSuper)
     setSuperBeforeDisable(dbSuper > 0 ? dbSuper : 1449)
     setOpenGear(null)
-    setOtherCostsInput(0)
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
       setUnitRents(Array(dbUnits).fill(perUnit))
@@ -404,9 +401,9 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const targetYieldOnCost = assumptions.targetYieldOnCost ?? 0.05
   const mpp = (noi: number) => {
     const maxTotal = targetYieldOnCost > 0 && noi > 0 ? Math.round(noi / targetYieldOnCost) : 0
-    // price * (1 + closing) + repairs + other + reserve = maxTotal
+    // price * (1 + closing) + repairs + reserve = maxTotal
     const price = maxTotal > 0
-      ? Math.round((maxTotal - repairsInput - otherCostsInput - PROPERTY_RESERVE) / (1 + assumptions.closingCostRate)) : 0
+      ? Math.round((maxTotal - repairsInput - PROPERTY_RESERVE) / (1 + assumptions.closingCostRate)) : 0
     return {
       noi,
       maxTotal,
@@ -1411,23 +1408,6 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                 <div className="text-slate-500">− Repairs / rehab</div>
                 <div className="text-right tabular-nums text-slate-500">{fmtCurrency(repairsInput)}</div>
                 <div className="text-right tabular-nums text-slate-500">{fmtCurrency(repairsInput)}</div>
-
-                <div className="text-slate-500 flex items-center gap-2">
-                  − Permits, legal, contingency
-                  <span className="flex items-center gap-0.5">
-                    <span className="text-xs text-slate-400">$</span>
-                    <input
-                      type="number"
-                      min={0}
-                      step={1000}
-                      value={otherCostsInput}
-                      onChange={(e) => setOtherCostsInput(Math.max(0, Number(e.target.value)))}
-                      className="w-20 text-xs text-right tabular-nums border border-slate-200 rounded-md px-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    />
-                  </span>
-                </div>
-                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(otherCostsInput)}</div>
-                <div className="text-right tabular-nums text-slate-500">{fmtCurrency(otherCostsInput)}</div>
 
                 <div className="text-slate-500">− Day 1 operating reserve</div>
                 <div className="text-right tabular-nums text-slate-500">{fmtCurrency(PROPERTY_RESERVE)}</div>
