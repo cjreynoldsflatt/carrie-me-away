@@ -2259,7 +2259,7 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
             </div>
           )}
           {listing.rentSource === 'comps' && usedCount < 5 && (
-            <div className="text-xs text-amber-600">Only {usedCount} comps — save more rentals nearby for a firmer estimate.</div>
+            <div className="text-xs text-slate-500">Based on {usedCount} comps — usable, but more nearby rentals would firm it up.</div>
           )}
         </div>
       </div>

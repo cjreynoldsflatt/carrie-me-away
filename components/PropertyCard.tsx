@@ -378,7 +378,7 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
                   </button>
                 </>
               ) : listing.rentSource === 'comps' ? (
-                <span>{listing.rentCompCount} comps · realistic {fmtRent(listing.realisticRent ?? listing.estimatedRent)}</span>
+                <span>{listing.rentCompCount} comps{(listing.rentCompCount ?? 0) < 5 ? ' · thin' : ''} · realistic {fmtRent(listing.realisticRent ?? listing.estimatedRent)}</span>
               ) : listing.rentLow > 0 ? (
                 <span>HUD estimate · no comps nearby</span>
               ) : listing.rentConfidence === 'High' ? (

@@ -3,7 +3,7 @@
 import type { SaleListing } from './types'
 
 export interface DataGap {
-  key: 'no-comps' | 'thin-comps' | 'details'
+  key: 'no-comps' | 'details'
   label: string          // short chip text
   detail: string         // one-line explanation
   href: string           // Redfin page to open
@@ -11,7 +11,7 @@ export interface DataGap {
   button: string         // short button label naming the page it opens
 }
 
-const THIN_COMPS = 5
+// 3–4 comps is usable (shown as a quiet 'thin' note on the card); only the HUD fallback (<3) needs action
 const REDFIN_TYPE: Record<string, string> = { Townhouse: 'townhouse', 'Single Family': 'house', Condo: 'condo' }
 
 /** Redfin rentals search for the listing's ZIP and property type (where comps come from). */
@@ -34,15 +34,6 @@ export function dataGaps(l: SaleListing): DataGap[] {
         key: 'no-comps',
         label: 'No rent comps',
         detail: `Rent is a HUD estimate — save ${l.beds}-bed ${l.propertyType.toLowerCase()} rentals in ${zip} to replace it.`,
-        href: rentals,
-        action: `Open ${zip} rentals on Redfin, then click the bookmarklet`,
-        button: `${zip} rentals search`,
-      })
-    } else if ((l.rentCompCount ?? 0) < THIN_COMPS) {
-      gaps.push({
-        key: 'thin-comps',
-        label: `Only ${l.rentCompCount} comps`,
-        detail: `Rent rests on ${l.rentCompCount} comps — more nearby rentals make it firmer.`,
         href: rentals,
         action: `Open ${zip} rentals on Redfin, then click the bookmarklet`,
         button: `${zip} rentals search`,
