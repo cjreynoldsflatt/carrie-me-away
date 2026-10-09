@@ -62,6 +62,9 @@ interface AppState {
   favoritesOnly: boolean
   // Show only listings with data gaps (no/thin comps, missing details)
   needsDataOnly: boolean
+  // Unsaved what-if rent from the open detail panel (Low/Moderate/High/custom) — pins and cards follow it
+  whatIfRent: { id: string; rent: number } | null
+  setWhatIfRent: (v: { id: string; rent: number } | null) => void
   setNeedsDataOnly: (on: boolean) => void
   setFavoritesOnly: (on: boolean) => void
   toggleGradeFilter: (grade: string) => void
@@ -298,6 +301,12 @@ export const useAppStore = create<AppState>()(
       setGradeFilter: (grades) => set({ gradeFilter: grades }),
       favoritesOnly: false,
       needsDataOnly: false,
+      whatIfRent: null,
+      setWhatIfRent: (v) => {
+        const cur = get().whatIfRent
+        if (cur?.id === v?.id && cur?.rent === v?.rent) return
+        set({ whatIfRent: v })
+      },
       setNeedsDataOnly: (on) => set({ needsDataOnly: on }),
       setFavoritesOnly: (on) => set({ favoritesOnly: on }),
       toggleGradeFilter: (grade) =>
@@ -381,10 +390,13 @@ export const useAppStore = create<AppState>()(
 
       // Re-runs computeMetrics with current assumptions (live recalc)
       computedSaleListings: () => {
-        const { assumptions, saleListings } = get()
+        const { assumptions, saleListings, whatIfRent } = get()
         return saleListings.map((l) => {
-          // Recompute conservativeRent here so it stays current with any rent edits
-          const conservativeRent = computeConservativeRent(l.estimatedRent, l.rentLow, l.rentHigh, l.rentConfidence)
+          // Recompute conservativeRent here so it stays current with any rent edits; an unsaved
+          // what-if rent from the open detail panel replaces it for that one listing
+          const conservativeRent = whatIfRent?.id === l.id
+            ? whatIfRent.rent
+            : computeConservativeRent(l.estimatedRent, l.rentLow, l.rentHigh, l.rentConfidence)
           const metricsFor = (a: typeof assumptions, rent: number) => computeMetrics({
             price: l.price,
             hoaMonthly: l.hoaMonthly,

@@ -300,6 +300,7 @@ export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
   const search = useAppStore((s) => s.search)
   const gradeFilter = useAppStore((s) => s.gradeFilter)
   const favoritesOnly = useAppStore((s) => s.favoritesOnly)
+  const whatIfRent = useAppStore((s) => s.whatIfRent)
   const needsDataOnly = useAppStore((s) => s.needsDataOnly && !readOnly)
 
   const assumptions = useAppStore((s) => s.assumptions)
@@ -319,7 +320,7 @@ export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
         .filter((l) => !needsDataOnly || dataGaps(l).length > 0)
         .filter((l) => gradeFilter.length === 0 || gradeFilter.includes(gradePairKey(l)))
     },
-    [rawSale, search, sortedSaleListings, assumptions, gradeFilter, favoritesOnly, needsDataOnly], // eslint-disable-line
+    [rawSale, search, sortedSaleListings, assumptions, gradeFilter, favoritesOnly, needsDataOnly, whatIfRent], // eslint-disable-line
   )
 
   return (

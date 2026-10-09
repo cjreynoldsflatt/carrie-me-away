@@ -385,6 +385,16 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     ? unitRents.reduce((s, r) => s + r, 0)
     : rentInput
 
+  // Mirror an unsaved rent choice (Low/Moderate/High/custom) onto the map pin and card; the
+  // default (Low / conservative) needs no override. Cleared when leaving the listing.
+  const setWhatIfRent = useAppStore((s) => s.setWhatIfRent)
+  const defaultRent = listing ? computeConservativeRent(listing.estimatedRent, listing.rentLow, listing.rentHigh, listing.rentConfidence) : 0
+  useEffect(() => {
+    if (!listing) return
+    setWhatIfRent(effectiveRentInput > 0 && effectiveRentInput !== defaultRent ? { id: listing.id, rent: effectiveRentInput } : null)
+  }, [listing?.id, effectiveRentInput, defaultRent]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => setWhatIfRent(null), [listing?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!listing) return null
 
   const vesting = getVestingStatus()

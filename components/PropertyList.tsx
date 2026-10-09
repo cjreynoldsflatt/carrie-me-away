@@ -117,7 +117,8 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
     setStatusResults(null)
   }
 
-  const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
+  const whatIfRent = useAppStore((s) => s.whatIfRent)
+  const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy, whatIfRent]) // eslint-disable-line
 
   const favoritesOnly = useAppStore((s) => s.favoritesOnly)
   const needsDataOnly = useAppStore((s) => s.needsDataOnly && !readOnly)
