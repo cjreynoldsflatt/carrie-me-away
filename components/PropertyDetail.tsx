@@ -243,7 +243,7 @@ function DetailActionsMenu({ listingId, onDelete }: { listingId: string; onDelet
           </button>
           <button onClick={() => copy('share')} className={cn(item, 'text-slate-700')} title="Realtor Version opened on this property — no CMA-I details, no login needed">
             {copied === 'share' ? <Check size={15} className="text-emerald-600" /> : <Share2 size={15} className="text-slate-400" />}
-            {copied === 'share' ? 'Copied' : 'Share externally'}
+            {copied === 'share' ? 'Copied' : 'Share with realtor'}
           </button>
           <div className="my-1 border-t border-slate-100" />
           <button onClick={() => { setOpen(false); if (confirm('Delete this listing?')) onDelete() }} className={cn(item, 'text-red-600 hover:bg-red-50')}>

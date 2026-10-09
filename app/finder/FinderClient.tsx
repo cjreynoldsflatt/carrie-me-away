@@ -9,6 +9,7 @@ import AddListingModal from '@/components/AddListingModal'
 import PropertyList from '@/components/PropertyList'
 import PropertyDetail from '@/components/PropertyDetail'
 import AppMenu from '@/components/AppMenu'
+import RealtorLinkButton from '@/components/RealtorLinkButton'
 import { useAppStore } from '@/lib/store'
 
 const MapView = dynamic(() => import('@/components/map/MapView'), {
@@ -124,6 +125,7 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
             <Bookmark size={13} />
             Bookmarklet
           </a>}
+          {!readOnly && <RealtorLinkButton />}
         </div>
       </header>
 

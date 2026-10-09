@@ -67,8 +67,9 @@ export default function AppMenu() {
               </Link>
             )
           })}
+          <div className="md:hidden">
           <div className="my-1.5 border-t border-slate-100" />
-          {/* Public, view-only version of the finder for realtors (no CMA-I details, no editing) */}
+          {/* Phones only — on desktop it sits in the header next to Bookmarklet. Public, view-only version of the finder for realtors (no CMA-I details, no editing) */}
           <button
             onClick={async () => {
               const { path } = await fetch('/api/realtor-link').then((r) => r.json())
@@ -83,6 +84,7 @@ export default function AppMenu() {
             </span>
             {copied ? 'Copied realtor link' : 'Copy realtor link'}
           </button>
+          </div>
         </div>
       )}
     </div>
