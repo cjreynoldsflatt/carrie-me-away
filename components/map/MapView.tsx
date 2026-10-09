@@ -11,6 +11,7 @@ import type { SaleListing } from '@/lib/types'
 import { MIN_COMPS, MAX_COMP_AGE_DAYS, isFreshComp, rentalRedfinUrl } from '@/lib/rent-comps'
 import { REGULATED_AREAS } from '@/lib/regulated-areas'
 import { gradePairKey } from '@/lib/grades'
+import { dataGaps } from '@/lib/data-gaps'
 
 // ── Home marker ───────────────────────────────────────────────────────────────
 const homeIcon = L.divIcon({
@@ -299,6 +300,7 @@ export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
   const search = useAppStore((s) => s.search)
   const gradeFilter = useAppStore((s) => s.gradeFilter)
   const favoritesOnly = useAppStore((s) => s.favoritesOnly)
+  const needsDataOnly = useAppStore((s) => s.needsDataOnly && !readOnly)
 
   const assumptions = useAppStore((s) => s.assumptions)
   const showComps = useAppStore((s) => s.layers.rentComps ?? false)
@@ -314,9 +316,10 @@ export default function MapView({ readOnly = false }: { readOnly?: boolean }) {
       const all = sortedSaleListings()
       return all
         .filter((l) => !favoritesOnly || l.isFavorite)
+        .filter((l) => !needsDataOnly || dataGaps(l).length > 0)
         .filter((l) => gradeFilter.length === 0 || gradeFilter.includes(gradePairKey(l)))
     },
-    [rawSale, search, sortedSaleListings, assumptions, gradeFilter, favoritesOnly], // eslint-disable-line
+    [rawSale, search, sortedSaleListings, assumptions, gradeFilter, favoritesOnly, needsDataOnly], // eslint-disable-line
   )
 
   return (

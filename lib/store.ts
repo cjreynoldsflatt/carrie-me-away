@@ -60,6 +60,9 @@ interface AppState {
   setGradeFilter: (grades: string[]) => void
   // Show only starred listings (list + map)
   favoritesOnly: boolean
+  // Show only listings with data gaps (no/thin comps, missing details)
+  needsDataOnly: boolean
+  setNeedsDataOnly: (on: boolean) => void
   setFavoritesOnly: (on: boolean) => void
   toggleGradeFilter: (grade: string) => void
 
@@ -294,6 +297,8 @@ export const useAppStore = create<AppState>()(
       gradeFilter: [],
       setGradeFilter: (grades) => set({ gradeFilter: grades }),
       favoritesOnly: false,
+      needsDataOnly: false,
+      setNeedsDataOnly: (on) => set({ needsDataOnly: on }),
       setFavoritesOnly: (on) => set({ favoritesOnly: on }),
       toggleGradeFilter: (grade) =>
         set((state) => ({

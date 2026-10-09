@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { MapPin, Trash2, Activity, X, ChevronDown, Star } from 'lucide-react'
+import { MapPin, Trash2, Activity, X, ChevronDown, Star, AlertTriangle } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
@@ -10,6 +10,7 @@ import FilterPopover from './FilterPopover'
 import AddListingModal from './AddListingModal'
 import { cn } from '@/lib/utils'
 import { GRADE_HEX, gradePairKey, compareGradePairs, type Grade } from '@/lib/grades'
+import { dataGaps } from '@/lib/data-gaps'
 import type { SaleListing } from '@/lib/types'
 import type { StatusResult, ListingStatus } from '@/app/api/check-listing-status/route'
 
@@ -119,13 +120,17 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
   const allListings = useMemo(() => sortedSaleListings(), [rawSale, sortedSaleListings, assumptions, sortBy]) // eslint-disable-line
 
   const favoritesOnly = useAppStore((s) => s.favoritesOnly)
+  const needsDataOnly = useAppStore((s) => s.needsDataOnly && !readOnly)
+  const setNeedsDataOnly = useAppStore((s) => s.setNeedsDataOnly)
+  const needsDataCount = useMemo(() => readOnly ? 0 : allListings.filter((l) => dataGaps(l).length > 0).length, [allListings, readOnly])
   const setFavoritesOnly = useAppStore((s) => s.setFavoritesOnly)
   const favoriteCount = useMemo(() => allListings.filter((l) => l.isFavorite).length, [allListings])
   const listings = useMemo(
     () => allListings
       .filter((l) => !favoritesOnly || l.isFavorite)
+      .filter((l) => !needsDataOnly || dataGaps(l).length > 0)
       .filter((l) => gradeFilter.length === 0 || gradeFilter.includes(gradePairKey(l))),
-    [allListings, gradeFilter, favoritesOnly],
+    [allListings, gradeFilter, favoritesOnly, needsDataOnly],
   )
 
   // One pill per conservative → realistic grade pair present, counted across ALL listings
@@ -146,7 +151,8 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
     if (!allLoaded) return
     if (staleGrades.length > 0) setGradeFilter(gradeFilter.filter((k) => !staleGrades.includes(k)))
     if (favoritesOnly && favoriteCount === 0) setFavoritesOnly(false)
-  }, [allLoaded, staleGrades.join('|'), favoritesOnly, favoriteCount]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (needsDataOnly && needsDataCount === 0) setNeedsDataOnly(false)
+  }, [allLoaded, staleGrades.join('|'), favoritesOnly, favoriteCount, needsDataOnly, needsDataCount]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col h-full flex-1 min-h-0">
@@ -328,6 +334,20 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
+        {!readOnly && needsDataCount > 0 && (
+          <button
+            onClick={() => setNeedsDataOnly(!needsDataOnly)}
+            className={cn(
+              'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors whitespace-nowrap',
+              needsDataOnly ? 'bg-amber-500 text-white border-amber-500' : 'border-amber-200 text-amber-800 bg-amber-50 hover:border-amber-300',
+            )}
+            title="Properties that need rent comps or listing details — collect them with the bookmarklet"
+          >
+            <AlertTriangle size={12} />
+            Needs data
+            <span className={cn('text-[10px]', needsDataOnly ? 'opacity-80' : 'text-amber-600')}>{needsDataCount}</span>
+          </button>
+        )}
         {favoriteCount > 0 && (
           <button
             onClick={() => setFavoritesOnly(!favoritesOnly)}
@@ -343,10 +363,10 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
           </button>
         )}
         <button
-          onClick={() => { setGradeFilter([]); setFavoritesOnly(false); setSortBy('best') }}
+          onClick={() => { setGradeFilter([]); setFavoritesOnly(false); setNeedsDataOnly(false); setSortBy('best') }}
           className={cn(
             'shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors',
-            gradeFilter.length === 0 && !favoritesOnly
+            gradeFilter.length === 0 && !favoritesOnly && !needsDataOnly
               ? 'bg-slate-800 text-white border-slate-800'
               : 'border-slate-200 text-slate-500 hover:border-slate-300',
           )}

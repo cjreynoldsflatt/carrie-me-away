@@ -2,9 +2,10 @@
 
 import Image from 'next/image'
 import { useState, useRef } from 'react'
-import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText } from 'lucide-react'
+import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText, AlertTriangle } from 'lucide-react'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import FavoriteButton from './FavoriteButton'
+import { dataGaps } from '@/lib/data-gaps'
 import { crimeMapUrl, crimeGradeUrl, hoaSearchUrl } from '@/lib/links'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
@@ -270,6 +271,25 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
           {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
           <span>{listing.hoaMonthly > 0 ? `HOA ${fmtCurrency(listing.hoaMonthly)}/mo` : 'No HOA'}</span>
         </div>
+
+        {/* Data gaps — what to collect with the bookmarklet (owner view only) */}
+        {!readOnly && dataGaps(listing).length > 0 && (
+          <div className="rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1.5 flex flex-wrap items-center gap-x-2 gap-y-1" onClick={(e) => e.stopPropagation()}>
+            <span className="text-xs font-semibold text-amber-800 flex items-center gap-1"><AlertTriangle size={12} />Needs data</span>
+            {dataGaps(listing).map((g) => (
+              <a
+                key={g.key}
+                href={g.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`${g.detail} ${g.action}.`}
+                className="text-xs font-medium text-amber-900 bg-white border border-amber-200 rounded-full px-2 py-0.5 hover:bg-amber-100 flex items-center gap-1"
+              >
+                {g.label}<ExternalLink size={10} />
+              </a>
+            ))}
+          </div>
+        )}
 
         {/* Extra rental licensing/registration where this property sits */}
         {regulatedAreasAt(listing.lat, listing.lng).map((area) => (

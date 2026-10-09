@@ -1,13 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
+import { dataGaps } from '@/lib/data-gaps'
 import { crimeMapUrl, crimeGradeUrl, hoaSearchUrl } from '@/lib/links'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
@@ -755,7 +756,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                     }
                   }}
                   disabled={regeocodeBusy}
-                  className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 hover:underline disabled:opacity-40"
+                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline disabled:opacity-40"
                 >
                   <MapPin size={13} />
                   {regeocodeBusy ? 'Locating…' : 'Fix location'}
@@ -764,6 +765,33 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
               </div>
             </div>
           </div>
+
+          {/* ── Data gaps: what to collect before trusting the numbers (owner view) ── */}
+          {!shareMode && dataGaps(listing).length > 0 && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-2.5">
+              <div className="flex items-center gap-1.5 text-sm font-semibold text-amber-900">
+                <AlertTriangle size={15} /> Needs data before you trust these numbers
+              </div>
+              {dataGaps(listing).map((g) => (
+                <div key={g.key} className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium text-amber-900">{g.label}</div>
+                    <div className="text-xs text-amber-800/80 leading-snug">{g.detail}</div>
+                  </div>
+                  <a
+                    href={g.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={g.action}
+                    className="shrink-0 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-md px-2.5 py-1.5 flex items-center gap-1 whitespace-nowrap"
+                  >
+                    Open on Redfin <ExternalLink size={11} />
+                  </a>
+                </div>
+              ))}
+              <div className="text-[11px] text-amber-800/70">On the Redfin page, click your <span className="font-semibold">+ Carrie Me Away</span> bookmark — this updates automatically.</div>
+            </div>
+          )}
 
           {!shareMode && (<>
           {/* ── Carrie Capital ───────────────────────────────── */}
