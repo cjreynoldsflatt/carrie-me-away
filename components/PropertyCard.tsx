@@ -5,6 +5,7 @@ import { useState, useRef } from 'react'
 import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText } from 'lucide-react'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import FavoriteButton from './FavoriteButton'
+import { crimeMapUrl, hoaSearchUrl } from '@/lib/links'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
@@ -219,21 +220,30 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
                 <MapPin size={13} />
                 Google Maps
               </a>
-              {(() => {
-                const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
-                return zip ? (
-                  <a
-                    href={`https://crimegrade.org/safest-places-in-${zip}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-                  >
-                    <ShieldAlert size={13} />
-                    Crime map
-                  </a>
-                ) : null
-              })()}
+              <a
+                href={crimeMapUrl(listing.lat, listing.lng)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
+                title="SpotCrime map centered on this property"
+              >
+                <ShieldAlert size={13} />
+                Crime map
+              </a>
+              {listing.hoaMonthly > 0 && (
+                <a
+                  href={hoaSearchUrl(listing)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
+                  title={listing.community ? `Search for the ${listing.community} HOA website` : 'Search for this property’s HOA website'}
+                >
+                  <Building2 size={13} />
+                  Find HOA
+                </a>
+              )}
             </div>
           </div>
           <FavoriteButton id={listing.id} isFavorite={listing.isFavorite} readOnly={readOnly} size={20} className="w-8 h-8 -mr-1 -mt-1 shrink-0" />

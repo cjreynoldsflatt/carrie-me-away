@@ -8,6 +8,7 @@ import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRed
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
+import { crimeMapUrl, hoaSearchUrl } from '@/lib/links'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -691,20 +692,28 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                   <MapPin size={13} />
                   Google Maps
                 </a>
-                {(() => {
-                  const zip = listing.city.match(/\b(\d{5})\b/)?.[1]
-                  return zip ? (
-                    <a
-                      href={`https://crimegrade.org/safest-places-in-${zip}/`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                    >
-                      <ShieldAlert size={13} />
-                      Crime map
-                    </a>
-                  ) : null
-                })()}
+                <a
+                  href={crimeMapUrl(listing.lat, listing.lng)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                  title="SpotCrime map centered on this property"
+                >
+                  <ShieldAlert size={13} />
+                  Crime map
+                </a>
+                {listing.hoaMonthly > 0 && (
+                  <a
+                    href={hoaSearchUrl(listing)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    title={listing.community ? `Search for the ${listing.community} HOA website` : 'Search for this property’s HOA website'}
+                  >
+                    <Building2 size={13} />
+                    Find HOA
+                  </a>
+                )}
                 {!shareMode && (
                 <button
                   onClick={async () => {

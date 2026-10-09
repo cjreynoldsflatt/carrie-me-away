@@ -56,3 +56,19 @@ export function parseRedfinDetail(raw: string): RedfinDetail {
 
   return out
 }
+
+/**
+ * Tidy an MLS subdivision name into a community name people search for:
+ * "HAMPTONS WEST PH 1B3" → "Hamptons West", "RENN QUARTER PH 2 8" → "Renn Quarter".
+ */
+export function cleanSubdivision(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  const base = raw
+    .replace(/\b(PH|PHASE|SEC|SECT|SECTION|LOT|BLK|BLOCK|UNIT|PLAT|PT)\b.*$/i, '')  // drop phase/section suffixes
+    .replace(/[\d\s-]+$/, '')                                                        // and trailing numbers
+    .trim()
+  if (base.length < 3 || /^(NONE|N\/A|NA|OTHER|UNKNOWN)$/i.test(base)) return null
+  return base.toLowerCase()
+    .replace(/\b[a-z]/g, (c) => c.toUpperCase())
+    .replace(/(?!^)\b(Of|The|At|And|On|In)\b/g, (w) => w.toLowerCase())   // "Villages of Urbana"
+}
