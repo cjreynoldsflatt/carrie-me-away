@@ -7,11 +7,11 @@ import 'leaflet/dist/leaflet.css'
 import type { SaleListing } from '@/lib/types'
 
 function dotColor(score: number): string {
-  if (score >= 97) return '#059669'  // emerald-600
-  if (score >= 88) return '#0891b2'  // cyan-600
-  if (score >= 76) return '#2563eb'  // blue-600
-  if (score >= 60) return '#fb923c'  // orange-400
-  if (score >= 40) return '#ea580c'  // orange-600
+  if (score >= 97) return '#047857'  // emerald-700
+  if (score >= 88) return '#22c55e'  // green-500
+  if (score >= 76) return '#1d4ed8'  // blue-700
+  if (score >= 60) return '#60a5fa'  // blue-400
+  if (score >= 40) return '#f97316'  // orange-500
   return '#dc2626'                   // red-600
 }
 

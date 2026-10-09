@@ -8,7 +8,7 @@ import { fmtPrice, fmtYield } from '@/lib/format'
 
 const gradeOf = (s: number) => s >= 97 ? 'A+' : s >= 88 ? 'A' : s >= 76 ? 'B+' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'
 const gradeHex = (s: number) =>
-  s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
+  s >= 97 ? '#047857' : s >= 88 ? '#22c55e' : s >= 76 ? '#1d4ed8' : s >= 60 ? '#60a5fa' : s >= 40 ? '#f97316' : '#dc2626'
 
 // The renderer's built-in font has no bold weights — load Inter (woff) from jsDelivr
 const FONT_URL = (w: number) => `https://cdn.jsdelivr.net/npm/@fontsource/inter@5/files/inter-latin-${w}-normal.woff`

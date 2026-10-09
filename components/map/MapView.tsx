@@ -76,7 +76,7 @@ function CenterOnSelected({ listings, selectedId, includeHome = true }: { listin
 
 // ── Colored pin marker ────────────────────────────────────────────────────────
 const gradeHex = (s: number) =>
-  s >= 97 ? '#059669' : s >= 88 ? '#0891b2' : s >= 76 ? '#2563eb' : s >= 60 ? '#fb923c' : s >= 40 ? '#ea580c' : '#dc2626'
+  s >= 97 ? '#047857' : s >= 88 ? '#22c55e' : s >= 76 ? '#1d4ed8' : s >= 60 ? '#60a5fa' : s >= 40 ? '#f97316' : '#dc2626'
 
 // Compact yearly amount for pins, e.g. "$15.9K/yr"
 function fmtAnnualK(n: number) {

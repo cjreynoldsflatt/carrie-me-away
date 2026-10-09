@@ -34,20 +34,20 @@ function scoreGrade(score: number): string {
   return 'D'
 }
 function gradeColor(score: number): string {
-  if (score >= 97) return 'bg-emerald-600'
-  if (score >= 88) return 'bg-cyan-600'
-  if (score >= 76) return 'bg-blue-600'
-  if (score >= 60) return 'bg-orange-400'
-  if (score >= 40) return 'bg-orange-600'
+  if (score >= 97) return 'bg-emerald-700'
+  if (score >= 88) return 'bg-green-500'
+  if (score >= 76) return 'bg-blue-700'
+  if (score >= 60) return 'bg-blue-400'
+  if (score >= 40) return 'bg-orange-500'
   return 'bg-red-600'
 }
 
 function yieldText(score: number) {
   if (score >= 97) return 'text-emerald-700'
-  if (score >= 88) return 'text-cyan-700'
-  if (score >= 76) return 'text-blue-700'
-  if (score >= 60) return 'text-orange-500'
-  if (score >= 40) return 'text-orange-700'
+  if (score >= 88) return 'text-green-600'
+  if (score >= 76) return 'text-blue-800'
+  if (score >= 60) return 'text-blue-500'
+  if (score >= 40) return 'text-orange-600'
   return 'text-red-600'
 }
 
