@@ -26,10 +26,20 @@ export default function SharePage() {
       .catch(() => setStatus('error'))
   }, [id, key])
 
+  if (status === 'loading') {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-sm text-slate-500">Loading…</div>
+  }
   if (status !== 'ready') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-sm text-slate-500">
-        {status === 'loading' ? 'Loading…' : 'This link is invalid or the listing is no longer available.'}
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm max-w-sm w-full p-8 text-center space-y-4">
+          {/* eslint-disable-next-line @next/next/no-img-element -- matches the home page logo */}
+          <img src="/cma-logo.png" alt="CMA Investments" className="h-6 w-auto mx-auto" />
+          <div className="space-y-1.5">
+            <h1 className="text-base font-semibold text-slate-900">This listing is no longer available</h1>
+            <p className="text-sm text-slate-500 leading-relaxed">It may have sold, gone off the market, or been removed from our list. Ask whoever sent the link for an updated one.</p>
+          </div>
+        </div>
       </div>
     )
   }

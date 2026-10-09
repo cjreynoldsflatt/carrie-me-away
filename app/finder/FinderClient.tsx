@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, Suspense } from 'react'
-import { Bookmark, ChevronLeft, Map } from 'lucide-react'
+import { Bookmark, ChevronLeft, Map, SearchX, X } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import FilterPopover from '@/components/FilterPopover'
@@ -32,6 +32,8 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
   const searchParams = useSearchParams()
   const [mobileShowMap, setMobileShowMap] = useState(false)
   const [mobileReturnToMap, setMobileReturnToMap] = useState(false)
+  // A shared/bookmarked ?id= whose listing has since been deleted
+  const [missingLink, setMissingLink] = useState(false)
 
   // #section from a copied card link — held until the first listing opens, which then scrolls to it
   const initialSection = useRef('')
@@ -41,7 +43,11 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
     initialSection.current = decodeURIComponent(window.location.hash.slice(1))
     const id = searchParams.get('id')
     const load = realtorKey ? initializeReadOnly(realtorKey) : initialize()
-    load.then(() => { if (id) setSelectedId(id) })
+    load.then(() => {
+      if (!id) return
+      if (useAppStore.getState().saleListings.some((l) => l.id === id)) setSelectedId(id)
+      else { setMissingLink(true); router.replace(pathname, { scroll: false }) }
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -64,7 +70,10 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId])
 
-  const showDetail = !!selectedId
+  // Only open the detail panel for a listing that exists (it may be deleted while open)
+  const selectedExists = useAppStore((s) => s.saleListings.some((l) => l.id === s.selectedId))
+  const showDetail = !!selectedId && selectedExists
+  useEffect(() => { if (selectedId) setMissingLink(false) }, [selectedId])
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden">
@@ -142,7 +151,21 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
               if (mobileReturnToMap) setMobileShowMap(true)
             }} />
           ) : (
-            <PropertyList readOnly={readOnly} onOpenMap={() => setMobileShowMap(true)} />
+            <>
+              {missingLink && (
+                <div className="shrink-0 m-3 mb-0 rounded-lg border border-slate-200 bg-white px-3 py-2.5 flex items-start gap-2.5 shadow-sm">
+                  <SearchX size={16} className="text-slate-400 shrink-0 mt-0.5" />
+                  <div className="text-sm leading-snug flex-1">
+                    <div className="font-semibold text-slate-800">That listing is no longer here</div>
+                    <div className="text-slate-500">It was removed — it may have sold or gone off the market. Here are the current listings.</div>
+                  </div>
+                  <button onClick={() => setMissingLink(false)} className="text-slate-400 hover:text-slate-600 shrink-0" aria-label="Dismiss">
+                    <X size={15} />
+                  </button>
+                </div>
+              )}
+              <PropertyList readOnly={readOnly} onOpenMap={() => setMobileShowMap(true)} />
+            </>
           )}
         </aside>
       </main>
