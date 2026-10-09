@@ -2,15 +2,15 @@
 
 import Image from 'next/image'
 import { useState, useRef } from 'react'
-import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText, AlertTriangle } from 'lucide-react'
+import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, ExternalLink, ScrollText, AlertTriangle } from 'lucide-react'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import FavoriteButton from './FavoriteButton'
+import ListingLinks from './ListingLinks'
 import { dataGaps } from '@/lib/data-gaps'
-import { crimeMapUrl, crimeGradeUrl, hoaSearchUrl } from '@/lib/links'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
-import { equityScenarios, tenYearRentalIncome, distanceMiles } from '@/lib/investment'
+import { distanceMiles } from '@/lib/investment'
 import { HOME } from '@/lib/config'
 import { cn } from '@/lib/utils'
 
@@ -89,10 +89,7 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
 
   const isRentEdited = listing.rentSource === 'manual' && (listing.autoRent ?? 0) > 0 && listing.autoRent !== listing.estimatedRent
 
-  const equity = equityScenarios(listing.price, listing.appreciationRate)
-  const tenYrRent = tenYearRentalIncome(listing.netAnnualIncome)
-  const tenYrCombined = tenYrRent + equity.expected
-  const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
+    const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
 
   const isNonActive = listingStatus && listingStatus !== 'Active' && listingStatus !== 'Unknown'
 
@@ -180,7 +177,7 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
             <div className="text-sm text-slate-500 leading-tight mt-0.5">{listing.address}</div>
             <div className="text-sm text-slate-400">{listing.city}</div>
             {/* Grades row — same layout as the detail panel header */}
-            <div className="flex items-center gap-4 my-2">
+            <div className="flex items-center gap-4 mt-2">
               {([
                 { label: 'Conservative', score: listing.investmentScore, y: listing.netCashYield },
                 ...(listing.realisticScore != null && listing.realisticNetCashYield != null
@@ -198,67 +195,6 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-              {listing.listingUrl && (
-                <a
-                  href={listing.listingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-                >
-                  <ExternalLink size={13} />
-                  {listing.listingUrl?.includes('redfin.com') ? 'Redfin' : 'Realtor.com'}
-                </a>
-              )}
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.address}, ${listing.city}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-              >
-                <MapPin size={13} />
-                Google Maps
-              </a>
-              {crimeGradeUrl(listing.city) && (
-                <a
-                  href={crimeGradeUrl(listing.city)!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-                  title="CrimeGrade: green-to-red crime heat map for this ZIP"
-                >
-                  <ShieldAlert size={13} />
-                  Crime grade
-                </a>
-              )}
-              <a
-                href={crimeMapUrl(listing.lat, listing.lng)}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-                title="SpotCrime: recent incidents around this exact address"
-              >
-                <MapPin size={13} />
-                Nearby incidents
-              </a>
-              {listing.hoaMonthly > 0 && (
-                <a
-                  href={hoaSearchUrl(listing)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-                  title={listing.community ? `Search for the ${listing.community} HOA website` : 'Search for this property’s HOA website'}
-                >
-                  <Building2 size={13} />
-                  Find HOA
-                </a>
-              )}
-            </div>
           </div>
           <FavoriteButton id={listing.id} isFavorite={listing.isFavorite} readOnly={readOnly} size={20} className="w-8 h-8 -mr-1 -mt-1 shrink-0" />
         </div>
@@ -271,6 +207,22 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
           {listing.yearBuilt > 0 && <span>Built {listing.yearBuilt}</span>}
           <span>{listing.hoaMonthly > 0 ? `HOA ${fmtCurrency(listing.hoaMonthly)}/mo` : 'No HOA'}</span>
         </div>
+
+        {listing.community && (
+          <div className="text-sm text-slate-500 flex items-center gap-1 -mt-1">
+            <Building2 size={12} />{listing.community}
+          </div>
+        )}
+
+        {/* Extra rental licensing/registration where this property sits */}
+        {regulatedAreasAt(listing.lat, listing.lng).map((area) => (
+          <div key={area.id} className="flex items-center gap-1.5 text-xs font-medium text-purple-700" title={area.summary.join(' · ')}>
+            <ScrollText size={12} />
+            {area.short} required
+          </div>
+        ))}
+
+        <ListingLinks listing={listing} />
 
         {/* Data gaps — what to collect with the bookmarklet (owner view only) */}
         {!readOnly && dataGaps(listing).length > 0 && (
@@ -288,20 +240,6 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
                 {g.label}<ExternalLink size={10} />
               </a>
             ))}
-          </div>
-        )}
-
-        {/* Extra rental licensing/registration where this property sits */}
-        {regulatedAreasAt(listing.lat, listing.lng).map((area) => (
-          <div key={area.id} className="flex items-center gap-1.5 text-xs font-medium text-purple-700" title={area.summary.join(' · ')}>
-            <ScrollText size={12} />
-            {area.short} required
-          </div>
-        ))}
-
-        {listing.community && (
-          <div className="text-sm text-slate-500 flex items-center gap-1">
-            <Building2 size={12} />{listing.community}
           </div>
         )}
 
@@ -378,9 +316,9 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
                   </button>
                 </>
               ) : listing.rentSource === 'comps' ? (
-                <span>{listing.rentCompCount} comps{(listing.rentCompCount ?? 0) < 5 ? ' · thin' : ''} · realistic {fmtRent(listing.realisticRent ?? listing.estimatedRent)}</span>
+                <span>{listing.rentCompCount} comps{(listing.rentCompCount ?? 0) < 5 ? ' · thin' : ''}</span>
               ) : listing.rentLow > 0 ? (
-                <span>HUD estimate · no comps nearby</span>
+                <span>HUD estimate</span>
               ) : listing.rentConfidence === 'High' ? (
                 <span>Manually set</span>
               ) : (
@@ -391,24 +329,7 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
           <div className="bg-slate-50 rounded-lg p-2.5">
             <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Net Income</div>
             <div className="text-base font-bold text-slate-800">{fmtCurrency(listing.netAnnualIncome)}/yr</div>
-            <div className="text-xs text-slate-400">
-              {listing.realisticNetAnnualIncome != null && <>realistic {fmtCurrency(listing.realisticNetAnnualIncome)} · </>}
-              {fmtPayback(listing.paybackYears)} payback
-            </div>
-          </div>
-        </div>
-
-        {/* 5-year equity */}
-        <div className="bg-slate-900 rounded-lg p-2.5 grid grid-cols-2 gap-2">
-          <div>
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">5-yr Equity</div>
-            <div className="text-base font-bold text-white">+{fmtCurrency(equity.expected)}</div>
-            <div className="text-xs text-slate-400">at {(listing.appreciationRate * 100).toFixed(1)}%/yr est.</div>
-          </div>
-          <div>
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">5-yr Combined</div>
-            <div className="text-base font-bold text-white">+{fmtCurrency(tenYrCombined)}</div>
-            <div className="text-xs text-slate-400">rent + equity</div>
+            <div className="text-xs text-slate-400">{fmtPayback(listing.paybackYears)} payback</div>
           </div>
         </div>
 

@@ -1,15 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, BED_ADJ, MAX_BED_DIFF, rentalRedfinUrl, compAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
+import ListingLinks, { linkClass } from './ListingLinks'
 import { dataGaps } from '@/lib/data-gaps'
-import { crimeMapUrl, crimeGradeUrl, hoaSearchUrl } from '@/lib/links'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -682,61 +682,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                   {area.short} required
                 </a>
               ))}
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                {listing.listingUrl && (
-                  <a
-                    href={listing.listingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    <ExternalLink size={13} />
-                    {listing.listingUrl.includes('redfin.com') ? 'View on Redfin' : 'View on Realtor.com'}
-                  </a>
-                )}
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.address}, ${listing.city}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  <MapPin size={13} />
-                  Google Maps
-                </a>
-                {crimeGradeUrl(listing.city) && (
-                  <a
-                    href={crimeGradeUrl(listing.city)!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                    title="CrimeGrade: green-to-red crime heat map for this ZIP"
-                  >
-                    <ShieldAlert size={13} />
-                    Crime grade
-                  </a>
-                )}
-                <a
-                  href={crimeMapUrl(listing.lat, listing.lng)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                  title="SpotCrime: recent incidents around this exact address"
-                >
-                  <MapPin size={13} />
-                  Nearby incidents
-                </a>
-                {listing.hoaMonthly > 0 && (
-                  <a
-                    href={hoaSearchUrl(listing)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                    title={listing.community ? `Search for the ${listing.community} HOA website` : 'Search for this property’s HOA website'}
-                  >
-                    <Building2 size={13} />
-                    Find HOA
-                  </a>
-                )}
+              <ListingLinks listing={listing}>
                 {!shareMode && (
                 <button
                   onClick={async () => {
@@ -766,13 +712,13 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                     }
                   }}
                   disabled={regeocodeBusy}
-                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline disabled:opacity-40"
+                  className={linkClass}
                 >
-                  <MapPin size={13} />
+                  <MapPin size={14} />
                   {regeocodeBusy ? 'Locating…' : 'Fix location'}
                 </button>
                 )}
-              </div>
+              </ListingLinks>
             </div>
           </div>
 
