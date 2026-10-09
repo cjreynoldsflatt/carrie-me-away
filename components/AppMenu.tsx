@@ -82,7 +82,7 @@ export default function AppMenu() {
             <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-violet-50 text-violet-500">
               {copied ? <Check size={15} /> : <Share2 size={15} />}
             </span>
-            {copied ? 'Copied realtor link' : 'Copy realtor link'}
+            {copied ? 'Copied realtor link' : 'Share with realtor'}
           </button>
           </div>
         </div>

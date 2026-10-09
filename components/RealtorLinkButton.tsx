@@ -17,7 +17,7 @@ export default function RealtorLinkButton() {
       className="h-7 px-2.5 text-xs font-medium rounded-md border border-slate-200 text-slate-800 hover:text-slate-900 hover:border-slate-300 flex items-center gap-1.5 transition-colors"
     >
       {copied ? <Check size={13} className="text-emerald-600" /> : <Share2 size={13} />}
-      {copied ? 'Copied' : 'Realtor link'}
+      {copied ? 'Copied' : 'Share with realtor'}
     </button>
   )
 }
