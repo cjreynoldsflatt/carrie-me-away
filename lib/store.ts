@@ -425,7 +425,8 @@ export const useAppStore = create<AppState>()(
           })
           const metrics = metricsFor(assumptions, conservativeRent)
           // Realistic scenario: typical costs + comp-median rent (see REALISTIC in lib/investment)
-          const rRent = realisticRent(l)
+          // A what-if rent (picked in the detail panel) drives both scenarios, as it does there
+          const rRent = whatIfRent?.id === l.id ? whatIfRent.rent : realisticRent(l)
           const realistic = metricsFor(realisticAssumptions(assumptions, l.propertyType), rRent)
           return {
             ...l,

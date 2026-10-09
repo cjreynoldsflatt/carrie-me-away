@@ -29,9 +29,9 @@ function scoreGrade(score: number): string {
 }
 function gradeColor(score: number): string {
   if (score >= 97) return 'bg-emerald-700'
-  if (score >= 88) return 'bg-green-500'
+  if (score >= 88) return 'bg-green-600'
   if (score >= 76) return 'bg-blue-700'
-  if (score >= 60) return 'bg-blue-400'
+  if (score >= 60) return 'bg-blue-500'
   if (score >= 40) return 'bg-orange-500'
   return 'bg-red-600'
 }
@@ -49,10 +49,10 @@ function yieldLabel(y: number, target: number) {
 // Score-based colors (match grade circle & map marker)
 function yieldColor(score: number) {
   if (score >= 97) return 'text-emerald-700'
-  if (score >= 88) return 'text-green-600'
+  if (score >= 88) return 'text-green-700'
   if (score >= 76) return 'text-blue-800'
-  if (score >= 60) return 'text-blue-500'
-  if (score >= 40) return 'text-orange-600'
+  if (score >= 60) return 'text-blue-600'
+  if (score >= 40) return 'text-orange-700'
   return 'text-red-600'
 }
 function yieldBg(score: number) {
@@ -326,7 +326,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const isMultiFamily = listing?.propertyType === 'Multi Family'
 
   // Local editable values — reset when selected property changes
-  const [repairsInput, setRepairsInput] = useState(20000)
+  const [repairsInput, setRepairsInput] = useState(listing?.repairs ?? 20000)
   const [rentInput, setRentInput] = useState(listing?.estimatedRent ?? 0)
   const [unitsInput, setUnitsInput] = useState(listing?.units ?? 2)
   const [propertyTaxInput, setPropertyTaxInput] = useState(listing?.cmaPropertyTaxAnnual ?? listing?.propertyTaxAnnual ?? 0)
@@ -350,7 +350,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   useEffect(() => {
     const dbRent = listing?.estimatedRent ?? 0
     const dbUnits = listing?.units ?? 2
-    setRepairsInput(20000)
+    setRepairsInput(listing?.repairs ?? 20000)   // saved value — the same one the map/list grade with
     // Default to the Low rent — the same value the map/list uses for grading
     const hasRentRange = (listing?.rentLow ?? 0) > 0 && (listing?.rentHigh ?? 0) > 0 && listing?.rentConfidence !== 'High'
     const defaultRent = hasRentRange
@@ -874,7 +874,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                   onChange={(e) => setRepairsInput(Math.max(0, Number(e.target.value)))}
                   onBlur={(e) => {
                     const val = Math.max(0, Number(e.target.value))
-                    if (val !== (20000)) saveRepairsToDb(listing.id, val)
+                    if (val !== listing.repairs) saveRepairsToDb(listing.id, val)
                   }}
                   className="w-24 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 />

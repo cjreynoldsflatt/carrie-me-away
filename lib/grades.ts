@@ -13,7 +13,7 @@ export function scoreToGrade(score: number): Grade {
 }
 
 export const GRADE_HEX: Record<Grade, string> = {
-  'A+': '#047857', A: '#22c55e', 'B+': '#1d4ed8', B: '#60a5fa', C: '#f97316', D: '#dc2626',
+  'A+': '#047857', A: '#16a34a', 'B+': '#1d4ed8', B: '#3b82f6', C: '#f97316', D: '#dc2626',
 }
 
 /** Filter key for a listing's grade pair: "B→B+", or just "B" when both scenarios agree. */

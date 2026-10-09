@@ -8,9 +8,9 @@ import type { SaleListing } from '@/lib/types'
 
 function dotColor(score: number): string {
   if (score >= 97) return '#047857'  // emerald-700
-  if (score >= 88) return '#22c55e'  // green-500
+  if (score >= 88) return '#16a34a'  // green-600
   if (score >= 76) return '#1d4ed8'  // blue-700
-  if (score >= 60) return '#60a5fa'  // blue-400
+  if (score >= 60) return '#3b82f6'  // blue-500
   if (score >= 40) return '#f97316'  // orange-500
   return '#dc2626'                   // red-600
 }
