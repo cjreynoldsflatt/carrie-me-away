@@ -5,7 +5,7 @@ import { useState, useRef } from 'react'
 import { Building2, Home, Clock, Navigation, CheckSquare, Square, Pencil, X, RotateCcw, Loader2, MapPin, ExternalLink, ShieldAlert, ScrollText } from 'lucide-react'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import FavoriteButton from './FavoriteButton'
-import { crimeMapUrl, hoaSearchUrl } from '@/lib/links'
+import { crimeMapUrl, crimeGradeUrl, hoaSearchUrl } from '@/lib/links'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
@@ -220,16 +220,29 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
                 <MapPin size={13} />
                 Google Maps
               </a>
+              {crimeGradeUrl(listing.city) && (
+                <a
+                  href={crimeGradeUrl(listing.city)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
+                  title="CrimeGrade: green-to-red crime heat map for this ZIP"
+                >
+                  <ShieldAlert size={13} />
+                  Crime grade
+                </a>
+              )}
               <a
                 href={crimeMapUrl(listing.lat, listing.lng)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="text-xs text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-1"
-                title="SpotCrime map centered on this property"
+                title="SpotCrime: recent incidents around this exact address"
               >
-                <ShieldAlert size={13} />
-                Crime map
+                <MapPin size={13} />
+                Nearby incidents
               </a>
               {listing.hoaMonthly > 0 && (
                 <a

@@ -8,7 +8,7 @@ import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRed
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
-import { crimeMapUrl, hoaSearchUrl } from '@/lib/links'
+import { crimeMapUrl, crimeGradeUrl, hoaSearchUrl } from '@/lib/links'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -692,15 +692,27 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                   <MapPin size={13} />
                   Google Maps
                 </a>
+                {crimeGradeUrl(listing.city) && (
+                  <a
+                    href={crimeGradeUrl(listing.city)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    title="CrimeGrade: green-to-red crime heat map for this ZIP"
+                  >
+                    <ShieldAlert size={13} />
+                    Crime grade
+                  </a>
+                )}
                 <a
                   href={crimeMapUrl(listing.lat, listing.lng)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                  title="SpotCrime map centered on this property"
+                  title="SpotCrime: recent incidents around this exact address"
                 >
-                  <ShieldAlert size={13} />
-                  Crime map
+                  <MapPin size={13} />
+                  Nearby incidents
                 </a>
                 {listing.hoaMonthly > 0 && (
                   <a
