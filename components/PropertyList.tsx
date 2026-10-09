@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { MapPin, Trash2, Activity, X, ChevronDown, Star } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
@@ -137,6 +137,16 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
     }
     return Object.keys(counts).sort(compareGradePairs).map((key) => ({ key, count: counts[key] }))
   }, [allListings])
+
+  // Drop filters that no longer match anything (e.g. after deleting every listing in a grade
+  // or unstarring the last favorite) so the list doesn't get stuck at "0 Properties"
+  const allLoaded = allListings.length > 0
+  const staleGrades = gradeFilter.filter((k) => !gradePills.some((p) => p.key === k))
+  useEffect(() => {
+    if (!allLoaded) return
+    if (staleGrades.length > 0) setGradeFilter(gradeFilter.filter((k) => !staleGrades.includes(k)))
+    if (favoritesOnly && favoriteCount === 0) setFavoritesOnly(false)
+  }, [allLoaded, staleGrades.join('|'), favoritesOnly, favoriteCount]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col h-full flex-1 min-h-0">
