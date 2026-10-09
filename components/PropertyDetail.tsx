@@ -8,6 +8,7 @@ import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, BED_ADJ, 
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
+import ExpenseDonut from './ExpenseDonut'
 import ListingLinks, { linkClass } from './ListingLinks'
 import { dataGaps } from '@/lib/data-gaps'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
@@ -985,6 +986,16 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
 
           {/* ── Step 3: Annual expenses ───────────────────────── */}
           <Section title="Step 3 — Annual Expenses">
+            <ExpenseDonut slices={[
+              { key: 'tax', label: 'Taxes', value: propertyTaxInput },
+              { key: 'maintenance', label: 'Maintenance', value: metrics.maintenanceReserve },
+              { key: 'capex', label: 'CapEx', value: metrics.capExReserve },
+              { key: 'vacancy', label: 'Vacancy', value: metrics.vacancyReserve },
+              { key: 'management', label: 'Management', value: managementCost },
+              { key: 'insurance', label: 'Insurance', value: metrics.insuranceAnnual },
+              { key: 'hoa', label: 'HOA', value: annualHOA },
+              { key: 'other', label: 'Other', value: metrics.turnoverReserve + metrics.superAnnual + LLC_ANNUAL_COST + metrics.pestControlAnnual + metrics.lawnCareAnnual },
+            ]} />
             <GearRow
               id="vacancy"
               label={`Vacancy reserve (${(assumptions.vacancyRate * 100).toFixed(0)}%)`}
