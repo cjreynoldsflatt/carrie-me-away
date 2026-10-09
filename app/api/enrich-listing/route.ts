@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     const { data: row } = await supabase
       .from('sale_listings')
-      .select('id, address, property_type, beds, baths, sqft')
+      .select('id, address, property_type, beds, baths, sqft, year_built')
       .eq('id', `redfin-${homeId}`)
       .maybeSingle()
     if (!row) return NextResponse.json({ notSaved: true }, { headers: CORS })
@@ -43,7 +43,9 @@ export async function POST(req: NextRequest) {
     if (d.beds && !row.beds) updates.beds = d.beds
     if (d.baths && !row.baths) updates.baths = d.baths
     if (d.sqft && !row.sqft) updates.sqft = d.sqft
-    const community = cleanSubdivision(subdivision)
+    // Plan listings have no street address — label them by plan name instead of just the town
+    if (d.planName && !/\d/.test(row.address ?? '')) updates.address = d.planName
+    const community = cleanSubdivision(subdivision) ?? (d.planCommunity ? cleanSubdivision(d.planCommunity.replace(/\s+(Townhomes|Townhouses|Homes|Condominiums|Condos)$/i, '')) : null)
     if (community) updates.community = community
 
     if (Object.keys(updates).length > 0) {

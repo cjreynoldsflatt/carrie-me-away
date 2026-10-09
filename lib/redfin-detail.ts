@@ -12,6 +12,10 @@ export interface RedfinDetail {
   beds?: number
   baths?: number
   sqft?: number
+  // Builder floor-plan listing ("Van Dorn Plan, … Lake Linganore Creekside Townhomes built by NVHomes")
+  isPlan?: boolean
+  planName?: string
+  planCommunity?: string
 }
 
 const num = (s: string) => Number(s.replace(/,/g, ''))
@@ -52,6 +56,16 @@ export function parseRedfinDetail(raw: string): RedfinDetail {
     out.beds = num(summary[1])
     out.baths = num(summary[2])
     out.sqft = num(summary[3])
+  }
+
+  // New-construction plan listings have no year built or tax history — mark them as new builds
+  const plan = t.match(/\bPlan, [^|]{0,60}?\b\d{5} (.{3,80}?) built by ([A-Z][\w&.' ]{1,40}?)(?= Ready| Under| Coming| To be| Quick| Move| \$|\s*$)/)
+  if (plan) {
+    out.isPlan = true
+    out.planCommunity = plan[1].trim()
+    const name = t.match(/sq ft ([A-Z][\w' -]{1,40}?) Plan, /)
+    if (name) out.planName = `${name[1].trim()} Plan`
+    if (!out.yearBuilt) out.yearBuilt = new Date().getFullYear()
   }
 
   return out
