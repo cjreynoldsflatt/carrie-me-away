@@ -14,6 +14,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/realtor/') ||        // read-only Realtor Version (key checked by the page + API)
     pathname.startsWith('/api/realtor/') ||
     pathname === '/cma-logo.png' ||   // shown on public share pages
+    pathname === '/bm.js' ||          // live bookmarklet program (loaded from redfin.com)
     pathname === '/icon.png' || pathname === '/apple-icon.png' ||   // favicons
     pathname.startsWith('/api/share/') ||
     pathname.startsWith('/api/og/') ||          // link-preview images (signed key)

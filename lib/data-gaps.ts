@@ -59,7 +59,7 @@ export function dataGaps(l: SaleListing): DataGap[] {
     gaps.push({
       key: 'details',
       label: 'Missing details',
-      detail: `Missing ${missing} (HOA may be missing too).`,
+      detail: `Missing ${missing}${l.hoaMonthly > 0 ? '' : ' (HOA may be missing too)'}.`,
       href: l.listingUrl,
       action: 'Open the listing on Redfin, then click the bookmarklet',
       button: 'Listing page',
