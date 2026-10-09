@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
 import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, BED_ADJ, MAX_BED_DIFF, rentalRedfinUrl, compAdjustedRent } from '@/lib/rent-comps'
@@ -2115,6 +2115,7 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
   const rentalListings = useAppStore((s) => s.rentalListings)
   const toggleExcludedComp = useAppStore((s) => s.toggleExcludedComp)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [showNotUsed, setShowNotUsed] = useState(false)   // 'Nearby, not used' starts collapsed
   const excluded = new Set(listing.excludedCompIds ?? [])
 
   // Exactly the pool the estimate draws from: same beds + type, fresh, within 3 mi
@@ -2198,10 +2199,19 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
               <div className="divide-y divide-slate-100">{used.map(renderRow)}</div>
               {notUsed.length > 0 && (
                 <>
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mt-4 mb-0.5">
+                  {/* span, not button — still clickable inside the read-only (disabled) fieldset */}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={showNotUsed}
+                    onClick={() => setShowNotUsed((v) => !v)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowNotUsed((v) => !v) } }}
+                    className="flex items-center gap-1 cursor-pointer select-none text-[10px] font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600 mt-4 mb-0.5"
+                  >
+                    <ChevronRight size={12} className={cn('transition-transform', showNotUsed && 'rotate-90')} />
                     Nearby, not used — beyond {radius} mi{excluded.size > 0 ? ' or excluded' : ''} ({notUsed.length})
-                  </div>
-                  <div className="divide-y divide-slate-100">{notUsed.map(renderRow)}</div>
+                  </span>
+                  {showNotUsed && <div className="divide-y divide-slate-100">{notUsed.map(renderRow)}</div>}
                 </>
               )}
             </>
