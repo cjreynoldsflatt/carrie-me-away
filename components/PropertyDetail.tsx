@@ -785,11 +785,14 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                     title={g.action}
                     className="shrink-0 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-md px-2.5 py-1.5 flex items-center gap-1 whitespace-nowrap"
                   >
-                    Open on Redfin <ExternalLink size={11} />
+                    {g.button} <ExternalLink size={11} />
                   </a>
                 </div>
               ))}
-              <div className="text-[11px] text-amber-800/70">On the Redfin page, click your <span className="font-semibold">+ Carrie Me Away</span> bookmark — this updates automatically.</div>
+              <div className="text-[11px] text-amber-800/70">
+                Comps come from a Redfin <span className="font-semibold">rentals search</span>; details come from the <span className="font-semibold">listing page</span>.
+                Click your <span className="font-semibold">+ Carrie Me Away</span> bookmark on that page, then refresh here.
+              </div>
             </div>
           )}
 

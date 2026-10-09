@@ -8,6 +8,7 @@ export interface DataGap {
   detail: string         // one-line explanation
   href: string           // Redfin page to open
   action: string         // what to do there
+  button: string         // short button label naming the page it opens
 }
 
 const THIN_COMPS = 5
@@ -35,6 +36,7 @@ export function dataGaps(l: SaleListing): DataGap[] {
         detail: `Rent is a HUD estimate — save ${l.beds}-bed ${l.propertyType.toLowerCase()} rentals in ${zip} to replace it.`,
         href: rentals,
         action: `Open ${zip} rentals on Redfin, then click the bookmarklet`,
+        button: `${zip} rentals search`,
       })
     } else if ((l.rentCompCount ?? 0) < THIN_COMPS) {
       gaps.push({
@@ -43,6 +45,7 @@ export function dataGaps(l: SaleListing): DataGap[] {
         detail: `Rent rests on ${l.rentCompCount} comps — more nearby rentals make it firmer.`,
         href: rentals,
         action: `Open ${zip} rentals on Redfin, then click the bookmarklet`,
+        button: `${zip} rentals search`,
       })
     }
   }
@@ -59,6 +62,7 @@ export function dataGaps(l: SaleListing): DataGap[] {
       detail: `Missing ${missing} (HOA may be missing too).`,
       href: l.listingUrl,
       action: 'Open the listing on Redfin, then click the bookmarklet',
+      button: 'Listing page',
     })
   }
   return gaps
