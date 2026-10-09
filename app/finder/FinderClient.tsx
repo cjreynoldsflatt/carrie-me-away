@@ -164,9 +164,9 @@ function FinderContent({ realtorKey }: { realtorKey?: string }) {
       {/* Toast: a shared/bookmarked link pointed at a listing that has since been removed */}
       {missingLink && (
         <div role="status" className="fixed bottom-5 inset-x-0 z-[2000] flex justify-center px-4 pointer-events-none">
-          <div className="pointer-events-auto bg-slate-900 text-white text-sm rounded-xl shadow-lg pl-4 pr-2 py-2.5 flex items-center gap-3 max-w-md">
+          <div className="pointer-events-auto bg-red-600 text-white text-sm rounded-xl shadow-lg pl-4 pr-2 py-2.5 flex items-center gap-3 max-w-md">
             <span>That listing is no longer available.</span>
-            <button onClick={() => setMissingLink(false)} className="text-slate-400 hover:text-white p-1" aria-label="Dismiss">
+            <button onClick={() => setMissingLink(false)} className="text-red-200 hover:text-white p-1" aria-label="Dismiss">
               <X size={14} />
             </button>
           </div>
