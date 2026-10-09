@@ -176,6 +176,8 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
               <option value="worst">Worst</option>
               <option value="price-asc">Price ↑</option>
               <option value="price-desc">Price ↓</option>
+              <option value="dom-desc">Days on market ↓</option>
+              <option value="newest">Days on market ↑</option>
             </select>
             <ChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
           </div>

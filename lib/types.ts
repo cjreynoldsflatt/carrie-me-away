@@ -8,6 +8,7 @@ export type SortOption =
   | 'worst'
   | 'price-asc'
   | 'price-desc'
+  | 'dom-desc'
   | 'date-added'
   | 'yield'
   | 'payback'

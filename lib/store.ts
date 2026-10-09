@@ -128,6 +128,10 @@ const DEFAULT_LAYERS: LayerSettings = {
   investmentScore: true,
 }
 
+function domForSort(l: SaleListing): number {
+  return l.marketStatus && l.marketStatus !== 'Active' ? 0 : l.daysOnMarket
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
@@ -488,7 +492,9 @@ export const useAppStore = create<AppState>()(
               const order = { High: 3, Medium: 2, Low: 1 }
               return order[b.rentConfidence] - order[a.rentConfidence]
             }
-            case 'newest': return a.daysOnMarket - b.daysOnMarket
+            // Coming soon / pending / sold count as 0 days — not sitting on the market
+            case 'newest':   return domForSort(a) - domForSort(b)
+            case 'dom-desc': return domForSort(b) - domForSort(a)
             case 'hoa':    return a.hoaMonthly - b.hoaMonthly
             default:       return b.investmentScore - a.investmentScore
           }
