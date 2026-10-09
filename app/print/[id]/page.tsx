@@ -8,7 +8,7 @@ import { Printer } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { computeConservativeRent, distanceMiles, realisticAssumptions, realisticRent, OPERATING_RESERVE, LLC_ANNUAL_COST } from '@/lib/investment'
 import { scenarioMetrics } from '@/lib/scenario'
-import { isFreshComp, sizeAdjustedRent } from '@/lib/rent-comps'
+import { isFreshComp, compAdjustedRent, MAX_BED_DIFF } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { scoreToGrade } from '@/lib/grades'
 import { fmtCurrency, fmtPrice, fmtYield } from '@/lib/format'
@@ -105,8 +105,8 @@ export default function PrintWorksheetPage() {
       ? Math.round((noi / target - l.repairs - OPERATING_RESERVE) / (1 + assumptions.closingCostRate)) : 0
     const excluded = new Set(l.excludedCompIds ?? [])
     const comps = rentalListings
-      .map((x) => ({ ...x, dist: distanceMiles(l.lat, l.lng, x.lat, x.lng), adjusted: sizeAdjustedRent(x.monthlyRent, x.sqft, l.sqft) }))
-      .filter((x) => x.dist <= 3 && x.beds === l.beds && x.propertyType === l.propertyType && isFreshComp(x.fetchedAt))
+      .map((x) => ({ ...x, dist: distanceMiles(l.lat, l.lng, x.lat, x.lng), adjusted: compAdjustedRent(x, l) }))
+      .filter((x) => x.dist <= 3 && Math.abs(x.beds - l.beds) <= MAX_BED_DIFF && x.propertyType === l.propertyType && isFreshComp(x.fetchedAt))
       .sort((a, b) => a.dist - b.dist)
       .slice(0, 12)
     return { consRent, realRent, realA, c, r, target, maxCons: maxPrice(c.netAnnualIncome), maxReal: maxPrice(r.netAnnualIncome), comps, excluded }
@@ -224,7 +224,7 @@ export default function PrintWorksheetPage() {
             <table className="w-full text-[10px] border-collapse">
               <thead>
                 <tr className="border-b-2 border-slate-800 text-left">
-                  <th className="py-1 text-xs font-bold uppercase tracking-wide" colSpan={2}>5 · Rent comps ({l.beds}bd {l.propertyType.toLowerCase()}, ≤3 mi)</th>
+                  <th className="py-1 text-xs font-bold uppercase tracking-wide" colSpan={2}>5 · Rent comps ({l.beds}±1bd {l.propertyType.toLowerCase()}, ≤3 mi)</th>
                   <th className="py-1 px-1 text-right text-[9px] font-semibold uppercase text-slate-500">Listed</th>
                   <th className="py-1 px-1 text-right text-[9px] font-semibold uppercase text-slate-500">Size-adj.</th>
                   <th className="py-1 pl-2 w-[0.7in] text-center text-[9px] font-semibold uppercase text-slate-500">Use? ✓/✗</th>
@@ -234,7 +234,7 @@ export default function PrintWorksheetPage() {
                 {data.comps.map((x) => (
                   <tr key={x.id} className="border-b border-slate-200">
                     <td className="py-1 pr-2">{x.address}{data.excluded.has(x.id) ? ' (excluded)' : ''}</td>
-                    <td className="py-1 pr-2 text-slate-500 whitespace-nowrap">{x.baths}ba{x.sqft ? ` · ${x.sqft.toLocaleString()} sf` : ''} · {x.dist.toFixed(1)} mi</td>
+                    <td className="py-1 pr-2 text-slate-500 whitespace-nowrap">{x.beds}bd · {x.baths}ba{x.sqft ? ` · ${x.sqft.toLocaleString()} sf` : ''} · {x.dist.toFixed(1)} mi</td>
                     <td className="py-1 px-1 text-right tabular-nums">{money(x.monthlyRent)}</td>
                     <td className="py-1 px-1 text-right tabular-nums font-semibold">{money(x.adjusted)}</td>
                     <td className="py-1 pl-2"><div className="mx-auto w-4 h-4 border border-slate-400 rounded-sm" /></td>

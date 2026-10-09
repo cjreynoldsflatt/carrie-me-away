@@ -54,22 +54,43 @@ function percentile(sorted: number[], p: number): number {
   return Math.round(sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo))
 }
 
+// Bedrooms: comps may differ by one bedroom. Size is adjusted separately (above), so this only
+// covers what's left — a typical 3→4-bed gap here is ~$500, most of it explained by size.
+export const BED_ADJ = 200
+export const MAX_BED_DIFF = 1
+
+/** A comp's rent adjusted to the subject's size and bedroom count. */
+export function compAdjustedRent(
+  comp: { monthly_rent?: number; monthlyRent?: number; sqft?: number | null; beds: number },
+  subject: { sqft?: number | null; beds: number },
+): number {
+  const rent = comp.monthly_rent ?? comp.monthlyRent ?? 0
+  return sizeAdjustedRent(rent, comp.sqft, subject.sqft) + (subject.beds - comp.beds) * BED_ADJ
+}
+
+/** Drop rents far from the group's median (room rentals, typos) before taking percentiles. */
+function trimOutliers(sorted: number[]): number[] {
+  if (sorted.length < 5) return sorted
+  const med = percentile(sorted, 0.5)
+  return sorted.filter((r) => r >= med * 0.6 && r <= med * 1.6)
+}
+
 export function estimateFromComps(sale: Row, rentals: Row[]): CompEstimate | null {
   // Multi-family is priced per unit — single-home comps don't apply
   if (sale.property_type === 'Multi Family' || !sale.beds) return null
   const excluded = new Set<string>(sale.excluded_comp_ids ?? [])   // comps the user ruled out for this property
   const candidates = rentals.filter((r) =>
-    r.beds === sale.beds &&
+    Math.abs(r.beds - sale.beds) <= MAX_BED_DIFF &&
     r.property_type === sale.property_type &&
     r.monthly_rent > 0 &&
     isFreshComp(r.fetched_at) &&
     !excluded.has(r.id),
   )
   for (const radius of RADII_MILES) {
-    const rents = candidates
+    const rents = trimOutliers(candidates
       .filter((r) => distanceMiles(sale.lat, sale.lng, r.lat, r.lng) <= radius)
-      .map((r) => sizeAdjustedRent(r.monthly_rent, r.sqft, sale.sqft))
-      .sort((a, b) => a - b)
+      .map((r) => compAdjustedRent(r as { monthly_rent: number; sqft: number | null; beds: number }, sale as { sqft: number | null; beds: number }))
+      .sort((a, b) => a - b))
     if (rents.length >= MIN_COMPS) {
       return { low: percentile(rents, 0.25), mid: percentile(rents, 0.5), high: percentile(rents, 0.75), count: rents.length }
     }

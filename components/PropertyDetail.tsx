@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, ShieldAlert, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
-import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, rentalRedfinUrl, sizeAdjustedRent } from '@/lib/rent-comps'
+import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, BED_ADJ, MAX_BED_DIFF, rentalRedfinUrl, compAdjustedRent } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
@@ -2159,9 +2159,9 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
     .map((r) => ({
       ...r,
       dist: distanceMiles(listing.lat, listing.lng, r.lat, r.lng),
-      adjusted: sizeAdjustedRent(r.monthlyRent, r.sqft, listing.sqft),
+      adjusted: compAdjustedRent(r, listing),
     }))
-    .filter((r) => r.dist <= 3 && r.beds === listing.beds && r.propertyType === listing.propertyType && isFreshComp(r.fetchedAt))
+    .filter((r) => r.dist <= 3 && Math.abs(r.beds - listing.beds) <= MAX_BED_DIFF && r.propertyType === listing.propertyType && isFreshComp(r.fetchedAt))
     .sort((a, b) => a.dist - b.dist)
   if (pool.length === 0) return null
 
@@ -2174,8 +2174,8 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
     <Section title={`Rent Comps · ${usedCount} used`}>
       <div className="py-1">
         <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-          Same-bed {listing.propertyType.toLowerCase()} rentals seen on Redfin in the last {MAX_COMP_AGE_DAYS} days, within {radius} mi
-          {radius === 3 ? ' (widened — fewer than 3 within 1.5 mi)' : ''}. Each rent is adjusted for size at ${SIZE_ADJ_PER_SQFT.toFixed(2)}/sqft
+          {listing.beds}-bed (±1) {listing.propertyType.toLowerCase()} rentals seen on Redfin in the last {MAX_COMP_AGE_DAYS} days, within {radius} mi
+          {radius === 3 ? ' (widened — fewer than 3 within 1.5 mi)' : ''}. Each rent is adjusted ${BED_ADJ} per bedroom and ${SIZE_ADJ_PER_SQFT.toFixed(2)}/sqft
           of difference{listing.sqft ? ` from this home's ${listing.sqft.toLocaleString()} sqft` : ' (size unknown — no adjustment)'}.
           {!shareMode && ' Exclude any that aren’t a fair match.'}
         </p>
@@ -2200,7 +2200,7 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
                     <div className={cn('text-sm text-slate-700 truncate', isExcluded && 'line-through')}>{r.address}</div>
                   )}
                   <div className="text-xs text-slate-400 mt-0.5">
-                    {r.baths}ba{r.sqft ? ` · ${r.sqft.toLocaleString()} sqft` : ''}
+                    <span className={cn(r.beds !== listing.beds && 'font-medium text-slate-500')}>{r.beds}bd</span> · {r.baths}ba{r.sqft ? ` · ${r.sqft.toLocaleString()} sqft` : ''}
                     <span className="mx-1">·</span>{r.dist.toFixed(1)} mi
                     {isExcluded && <span className="mx-1">· excluded</span>}
                   </div>
