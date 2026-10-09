@@ -26,14 +26,14 @@ export default function ExpenseDonut({ slices }: { slices: ExpenseSlice[] }) {
 
   return (
     <div className="flex items-center gap-4 pb-3 mb-2 border-b border-slate-100">
-      <div className="relative w-32 h-32 shrink-0">
-          <PieChart width={128} height={128}>
+      <div className="relative shrink-0" style={{ width: 128, height: 128 }}>
+          <PieChart width={128} height={128} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <Pie
               data={data}
               dataKey="value"
               nameKey="label"
-              cx={64}
-              cy={64}
+              cx="50%"
+              cy="50%"
               innerRadius={42}
               outerRadius={62}
               startAngle={90}
