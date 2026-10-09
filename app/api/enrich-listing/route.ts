@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     if (d.baths && !row.baths) updates.baths = d.baths
     if (d.sqft && !row.sqft) updates.sqft = d.sqft
     // Plan listings have no street address — label them by plan name instead of just the town
-    if (d.planName && !/\d/.test(row.address ?? '')) updates.address = d.planName
+    if (d.planName && !/^\d/.test(row.address ?? '')) updates.address = d.planName   // no leading house number
     const community = cleanSubdivision(subdivision) ?? (d.planCommunity ? cleanSubdivision(d.planCommunity.replace(/\s+(Townhomes|Townhouses|Homes|Condominiums|Condos)$/i, '')) : null)
     if (community) updates.community = community
 
