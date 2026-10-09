@@ -334,20 +334,6 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
 
       {/* Grade filter bar */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-slate-100 bg-white overflow-x-auto">
-        {!readOnly && needsDataCount > 0 && (
-          <button
-            onClick={() => setNeedsDataOnly(!needsDataOnly)}
-            className={cn(
-              'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors whitespace-nowrap',
-              needsDataOnly ? 'bg-amber-500 text-white border-amber-500' : 'border-amber-200 text-amber-800 bg-amber-50 hover:border-amber-300',
-            )}
-            title="Properties that need rent comps or listing details — collect them with the bookmarklet"
-          >
-            <AlertTriangle size={12} />
-            Needs data
-            <span className={cn('text-[10px]', needsDataOnly ? 'opacity-80' : 'text-amber-600')}>{needsDataCount}</span>
-          </button>
-        )}
         {favoriteCount > 0 && (
           <button
             onClick={() => setFavoritesOnly(!favoritesOnly)}
@@ -394,6 +380,20 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
             </button>
           )
         })}
+        {!readOnly && needsDataCount > 0 && (
+          <button
+            onClick={() => setNeedsDataOnly(!needsDataOnly)}
+            className={cn(
+              'shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors whitespace-nowrap',
+              needsDataOnly ? 'bg-amber-500 text-white border-amber-500' : 'border-amber-200 text-amber-800 bg-amber-50 hover:border-amber-300',
+            )}
+            title="Properties that need rent comps or listing details — collect them with the bookmarklet"
+          >
+            <AlertTriangle size={12} />
+            Needs data
+            <span className={cn('text-[10px]', needsDataOnly ? 'opacity-80' : 'text-amber-600')}>{needsDataCount}</span>
+          </button>
+        )}
       </div>
 
       {/* List */}
