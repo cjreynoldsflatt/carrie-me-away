@@ -45,6 +45,7 @@ export interface SaleListing {
   autoRent?: number                        // automated estimate a manual override resets to
   excludedCompIds?: string[]               // rental comps ruled out for this property
   isFavorite?: boolean                     // starred by the owner
+  marketStatus?: string                    // Redfin status badge: 'Active', 'Coming soon · Oct 15', 'Pending', 'Sold', 'Off market'
   // Realistic scenario (typical costs + comp-median rent) — set by computedSaleListings
   realisticRent?: number
   realisticNetAnnualIncome?: number

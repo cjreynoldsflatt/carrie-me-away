@@ -8,6 +8,8 @@ export interface RedfinDetail {
   yearBuilt?: number
   propertyType?: 'Townhouse' | 'Condo' | 'Single Family' | 'Multi Family'
   daysOnMarket?: number
+  // Status badge in the page header: 'Active', 'Coming soon · Oct 15', 'Pending', 'Sold · Oct 2, 2026', 'Off market'
+  marketStatus?: string
   propertyTaxAnnual?: number   // most recent year in the tax history table (actual bill)
   beds?: number
   baths?: number
@@ -64,6 +66,16 @@ export function parseRedfinDetail(raw: string): RedfinDetail {
     out.beds = num(summary[1])
     out.baths = num(summary[2])
     out.sqft = num(summary[3])
+    // The status badge sits just above the price/summary ("Coming soon on oct 15 $300,000 … 4 bd • 2 ba")
+    const head = t.slice(Math.max(0, (summary.index ?? 0) - 300), summary.index)
+    const cap = (s: string) => s.replace(/\b[a-z]/g, (c) => c.toUpperCase())
+    const soon = head.match(/Coming soon(?: on ([A-Za-z]{3,9} \d{1,2}))?/i)
+    const sold = head.match(/\bSold(?: on ([A-Za-z]{3,9} \d{1,2}, \d{4}))?/i)
+    out.marketStatus = soon ? `Coming soon${soon[1] ? ` · ${cap(soon[1])}` : ''}`
+      : /\b(Pending|Contingent|Under contract)\b/i.test(head) ? 'Pending'
+      : sold ? `Sold${sold[1] ? ` · ${cap(sold[1])}` : ''}`
+      : /\bOff market\b/i.test(head) ? 'Off market'
+      : 'Active'
   }
 
   // New-construction plan listings have no year built or tax history — mark them as new builds

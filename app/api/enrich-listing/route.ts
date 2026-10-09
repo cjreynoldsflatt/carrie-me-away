@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     if (d.propertyTaxAnnual != null) updates.property_tax_annual = d.propertyTaxAnnual
     if (d.yearBuilt != null) updates.year_built = d.yearBuilt
     if (d.daysOnMarket != null) updates.days_on_market = d.daysOnMarket
+    if (d.marketStatus) updates.market_status = d.marketStatus
     // Existing listings: only correct the Townhouse default so a manual type choice sticks
     if (d.propertyType && d.propertyType !== row.property_type && (setType || row.property_type === 'Townhouse')) updates.property_type = d.propertyType
     if (d.beds && !row.beds) updates.beds = d.beds
@@ -49,7 +50,12 @@ export async function POST(req: NextRequest) {
     if (community) updates.community = community
 
     if (Object.keys(updates).length > 0) {
-      const { error } = await supabase.from('sale_listings').update(updates).eq('id', row.id)
+      let { error } = await supabase.from('sale_listings').update(updates).eq('id', row.id)
+      // market_status column not added yet — save everything else
+      if (error && /market_status/.test(error.message)) {
+        delete updates.market_status
+        ;({ error } = await supabase.from('sale_listings').update(updates).eq('id', row.id))
+      }
       if (error) throw new Error(`Supabase: ${error.message}`)
     }
     return NextResponse.json({ address: row.address, updated: updates }, { headers: CORS })

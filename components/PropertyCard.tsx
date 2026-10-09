@@ -10,7 +10,7 @@ import { dataGaps } from '@/lib/data-gaps'
 import type { SaleListing } from '@/lib/types'
 import { fmtPrice, fmtRent, fmtYield, fmtCurrency, fmtPayback, fmtDom } from '@/lib/format'
 import { useAppStore } from '@/lib/store'
-import { distanceMiles } from '@/lib/investment'
+import { equityScenarios, tenYearRentalIncome, distanceMiles } from '@/lib/investment'
 import { HOME } from '@/lib/config'
 import { cn } from '@/lib/utils'
 
@@ -89,7 +89,9 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
 
   const isRentEdited = listing.rentSource === 'manual' && (listing.autoRent ?? 0) > 0 && listing.autoRent !== listing.estimatedRent
 
-    const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
+    const equityExpected = equityScenarios(listing.price, listing.appreciationRate).expected
+  const fiveYr = { equity: equityExpected, combined: tenYearRentalIncome(listing.netAnnualIncome) + equityExpected }
+  const distFromHome = distanceMiles(HOME.lat, HOME.lng, listing.lat, listing.lng)
 
   const isNonActive = listingStatus && listingStatus !== 'Active' && listingStatus !== 'Unknown'
 
@@ -147,7 +149,12 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
               {distFromHome.toFixed(1)} mi
             </span>
           )}
-          {listing.daysOnMarket > 0 && (
+          {listing.marketStatus && listing.marketStatus !== 'Active' ? (
+            <span className="bg-amber-400/95 text-amber-950 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <Clock size={10} />
+              {listing.marketStatus}
+            </span>
+          ) : listing.daysOnMarket > 0 && (
             <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
               <Clock size={10} />
               {fmtDom(listing.daysOnMarket)}
@@ -216,10 +223,18 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
 
         {/* Extra rental licensing/registration where this property sits */}
         {regulatedAreasAt(listing.lat, listing.lng).map((area) => (
-          <div key={area.id} className="flex items-center gap-1.5 text-xs font-medium text-purple-700" title={area.summary.join(' · ')}>
+          <a
+            key={area.id}
+            href={area.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            title={area.summary.join(' · ')}
+            className="self-start w-fit flex items-center gap-1.5 text-xs font-medium text-purple-700 bg-purple-50 border border-purple-200 rounded-full px-2.5 py-0.5 hover:bg-purple-100"
+          >
             <ScrollText size={12} />
             {area.short} required
-          </div>
+          </a>
         ))}
 
         <ListingLinks listing={listing} />
@@ -330,6 +345,15 @@ export default function PropertyCard({ listing, selected, onClick, selectMode = 
             <div className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Net Income</div>
             <div className="text-base font-bold text-slate-800">{fmtCurrency(listing.netAnnualIncome)}/yr</div>
             <div className="text-xs text-slate-400">{fmtPayback(listing.paybackYears)} payback</div>
+          </div>
+        </div>
+
+        {/* 5-year outlook — net rent plus appreciation */}
+        <div className="bg-slate-900 rounded-lg px-3 py-2 flex items-baseline justify-between gap-2">
+          <div className="text-xs text-slate-400 uppercase tracking-wide">5-yr gain</div>
+          <div className="text-right">
+            <span className="text-base font-bold text-white">+{fmtCurrency(fiveYr.combined)}</span>
+            <span className="text-xs text-slate-400 ml-1.5">{fmtCurrency(fiveYr.equity)} equity + rent</span>
           </div>
         </div>
 

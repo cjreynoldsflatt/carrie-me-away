@@ -562,7 +562,12 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                     {distFromHome.toFixed(1)} mi
                   </span>
                 )}
-                {listing.daysOnMarket > 0 && (
+                {listing.marketStatus && listing.marketStatus !== 'Active' ? (
+                  <span className="bg-amber-400/95 text-amber-950 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <Clock size={10} />
+                    {listing.marketStatus}
+                  </span>
+                ) : listing.daysOnMarket > 0 && (
                   <span className="bg-white/90 backdrop-blur-sm text-slate-600 text-xs px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
                     <Clock size={10} />
                     {fmtDom(listing.daysOnMarket)}
@@ -663,7 +668,9 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                 {listing.community && (
                   <span className="flex items-center gap-1"><Building2 size={12} />{listing.community}</span>
                 )}
-                {listing.daysOnMarket > 0 && (
+                {listing.marketStatus && listing.marketStatus !== 'Active' ? (
+                  <span className="flex items-center gap-1 font-medium text-amber-700"><Clock size={12} />{listing.marketStatus}</span>
+                ) : listing.daysOnMarket > 0 && (
                   <span className="flex items-center gap-1"><Clock size={12} />{fmtDom(listing.daysOnMarket)} on market</span>
                 )}
                 {listing.hoaMonthly > 0 && <span>HOA {fmtCurrency(listing.hoaMonthly)}/mo</span>}

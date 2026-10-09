@@ -81,6 +81,7 @@ export function rowToSaleListing(row: Row): SaleListing {
     autoRent: row.auto_rent ?? undefined,
     excludedCompIds: row.excluded_comp_ids ?? [],
     isFavorite: row.is_favorite ?? false,
+    marketStatus: row.market_status ?? undefined,
     conservativeRent,
     propertyTaxAnnual,                                   // seller's current bill (display only)
     sdatAssessedValue,
