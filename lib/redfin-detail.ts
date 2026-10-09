@@ -48,6 +48,14 @@ export function parseRedfinDetail(raw: string): RedfinDetail {
   if (tax) {
     const v = num(tax[1])
     if (v >= 200 && v <= 60_000) out.propertyTaxAnnual = v
+  } else {
+    // No tax history yet (new public record): fall back to Redfin's payment-calculator estimate
+    // ("Property taxes $247" per month) — home-specific, and better than the 1%-of-price placeholder
+    const calc = t.match(/Payment calculator[^]{0,300}?Property taxes \$([\d,]+)/i)
+    if (calc) {
+      const v = num(calc[1]) * 12
+      if (v >= 200 && v <= 60_000) out.propertyTaxAnnual = v
+    }
   }
 
   // Header summary: "4 bd • 2 ba • 1,720 sq ft"
