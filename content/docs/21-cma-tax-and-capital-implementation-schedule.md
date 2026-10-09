@@ -1,9 +1,9 @@
 # 21 — CMA Tax & Capital Implementation Schedule
 
 **Status:** Final tax-implementation working draft; CPA and tax-attorney review required before grant, funding, sale, or filing  
-**Version:** 2026-08-26.5  
+**Version:** 2026-10-08.1  
 **Effective date:** [EFFECTIVE DATE]  
-**Last reviewed:** 2026-08-26  
+**Last reviewed:** 2026-10-08  
 **Document owner:** CMA-I  
 **Approved by:** Pending  
 **Related documents:** 02, 06, 08, 09, 19, 23
@@ -73,14 +73,17 @@ For each property subledger:
 ```text
 approved purchase equity
 + approved acquisition closing costs
-+ initial reserve funded as capital
++ initial reserve funded as capital (the Reserve Seed)
 + approved capital improvements
 + debt principal funded directly from CMA-I capital
 + operating shortfalls expressly designated as capital
 + other amounts approved by written resolution
 - prior amounts expressly returned from that property as capital
+  (including a Reserve Seed returned to CMA-I under Doc 06, Section 4A)
 = Attributed Property Capital
 ```
+
+A returned Reserve Seed moves from the property subledger back to unattributed CMA-I capital. It does not reduce any member's Unrecovered Contributed Capital unless it is later distributed to that member and designated as a return of capital.
 
 Exclude:
 

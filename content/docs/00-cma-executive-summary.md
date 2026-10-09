@@ -71,8 +71,13 @@ Member capital
 Tenant rent
     -> DoorLoop
     -> CMA-PM Operating Account
-    -> property expenses and reserve
+    -> property expenses and reserve set-asides
     -> excess property cash to CMA-I
+
+Reserve Seed ($20K per property)
+    -> CMA-I Operating Account funds it at acquisition
+    -> replaced over time by vacancy / maintenance / CapEx / turnover set-asides
+    -> returned to the CMA-I Operating Account once the reserve is self-funded
 
 Tenant security deposit
     -> separate CMA-PM Security Deposit Account
@@ -85,6 +90,8 @@ Each property maintains an operating reserve equal to the greater of:
 
 - $20,000; or
 - approximately nine months of unavoidable carrying costs.
+
+CMA-I seeds the reserve at acquisition. The property's set-asides then build its own reserve, and the seed is returned to the CMA-I Operating Account once they reach the target (Doc 06, Section 4A).
 
 CMA-PM also maintains a separate company working-capital target of $5,000.
 

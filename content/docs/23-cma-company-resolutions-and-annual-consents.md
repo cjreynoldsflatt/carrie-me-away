@@ -1,9 +1,9 @@
 # 23 — CMA Company Resolutions & Annual Consents
 
 **Status:** Final signable template library; complete the correct entity, approval basis, and attachments before use  
-**Version:** 2026-08-26.5  
+**Version:** 2026-10-08.1  
 **Effective date:** [EFFECTIVE DATE]  
-**Last reviewed:** 2026-08-26  
+**Last reviewed:** 2026-10-08  
 **Document owner:** CMA-I / CMA-PM / applicable Property LLC  
 **Approved by:** Each completed consent  
 **Related documents:** 02, 03, 04, 06, 07, 09, 19, 20, 21, 22
@@ -95,7 +95,7 @@ The approving party reviewed the Property Analysis, due diligence, financing, in
 
 1. [ENTITY] is authorized to acquire [PROPERTY ADDRESS] for a purchase price not exceeding $[AMOUNT].
 2. Financing may not exceed $[AMOUNT] and must remain within the attached approved terms.
-3. The initial property reserve is $[AMOUNT].
+3. The initial property reserve (Reserve Seed) is $[AMOUNT], funded from the CMA-I Operating Account and returned to it once the reserve is self-funded under Doc 06, Section 4A.
 4. The property will be owned by [PROPERTY LLC NAME].
 5. [AUTHORIZED PERSON] may execute documents reasonably necessary to close within the approved limits.
 6. A material change in price, financing, guaranty, title, or due-diligence condition requires further approval under Doc 02.

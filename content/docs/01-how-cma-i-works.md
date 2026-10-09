@@ -1,9 +1,9 @@
 # 01 — How CMA-I Works
 
 **Status:** Final plain-English operating overview draft  
-**Version:** 2026-08-26.5
+**Version:** 2026-10-08.1
 **Effective Date:** Not yet effective  
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-10-08
 **Supersedes:** All prior drafts of Doc 01  
 **Document Owner:** CMA-I  
 **Approved By:** Pending
@@ -230,6 +230,14 @@ Banking may be centralized, but bookkeeping stays property-specific.
 Property reserve target:
 
 ## Greater of $20,000 or approximately 9 months of unavoidable carrying costs
+
+How it is funded:
+
+1. At purchase, CMA-I puts in the reserve as a **Reserve Seed** (normally $20,000).
+2. Each month, the budgeted vacancy, maintenance, CapEx, and turnover amounts are set aside from rent into the reserve. Actual repairs are paid from it.
+3. When those set-asides, less what was spent, reach the target, the $20,000 seed goes back to the CMA-I Operating Account and is available for the next property.
+
+The returned seed is not a distribution to anyone. It stays CMA-I capital. See Doc 06, Section 4A.
 
 CMA-PM company working-capital target:
 

@@ -1,9 +1,9 @@
 # 19 — CMA Annual Compliance Calendar & Entity Checklist
 
 **Status:** Final internal compliance calendar; current forms, fees, and deadlines must be verified each year  
-**Version:** 2026-08-26.5  
+**Version:** 2026-10-08.1  
 **Effective date:** [EFFECTIVE DATE]  
-**Last reviewed:** 2026-08-26  
+**Last reviewed:** 2026-10-08  
 **Document owner:** CMA-I / CMA-PM  
 **Approved by:** Pending annual consent  
 **Related documents:** 02, 03, 06, 07, 10, 13, 18, 20, 21, 22, 23
@@ -111,6 +111,7 @@ For each property:
 - [ ] insurance renewed
 - [ ] renter's-insurance requirement reviewed
 - [ ] reserve target recalculated
+- [ ] Reserve Seed replacement test checked (Doc 06, Section 4A); seed returned to CMA-I if met
 - [ ] Super decision reviewed
 - [ ] emergency vendor roster reviewed
 - [ ] preventive maintenance reviewed

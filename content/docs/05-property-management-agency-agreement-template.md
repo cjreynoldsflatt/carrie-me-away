@@ -1,9 +1,9 @@
 # 05 — Property Management & Agency Agreement Template
 
 **Status:** Final consolidated legal template — complete property-specific review required before use  
-**Version:** 2026-08-26.5
+**Version:** 2026-10-08.1
 **Effective Date:** [EFFECTIVE DATE]  
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-10-08
 **Supersedes:** All prior drafts of Doc 05  
 **Document Owner:** Property LLC and CMA-PM  
 **Approved By:** Pending execution by both entities
@@ -216,6 +216,8 @@ The initial reserve target is the greater of:
 The target may increase toward 12 months based on Property risk.
 
 Manager will track reserve amounts separately for this Property.
+
+The reserve is first funded by Owner's parent (CMA-I) as a **Reserve Seed**. Each month, Manager will set aside the approved vacancy, maintenance, CapEx, and turnover allowances from collected rent to the Property's reserve, and pay reserve expenses from it. When those set-asides, less reserve spending, reach the reserve target, Manager will return the Reserve Seed to the CMA-I Operating Account, as described in Doc 06, Section 4A.
 
 ---
 

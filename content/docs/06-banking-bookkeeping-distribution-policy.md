@@ -1,8 +1,8 @@
 # 06 — Banking, Bookkeeping & Distribution Policy
 
 **Status:** Final internal operating policy  
-**Version:** 2026-08-26.5
-**Last reviewed:** 2026-08-26
+**Version:** 2026-10-08.1
+**Last reviewed:** 2026-10-08
 **Document owner:** CMA-I / CMA-PM  
 **Supersedes:** All earlier versions of Doc 06  
 **Related documents:** 02, 03, 05, 08, 19, 21, 23
@@ -65,7 +65,8 @@ One bank account may contain cash attributable to multiple properties, but the b
 Rent and tenant receipts
     -> CMA-PM Operating Account
     -> pay property expenses and obligations
-    -> maintain / restore approved property reserve
+    -> set aside vacancy, maintenance, CapEx, and turnover allowances to the property reserve
+    -> once the reserve is self-funded, return the Reserve Seed to the CMA-I Operating Account (Section 4A)
     -> transfer excess property cash to CMA-I
 ```
 
@@ -87,7 +88,44 @@ CMA-I may increase the target toward 12 months based on:
 - lender or insurer requirements;
 - concentration or market risk.
 
-The property reserve is a cash-liquidity target. It is separate from annual underwriting assumptions for vacancy, maintenance, CapEx, and turnover.
+The property reserve is a cash-liquidity target. The annual underwriting allowances for vacancy, maintenance, CapEx, and turnover are what fund it over time (Section 4A).
+
+## 4A. Reserve Seed and Replacement
+
+The reserve starts as CMA-I capital and is replaced by the property's own set-asides.
+
+**1. Reserve Seed.** At acquisition, CMA-I transfers the reserve target (normally $20,000) from the CMA-I Operating Account to the CMA-PM Operating Account. This is the **Reserve Seed**. It is recorded as initial reserve funding in that property's Attributed Property Capital.
+
+**2. Monthly set-asides.** Each month, before any excess property cash goes to CMA-I, CMA-PM records set-asides to the property's reserve subledger equal to the property's approved underwriting allowances applied to rent collected that month:
+
+- vacancy;
+- maintenance;
+- CapEx;
+- turnover.
+
+Unless CMA-I approves different rates for a property, use the rates in the approved Property Analysis (currently 5% vacancy, 10% maintenance, and 10% CapEx of rent, plus the turnover allowance). Set-asides are property operating cash, not capital.
+
+**3. Reserve spending.** Repairs, CapEx, turnover costs, and carrying costs during vacancy are paid from the property's reserve subledger.
+
+**4. Replacement test.** The property's **Self-Funded Reserve** is:
+
+```text
+cumulative set-asides
+- cumulative reserve spending
+= Self-Funded Reserve
+```
+
+When the Self-Funded Reserve reaches the property's reserve target (the greater of $20,000 or about nine months of unavoidable carrying costs), the reserve is self-funded. Put another way: the reserve balance has reached the Reserve Seed plus the target. CMA-PM checks this test during the monthly reconciliation.
+
+**5. Return of the Reserve Seed.** Once the test is met, CMA-PM transfers the full Reserve Seed to the CMA-I Operating Account. This happens once per property and is documented in the property subledger with CMA-I's written approval.
+
+- The returned seed reduces that property's Attributed Property Capital by the seed amount.
+- It stays CMA-I capital and may be used for the next acquisition.
+- It is **not** a member distribution, and it does not change any member's Unrecovered Contributed Capital at CMA-I. Paying any of it out to a member is a separate capital return under Doc 02.
+
+**6. After the return.** The reserve stays at its target. Set-asides continue only as needed to hold the target, and cash above it moves to CMA-I under Section 3. If spending later drops the reserve below target, set-asides refill it before excess cash goes to CMA-I. An urgent shortfall may be funded by CMA-I under Doc 05, Section 9.
+
+**7. Sale or refinance before the return.** If a property is sold or refinanced before the seed is returned, the remaining reserve is handled with the transaction proceeds. Any unreturned seed remains part of that property's Attributed Property Capital.
 
 ## 5. CMA-PM Working Capital
 
@@ -122,7 +160,7 @@ Tracked by member at CMA-I under Doc 02.
 
 ### Attributed Property Capital
 
-The portion assigned to a specific property subledger. It may include approved acquisition equity, closing costs, initial reserve funding, capital improvements, debt principal funded from CMA-I capital, and operating shortfalls expressly designated as capital.
+The portion assigned to a specific property subledger. It may include approved acquisition equity, closing costs, initial reserve funding (until the Reserve Seed is returned under Section 4A), capital improvements, debt principal funded from CMA-I capital, and operating shortfalls expressly designated as capital.
 
 ### Member Loan
 

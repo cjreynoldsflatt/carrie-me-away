@@ -1,7 +1,7 @@
 # 04 — Property LLC Operating Agreement Template
 
 **Status:** Final CMA working template; attorney review and property-specific completion required  
-**Version:** 2026-08-26.5
+**Version:** 2026-10-08.1
 **Document owner:** CMA-I as sole member  
 **Supersedes:** All earlier versions of Doc 04  
 **Related documents:** 02, 05, 06, 07, 20, 23
@@ -94,6 +94,8 @@ The Company should have access to an operating reserve equal to the greater of:
 - approximately nine months of unavoidable carrying costs.
 
 The reserve may be held through CMA-PM if separately attributed to the Property.
+
+The reserve is seeded with CMA-I capital and then replaced by set-asides from the Property's rent. Once replaced, the seed is returned to CMA-I (Doc 06, Section 4A).
 
 ## 10. Accounts and Bookkeeping
 
