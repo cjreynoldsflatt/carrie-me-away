@@ -82,6 +82,7 @@ export function rowToSaleListing(row: Row): SaleListing {
     excludedCompIds: row.excluded_comp_ids ?? [],
     isFavorite: row.is_favorite ?? false,
     marketStatus: row.market_status ?? undefined,
+    unitBeds: row.unit_beds ?? undefined,
     conservativeRent,
     propertyTaxAnnual,                                   // seller's current bill (display only)
     sdatAssessedValue,
@@ -119,7 +120,7 @@ export function rowToRentalListing(row: Row): RentalListing {
     sqft: row.sqft ?? 0,
     daysOnMarket: row.days_on_market ?? 0,
     community: row.community ?? undefined,
-    propertyType: row.property_type as PropertyType,
+    propertyType: row.property_type as RentalListing['propertyType'],
     fetchedAt: row.fetched_at ?? undefined,
   }
 }

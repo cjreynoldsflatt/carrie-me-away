@@ -17,13 +17,15 @@ export function isFreshComp(fetchedAt: string | null | undefined): boolean {
  * /STATE/City/slug/home/<id> path to the right listing — so the slug is best-effort.
  */
 export function rentalRedfinUrl(r: { id: string; address: string; city: string }): string | null {
-  const homeId = r.id.match(/^redfin-rental-(\d+)$/)?.[1]
-  if (!homeId) return null
+  const idm = r.id.match(/^redfin-rental-(apt-)?(\d+)$/)
+  if (!idm) return null
+  const [, apt, homeId] = idm
+  const kind = apt ? 'apartment' : 'home'
   const m = r.city.match(/^(.*?),\s*([A-Z]{2})\s+(\d{5})/)   // "Frederick, MD 21704"
   const slug = (s: string) => s.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '')
   return m
-    ? `https://www.redfin.com/${m[2]}/${slug(m[1])}/${slug(r.address)}-${m[3]}/home/${homeId}`
-    : `https://www.redfin.com/home/${homeId}`
+    ? `https://www.redfin.com/${m[2]}/${slug(m[1])}/${slug(r.address)}-${m[3]}/${kind}/${homeId}`
+    : `https://www.redfin.com/${kind}/${homeId}`
 }
 
 // Size adjustment: rent doesn't scale linearly with size, so each comp's rent moves by a modest
@@ -75,9 +77,59 @@ function trimOutliers(sorted: number[]): number[] {
   return sorted.filter((r) => r >= med * 0.6 && r <= med * 1.6)
 }
 
+// Multi-family is priced unit by unit: each unit is compared with apartment/condo rentals of
+// its own bedroom count. Unit sizes are rarely listed, so there's no size adjustment.
+export const UNIT_COMP_TYPES = ['Apartment', 'Condo', 'Multi Family']
+
+/** One unit's estimate from nearby apartment/condo rentals (null when fewer than MIN_COMPS). */
+export function estimateUnitFromComps(sale: Row, beds: number, rentals: Row[]): (CompEstimate & { ids: string[] }) | null {
+  const excluded = new Set<string>(sale.excluded_comp_ids ?? [])
+  const candidates = rentals.filter((r) =>
+    Math.abs(r.beds - beds) <= MAX_BED_DIFF &&
+    UNIT_COMP_TYPES.includes(r.property_type) &&
+    r.monthly_rent > 0 &&
+    isFreshComp(r.fetched_at) &&
+    !excluded.has(r.id),
+  )
+  for (const radius of RADII_MILES) {
+    const near = candidates.filter((r) => distanceMiles(sale.lat, sale.lng, r.lat, r.lng) <= radius)
+    const rents = trimOutliers(near
+      .map((r) => r.monthly_rent + (beds - r.beds) * BED_ADJ)
+      .sort((a, b) => a - b))
+    if (rents.length >= MIN_COMPS) {
+      return { low: percentile(rents, 0.25), mid: percentile(rents, 0.5), high: percentile(rents, 0.75), count: rents.length, ids: near.map((r) => r.id) }
+    }
+  }
+  return null
+}
+
+/** Per-unit estimates for a multi-family row with a unit mix (unit_beds); null if any unit lacks comps. */
+export function unitEstimates(sale: Row, rentals: Row[]): (CompEstimate & { beds: number })[] | null {
+  const mix: number[] = Array.isArray(sale.unit_beds) ? sale.unit_beds : []
+  if (sale.property_type !== 'Multi Family' || mix.length === 0) return null
+  const out: (CompEstimate & { beds: number })[] = []
+  for (const beds of mix) {
+    const e = estimateUnitFromComps(sale, beds, rentals)
+    if (!e) return null
+    out.push({ beds, low: e.low, mid: e.mid, high: e.high, count: e.count })
+  }
+  return out
+}
+
 export function estimateFromComps(sale: Row, rentals: Row[]): CompEstimate | null {
-  // Multi-family is priced per unit — single-home comps don't apply
-  if (sale.property_type === 'Multi Family' || !sale.beds) return null
+  // Multi-family: sum of per-unit estimates (needs the unit mix)
+  if (sale.property_type === 'Multi Family') {
+    const units = unitEstimates(sale, rentals)
+    if (!units) return null
+    const ids = new Set(units.flatMap((u) => estimateUnitFromComps(sale, u.beds, rentals)?.ids ?? []))
+    return {
+      low: units.reduce((s, u) => s + u.low, 0),
+      mid: units.reduce((s, u) => s + u.mid, 0),
+      high: units.reduce((s, u) => s + u.high, 0),
+      count: ids.size,
+    }
+  }
+  if (!sale.beds) return null
   const excluded = new Set<string>(sale.excluded_comp_ids ?? [])   // comps the user ruled out for this property
   const candidates = rentals.filter((r) =>
     Math.abs(r.beds - sale.beds) <= MAX_BED_DIFF &&

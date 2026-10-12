@@ -46,6 +46,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (typeof body.units === 'number' && body.units >= 2 && body.units <= 100) {
     updates.units = body.units
   }
+  // Multi-family unit mix: bedrooms per unit (0 = studio)
+  if (Array.isArray(body.unit_beds) && body.unit_beds.length <= 100 &&
+      body.unit_beds.every((b: unknown) => Number.isInteger(b) && (b as number) >= 0 && (b as number) <= 6)) {
+    updates.unit_beds = body.unit_beds
+  }
   if (typeof body.lat === 'number' && body.lat >= 24 && body.lat <= 50) {
     updates.lat = body.lat
   }

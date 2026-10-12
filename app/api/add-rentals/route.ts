@@ -25,7 +25,7 @@ interface IncomingRental {
   lng?: number
 }
 
-const VALID_TYPES = ['Townhouse', 'Condo', 'Single Family', 'Multi Family']
+const VALID_TYPES = ['Townhouse', 'Condo', 'Single Family', 'Multi Family', 'Apartment']
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,10 +43,12 @@ export async function POST(req: NextRequest) {
 
     const now = new Date().toISOString()
     const rows = rentals.flatMap((r) => {
-      const homeId = r.url?.match(/\/home\/(\d+)/)?.[1]
+      // Houses/condos link to /home/<id>; apartment listings to /apartment/<id> (a separate ID space)
+      const idMatch = r.url?.match(/\/(home|apartment)\/(\d+)/)
+      const homeId = idMatch ? (idMatch[1] === 'apartment' ? `apt-${idMatch[2]}` : idMatch[2]) : undefined
       const coords = validCoords(r.lat, r.lng)
       const rent = Number(r.rent), beds = Number(r.beds)
-      if (!homeId || !coords || !(rent > 0) || !(beds > 0) || !r.address) return []
+      if (!homeId || !coords || !(rent > 0) || !(beds >= 0) || !r.address) return []   // 0 beds = studio
       // "3614 Sprigg St S, Frederick, MD 21704" → street + "Frederick, MD 21704"
       const [street, ...rest] = r.address.split(',').map((s) => s.trim())
       return [{

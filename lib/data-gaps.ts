@@ -3,7 +3,7 @@
 import type { SaleListing } from './types'
 
 export interface DataGap {
-  key: 'no-comps' | 'details'
+  key: 'no-comps' | 'details' | 'unit-mix'
   label: string          // short chip text
   detail: string         // one-line explanation
   href: string           // Redfin page to open
@@ -18,6 +18,8 @@ const REDFIN_TYPE: Record<string, string> = { Townhouse: 'townhouse', 'Single Fa
 export function redfinRentalsUrl(l: Pick<SaleListing, 'city' | 'propertyType'>): string | null {
   const zip = l.city.match(/\b\d{5}\b/g)?.pop()
   if (!zip) return null
+  // Multi-family units compare with apartments, which Redfin lists on their own page
+  if (l.propertyType === 'Multi Family') return `https://www.redfin.com/zipcode/${zip}/apartments-for-rent`
   const type = REDFIN_TYPE[l.propertyType]
   return `https://www.redfin.com/zipcode/${zip}/rentals${type ? `/filter/property-type=${type}` : ''}`
 }
@@ -27,16 +29,30 @@ export function dataGaps(l: SaleListing): DataGap[] {
   const rentals = redfinRentalsUrl(l)
   const zip = l.city.match(/\b\d{5}\b/g)?.pop() ?? ''
 
+  // Multi-family: per-unit comps need the unit mix first
+  if (l.propertyType === 'Multi Family' && !(l.unitBeds?.length) && l.listingUrl) {
+    gaps.push({
+      key: 'unit-mix',
+      label: 'Set unit mix',
+      detail: 'Enter the bedrooms for each unit (Step 2) so each unit can be priced from apartment rentals.',
+      href: l.listingUrl,
+      action: 'Check the listing for the unit breakdown, then set beds per unit in Step 2',
+      button: 'Listing page',
+    })
+  }
+
   // Rent: comps beat HUD, which runs high in these markets; manual rent is the owner's call
-  if (rentals && l.propertyType !== 'Multi Family' && l.rentSource !== 'manual') {
+  if (rentals && (l.propertyType !== 'Multi Family' || l.unitBeds?.length) && l.rentSource !== 'manual') {
     if (l.rentSource !== 'comps') {
       gaps.push({
         key: 'no-comps',
         label: 'No rent comps',
-        detail: `Rent is a HUD estimate — save ${l.beds}-bed ${l.propertyType.toLowerCase()} rentals in ${zip} to replace it.`,
+        detail: l.propertyType === 'Multi Family'
+          ? `Rent is a HUD estimate — save apartment rentals in ${zip} to price each unit.`
+          : `Rent is a HUD estimate — save ${l.beds}-bed ${l.propertyType.toLowerCase()} rentals in ${zip} to replace it.`,
         href: rentals,
-        action: `Open ${zip} rentals on Redfin, then click the bookmarklet`,
-        button: `${zip} rentals search`,
+        action: `Open ${zip} ${l.propertyType === 'Multi Family' ? 'apartment ' : ''}rentals on Redfin, then click the bookmarklet`,
+        button: `${zip} ${l.propertyType === 'Multi Family' ? 'apartments' : 'rentals search'}`,
       })
     }
   }

@@ -89,6 +89,8 @@ interface AppState {
   savePropertyTypeToDb: (id: string, propertyType: PropertyType) => Promise<void>
   // Persist units count to Supabase
   saveUnitsToDb: (id: string, units: number) => Promise<void>
+  // Persist the multi-family unit mix, then reload so per-unit comps re-run on the server
+  saveUnitBedsToDb: (id: string, unitBeds: number[]) => Promise<void>
   // Persist corrected lat/lng to Supabase
   saveLocationToDb: (id: string, lat: number, lng: number) => Promise<void>
 
@@ -261,6 +263,21 @@ export const useAppStore = create<AppState>()(
         })
         if (!res.ok) {
           alert('Could not save — the excluded_comp_ids column may be missing in Supabase (see supabase/migrations).')
+          return
+        }
+        const data = await fetch('/api/listings').then((r) => r.json())
+        if (data?.saleListings) set({ saleListings: data.saleListings })
+      },
+
+      saveUnitBedsToDb: async (id, unitBeds) => {
+        set((state) => ({ saleListings: state.saleListings.map((l) => (l.id === id ? { ...l, unitBeds } : l)) }))
+        const res = await fetch(`/api/listings/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ unit_beds: unitBeds }),
+        })
+        if (!res.ok) {
+          alert('Could not save the unit mix — the unit_beds column may be missing in Supabase (see supabase/migrations).')
           return
         }
         const data = await fetch('/api/listings').then((r) => r.json())

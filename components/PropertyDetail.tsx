@@ -4,13 +4,13 @@ import Image from 'next/image'
 import { ArrowLeft, ChevronRight, Building2, Home, Clock, ExternalLink, Trash2, MapPin, RotateCcw, Navigation, Link2, Share2, Check, ScrollText, Printer, MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
-import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, BED_ADJ, MAX_BED_DIFF, rentalRedfinUrl, compAdjustedRent } from '@/lib/rent-comps'
+import { isFreshComp, MAX_COMP_AGE_DAYS, MIN_COMPS, SIZE_ADJ_PER_SQFT, BED_ADJ, MAX_BED_DIFF, rentalRedfinUrl, compAdjustedRent, UNIT_COMP_TYPES, unitEstimates } from '@/lib/rent-comps'
 import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
 import ExpenseDonut from './ExpenseDonut'
 import ListingLinks, { linkClass } from './ListingLinks'
-import { dataGaps } from '@/lib/data-gaps'
+import { dataGaps, redfinRentalsUrl } from '@/lib/data-gaps'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine } from 'recharts'
 import { fmtCurrency, fmtDom, fmtPayback, fmtPrice, fmtRent, fmtYield } from '@/lib/format'
@@ -319,6 +319,8 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const saveSuperToDb = useAppStore((s) => s.saveSuperToDb)
   const savePropertyTypeToDb = useAppStore((s) => s.savePropertyTypeToDb)
   const saveUnitsToDb = useAppStore((s) => s.saveUnitsToDb)
+  const saveUnitBedsToDb = useAppStore((s) => s.saveUnitBedsToDb)
+  const rentalListings = useAppStore((s) => s.rentalListings)
   const saveLocationToDb = useAppStore((s) => s.saveLocationToDb)
   const listing = saleListings.find((l) => l.id === selectedId)
   // Automated estimate (comps or HUD) that a manual override resets to
@@ -333,6 +335,8 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const [propertyTaxInput, setPropertyTaxInput] = useState(listing?.cmaPropertyTaxAnnual ?? listing?.propertyTaxAnnual ?? 0)
   // Per-unit rents for multi-family
   const [unitRents, setUnitRents] = useState<number[]>([])
+  // Multi-family unit mix being edited (null = not chosen yet); saved once every unit has a value
+  const [unitBedsInput, setUnitBedsInput] = useState<(number | null)[]>([])
   // Which gear row is expanded
   const [openGear, setOpenGear] = useState<string | null>(null)
   const [pmRateBeforeDisable, setPmRateBeforeDisable] = useState(
@@ -367,8 +371,10 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     if (listing?.propertyType === 'Multi Family' && dbUnits >= 2) {
       const perUnit = Math.round(dbRent / dbUnits)
       setUnitRents(Array(dbUnits).fill(perUnit))
+      setUnitBedsInput(Array.from({ length: dbUnits }, (_, i) => listing?.unitBeds?.[i] ?? null))
     } else {
       setUnitRents([])
+      setUnitBedsInput([])
     }
   }, [listing?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -395,6 +401,26 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
     setWhatIfRent(effectiveRentInput > 0 && effectiveRentInput !== defaultRent ? { id: listing.id, rent: effectiveRentInput } : null)
   }, [listing?.id, effectiveRentInput, defaultRent]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => setWhatIfRent(null), [listing?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Multi-family: split the building rent across units in proportion to each unit's comp estimate
+  // (larger units get more), or evenly without one. Skipped when the units already add up — so a
+  // rent the user typed per unit isn't reshuffled.
+  const unitWeights = (listing && isMultiFamily && listing.unitBeds?.length)
+    ? unitEstimates(
+        { property_type: listing.propertyType, unit_beds: listing.unitBeds, lat: listing.lat, lng: listing.lng, excluded_comp_ids: listing.excludedCompIds },
+        rentalListings.map((r) => ({ id: r.id, beds: r.beds, property_type: r.propertyType, monthly_rent: r.monthlyRent, fetched_at: r.fetchedAt, lat: r.lat, lng: r.lng })),
+      )?.map((u) => u.low) ?? null
+    : null
+  const unitWeightsKey = unitWeights?.join(',') ?? ''
+  useEffect(() => {
+    if (!listing || !isMultiFamily || unitsInput < 2 || defaultRent <= 0) return
+    if (unitRents.length === unitsInput && unitRents.reduce((s, r) => s + r, 0) === defaultRent) return
+    const w = unitWeights && unitWeights.length === unitsInput ? unitWeights : Array(unitsInput).fill(1)
+    const wSum = w.reduce((s, x) => s + x, 0)
+    const split = w.map((x) => Math.round(defaultRent * x / wSum))
+    split[split.length - 1] += defaultRent - split.reduce((s, r) => s + r, 0)   // rounding remainder
+    setUnitRents(split)
+  }, [listing?.id, defaultRent, unitWeightsKey, unitsInput]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!listing) return null
 
@@ -655,10 +681,13 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                         const total = unitRents.reduce((s, r) => s + r, 0) || rentInput
                         const perUnit = Math.round(total / newUnits)
                         setUnitRents(Array(newUnits).fill(perUnit))
+                        setUnitBedsInput(Array.from({ length: newUnits }, (_, i) => unitBedsInput[i] ?? null))
                       }}
                       onBlur={(e) => {
                         const newUnits = Math.max(2, Math.round(Number(e.target.value)))
                         saveUnitsToDb(listing.id, newUnits)
+                        const mix = Array.from({ length: newUnits }, (_, i) => unitBedsInput[i] ?? null)
+                        if (mix.every((b) => b != null)) saveUnitBedsToDb(listing.id, mix as number[])
                       }}
                       className="w-16 text-sm text-right tabular-nums border border-slate-200 rounded-md px-2 py-0.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
@@ -850,8 +879,26 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
             {isMultiFamily && unitRents.length > 0 ? (
               // Per-unit rent inputs for multi-family — auto-save on blur
               unitRents.map((r, i) => (
-                <div key={i} className="flex items-center justify-between gap-4 py-1.5">
-                  <span className="text-sm font-semibold text-slate-900">Unit {i + 1} monthly rent</span>
+                <div key={i} className="flex items-center justify-between gap-3 py-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-semibold text-slate-900 whitespace-nowrap">Unit {i + 1}</span>
+                    <select
+                      value={unitBedsInput[i] ?? ''}
+                      onChange={(e) => {
+                        const next = Array.from({ length: unitsInput }, (_, j) => unitBedsInput[j] ?? null)
+                        next[i] = e.target.value === '' ? null : Number(e.target.value)
+                        setUnitBedsInput(next)
+                        if (next.every((b) => b != null)) saveUnitBedsToDb(listing.id, next as number[])
+                      }}
+                      className={cn('text-xs border rounded-md px-1.5 py-0.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        unitBedsInput[i] == null ? 'border-amber-300 text-amber-700' : 'border-slate-200 text-slate-700')}
+                      aria-label={`Unit ${i + 1} bedrooms`}
+                    >
+                      <option value="">Beds?</option>
+                      <option value="0">Studio</option>
+                      {[1, 2, 3, 4, 5].map((b) => <option key={b} value={b}>{b} bed</option>)}
+                    </select>
+                  </div>
                   <div className="flex items-center gap-1">
                     <span className="text-sm text-slate-400">$</span>
                     <input
@@ -960,6 +1007,9 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
                   </button>
                 )}
               </>
+            )}
+            {isMultiFamily && unitBedsInput.some((b) => b == null) && (
+              <div className="text-xs text-amber-600 pb-1">Pick the bedrooms for each unit to price it from nearby apartment rentals.</div>
             )}
             {/* Total + reset for MF */}
             {isMultiFamily && unitRents.length > 0 && (
@@ -2122,28 +2172,196 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
 }
 
 // ── Rent comparables ─────────────────────────────────────────────────────────
+// Single homes: one list of same-type rentals. Multi-family: one list per unit size, drawn
+// from apartment/condo rentals (lib/rent-comps estimateUnitFromComps).
 function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing; shareMode?: boolean }) {
+  const rentalListings = useAppStore((s) => s.rentalListings)
+  if (listing.propertyType !== 'Multi Family') {
+    return <CompList listing={listing} shareMode={shareMode} beds={listing.beds} types={[listing.propertyType]} sizeAdjust standalone />
+  }
+
+  const mix = listing.unitBeds ?? []
+  const apartmentsUrl = redfinRentalsUrl(listing)
+  if (mix.length === 0) {
+    return (
+      <Section title="Rent Comps · per unit">
+        <div className="py-1 text-sm text-slate-500 leading-relaxed">
+          Set the bedrooms for each unit in Step 2 to estimate rent from nearby apartment rentals.
+          {!shareMode && apartmentsUrl && (
+            <> Then save comps from the <a href={apartmentsUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">apartment rentals search</a> with the bookmarklet.</>
+          )}
+        </div>
+      </Section>
+    )
+  }
+  // One group per distinct unit size, e.g. 2-bed ×2, 1-bed ×1
+  const sizes = [...new Set(mix)].sort((a, b) => b - a)
+  const hasAny = rentalListings.some((r) => UNIT_COMP_TYPES.includes(r.propertyType) &&
+    distanceMiles(listing.lat, listing.lng, r.lat, r.lng) <= 3 && isFreshComp(r.fetchedAt))
+  return (
+    <Section title={`Rent Comps · per unit`}>
+      <div className="py-1 space-y-5">
+        <p className="text-xs text-slate-400 leading-relaxed">
+          Apartment and condo rentals seen on Redfin in the last {MAX_COMP_AGE_DAYS} days, matched to each unit&apos;s bedrooms (±1, adjusted ${BED_ADJ} per bedroom).
+          The building&apos;s rent is the sum of the units.
+          {!shareMode && ' Exclude any that aren’t a fair match.'}
+        </p>
+        {!hasAny && (
+          <div className="text-xs text-amber-600">
+            No apartment rentals saved near this building yet.
+            {!shareMode && apartmentsUrl && <> Open the <a href={apartmentsUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">apartment rentals search</a> and click the bookmarklet.</>}
+          </div>
+        )}
+        {hasAny && sizes.map((beds) => (
+          <CompList
+            key={beds}
+            listing={listing}
+            shareMode={shareMode}
+            beds={beds}
+            types={UNIT_COMP_TYPES}
+            heading={`${beds === 0 ? 'Studio' : `${beds}-bed`} unit${mix.filter((b) => b === beds).length > 1 ? `s ×${mix.filter((b) => b === beds).length}` : ''}`}
+          />
+        ))}
+        {hasAny && listing.rentSource !== 'comps' && (
+          <div className="text-xs text-amber-600 border-t border-slate-200 pt-3">
+            {listing.rentSource === 'manual'
+              ? 'Rent is set manually — comps are for reference. Reset the rent in Step 2 to use them.'
+              : `Every unit size needs ${MIN_COMPS} usable comps before the estimate switches from HUD.`}
+          </div>
+        )}
+      </div>
+    </Section>
+  )
+}
+
+function CompList({ listing, shareMode, beds, types, sizeAdjust = false, standalone = false, heading }: {
+  listing: SaleListing; shareMode: boolean; beds: number; types: string[]
+  sizeAdjust?: boolean     // single homes: adjust for size too (unit sizes are rarely known)
+  standalone?: boolean     // render as its own card (single homes) vs a group inside the per-unit card
+  heading?: string
+}) {
   const rentalListings = useAppStore((s) => s.rentalListings)
   const toggleExcludedComp = useAppStore((s) => s.toggleExcludedComp)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [showNotUsed, setShowNotUsed] = useState(false)   // 'Nearby, not used' starts collapsed
   const excluded = new Set(listing.excludedCompIds ?? [])
 
-  // Exactly the pool the estimate draws from: same beds + type, fresh, within 3 mi
+  // Exactly the pool the estimate draws from: beds ±1, matching type, fresh, within 3 mi
   const pool = rentalListings
     .map((r) => ({
       ...r,
       dist: distanceMiles(listing.lat, listing.lng, r.lat, r.lng),
-      adjusted: compAdjustedRent(r, listing),
+      adjusted: sizeAdjust ? compAdjustedRent(r, listing) : r.monthlyRent + (beds - r.beds) * BED_ADJ,
     }))
-    .filter((r) => r.dist <= 3 && Math.abs(r.beds - listing.beds) <= MAX_BED_DIFF && r.propertyType === listing.propertyType && isFreshComp(r.fetchedAt))
+    .filter((r) => r.dist <= 3 && Math.abs(r.beds - beds) <= MAX_BED_DIFF && types.includes(r.propertyType) && isFreshComp(r.fetchedAt))
     .sort((a, b) => a.dist - b.dist)
-  if (pool.length === 0) return null
+  if (pool.length === 0) {
+    return standalone ? null : (
+      <div>
+        <div className="text-sm font-semibold text-slate-800">{heading}</div>
+        <div className="text-xs text-amber-600 mt-0.5">No {beds === 0 ? 'studio' : `${beds}-bed`} (±1) apartment rentals within 3 mi yet.</div>
+      </div>
+    )
+  }
 
   // Mirror lib/rent-comps: 1.5 mi first, widened to 3 mi when fewer than MIN_COMPS remain
   const near = pool.filter((r) => r.dist <= 1.5 && !excluded.has(r.id)).length
   const radius = near >= MIN_COMPS ? 1.5 : 3
-  const usedCount = pool.filter((r) => r.dist <= radius && !excluded.has(r.id)).length
+  const used = pool.filter((r) => r.dist <= radius && !excluded.has(r.id))
+  const notUsed = pool.filter((r) => !(r.dist <= radius && !excluded.has(r.id)))
+  const usedCount = used.length
+  const rents = used.map((r) => r.adjusted).sort((a, b) => a - b)
+  const pct = (p: number) => { const i = (rents.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return Math.round(rents[lo] + (rents[hi] - rents[lo]) * (i - lo)) }
+
+  const renderRow = (r: (typeof pool)[number]) => {
+    const isExcluded = excluded.has(r.id)
+    return (
+      <div key={r.id} className="flex items-center justify-between gap-3 py-2">
+        <div className="min-w-0">
+          {rentalRedfinUrl(r) ? (
+            <a
+              href={rentalRedfinUrl(r)!}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline truncate flex items-center gap-1"
+            >
+              <span className={cn('truncate', isExcluded && 'line-through')}>{r.address}</span>
+              <ExternalLink size={11} className="shrink-0" />
+            </a>
+          ) : (
+            <div className={cn('text-sm text-slate-700 truncate', isExcluded && 'line-through')}>{r.address}</div>
+          )}
+          <div className="text-xs text-slate-400 mt-0.5">
+            <span className={cn(r.beds !== beds && 'font-medium text-slate-500')}>{r.beds === 0 ? 'Studio' : `${r.beds}bd`}</span> · {r.baths}ba{r.sqft ? ` · ${r.sqft.toLocaleString()} sqft` : ''}
+            <span className="mx-1">·</span>{r.dist.toFixed(1)} mi
+            {isExcluded && <span className="mx-1">· excluded</span>}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="text-right">
+            <div className="text-sm font-semibold text-slate-800 tabular-nums">{fmtRent(r.adjusted)}</div>
+            {r.adjusted !== r.monthlyRent && (
+              <div className="text-[10px] text-slate-400 tabular-nums">listed {fmtRent(r.monthlyRent)}</div>
+            )}
+          </div>
+          {!shareMode && (
+            <button
+              onClick={async () => { setBusyId(r.id); await toggleExcludedComp(listing.id, r.id); setBusyId(null) }}
+              disabled={busyId === r.id}
+              className={cn('text-xs px-1.5 py-0.5 rounded-md border transition-colors disabled:opacity-40',
+                isExcluded ? 'border-blue-200 text-blue-600 hover:bg-blue-50' : 'border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200')}
+              title={isExcluded ? 'Use this comp again' : 'Exclude this comp from the estimate'}
+            >
+              {isExcluded ? 'Undo' : '×'}
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  const lists = (
+    <>
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 mb-0.5">Used in estimate ({used.length})</div>
+      <div className="divide-y divide-slate-100">{used.map(renderRow)}</div>
+      {notUsed.length > 0 && (
+        <>
+          {/* span, not button — still clickable inside the read-only (disabled) fieldset */}
+          <span
+            role="button"
+            tabIndex={0}
+            aria-expanded={showNotUsed}
+            onClick={() => setShowNotUsed((v) => !v)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowNotUsed((v) => !v) } }}
+            className="flex items-center gap-1 cursor-pointer select-none text-[10px] font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600 mt-4 mb-0.5"
+          >
+            <ChevronRight size={12} className={cn('transition-transform', showNotUsed && 'rotate-90')} />
+            Nearby, not used — beyond {radius} mi{excluded.size > 0 ? ' or excluded' : ''} ({notUsed.length})
+          </span>
+          {showNotUsed && <div className="divide-y divide-slate-100">{notUsed.map(renderRow)}</div>}
+        </>
+      )}
+    </>
+  )
+
+  if (!standalone) {
+    return (
+      <div>
+        <div className="flex items-baseline justify-between gap-3 mb-1">
+          <div className="text-sm font-semibold text-slate-800">{heading}</div>
+          {usedCount >= MIN_COMPS ? (
+            <div className="text-xs tabular-nums text-slate-500">
+              Low <span className="font-semibold text-slate-700">{fmtRent(pct(0.25))}</span> · Median <span className="font-semibold text-slate-700">{fmtRent(pct(0.5))}</span>
+            </div>
+          ) : (
+            <div className="text-xs text-amber-600">{usedCount} of {MIN_COMPS} comps</div>
+          )}
+        </div>
+        <div className="text-[11px] text-slate-400 mb-2">within {radius} mi{radius === 3 ? ' (widened — fewer than 3 within 1.5 mi)' : ''}</div>
+        {lists}
+      </div>
+    )
+  }
 
   return (
     <Section title={`Rent Comps · ${usedCount} used`}>
@@ -2155,79 +2373,7 @@ function RentCompsSection({ listing, shareMode = false }: { listing: SaleListing
           {!shareMode && ' Exclude any that aren’t a fair match.'}
         </p>
 
-        {(() => {
-          const renderRow = (r: (typeof pool)[number]) => {
-            const isExcluded = excluded.has(r.id)
-            return (
-              <div key={r.id} className="flex items-center justify-between gap-3 py-2">
-                <div className="min-w-0">
-                  {rentalRedfinUrl(r) ? (
-                    <a
-                      href={rentalRedfinUrl(r)!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline truncate flex items-center gap-1"
-                    >
-                      <span className={cn('truncate', isExcluded && 'line-through')}>{r.address}</span>
-                      <ExternalLink size={11} className="shrink-0" />
-                    </a>
-                  ) : (
-                    <div className={cn('text-sm text-slate-700 truncate', isExcluded && 'line-through')}>{r.address}</div>
-                  )}
-                  <div className="text-xs text-slate-400 mt-0.5">
-                    <span className={cn(r.beds !== listing.beds && 'font-medium text-slate-500')}>{r.beds}bd</span> · {r.baths}ba{r.sqft ? ` · ${r.sqft.toLocaleString()} sqft` : ''}
-                    <span className="mx-1">·</span>{r.dist.toFixed(1)} mi
-                    {isExcluded && <span className="mx-1">· excluded</span>}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-slate-800 tabular-nums">{fmtRent(r.adjusted)}</div>
-                    {r.adjusted !== r.monthlyRent && (
-                      <div className="text-[10px] text-slate-400 tabular-nums">listed {fmtRent(r.monthlyRent)}</div>
-                    )}
-                  </div>
-                  {!shareMode && (
-                    <button
-                      onClick={async () => { setBusyId(r.id); await toggleExcludedComp(listing.id, r.id); setBusyId(null) }}
-                      disabled={busyId === r.id}
-                      className={cn('text-xs px-1.5 py-0.5 rounded-md border transition-colors disabled:opacity-40',
-                        isExcluded ? 'border-blue-200 text-blue-600 hover:bg-blue-50' : 'border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200')}
-                      title={isExcluded ? 'Use this comp again' : 'Exclude this comp from the estimate'}
-                    >
-                      {isExcluded ? 'Undo' : '×'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )
-          }
-          const used = pool.filter((r) => r.dist <= radius && !excluded.has(r.id))
-          const notUsed = pool.filter((r) => !(r.dist <= radius && !excluded.has(r.id)))
-          return (
-            <>
-              <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 mb-0.5">Used in estimate ({used.length})</div>
-              <div className="divide-y divide-slate-100">{used.map(renderRow)}</div>
-              {notUsed.length > 0 && (
-                <>
-                  {/* span, not button — still clickable inside the read-only (disabled) fieldset */}
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={showNotUsed}
-                    onClick={() => setShowNotUsed((v) => !v)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowNotUsed((v) => !v) } }}
-                    className="flex items-center gap-1 cursor-pointer select-none text-[10px] font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600 mt-4 mb-0.5"
-                  >
-                    <ChevronRight size={12} className={cn('transition-transform', showNotUsed && 'rotate-90')} />
-                    Nearby, not used — beyond {radius} mi{excluded.size > 0 ? ' or excluded' : ''} ({notUsed.length})
-                  </span>
-                  {showNotUsed && <div className="divide-y divide-slate-100">{notUsed.map(renderRow)}</div>}
-                </>
-              )}
-            </>
-          )
-        })()}
+        {lists}
 
         <div className="mt-3 pt-3 border-t border-slate-200 space-y-1.5 text-sm">
           {listing.rentSource === 'comps' ? (

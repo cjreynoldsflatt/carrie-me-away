@@ -46,6 +46,7 @@ export interface SaleListing {
   autoRent?: number                        // automated estimate a manual override resets to
   excludedCompIds?: string[]               // rental comps ruled out for this property
   isFavorite?: boolean                     // starred by the owner
+  unitBeds?: number[]                      // multi-family unit mix: bedrooms per unit (0 = studio)
   marketStatus?: string                    // Redfin status badge: 'Active', 'Coming soon · Oct 15', 'Pending', 'Sold', 'Off market'
   // Realistic scenario (typical costs + comp-median rent) — set by computedSaleListings
   realisticRent?: number
@@ -104,7 +105,7 @@ export interface RentalListing {
   sqft: number
   daysOnMarket: number
   community?: string
-  propertyType: PropertyType
+  propertyType: PropertyType | 'Apartment'   // apartments are comps for multi-family units
   fetchedAt?: string   // last time the rental was seen on Redfin
 }
 
