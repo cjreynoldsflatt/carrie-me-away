@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { MapPin, Trash2, Activity, X, ChevronDown, Star, AlertTriangle } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
+import PullToRefresh from './PullToRefresh'
 import PropertyCard from './PropertyCard'
 import AssumptionsPopover from './AssumptionsPopover'
 import FilterPopover from './FilterPopover'
@@ -51,6 +52,7 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
   const rawSale = useAppStore((s) => s.saleListings)
   const assumptions = useAppStore((s) => s.assumptions)
   const sortBy = useAppStore((s) => s.sortBy)
+  const refreshData = useAppStore((s) => s.refresh)
   const setSortBy = useAppStore((s) => s.setSortBy)
 
   const gradeFilter = useAppStore((s) => s.gradeFilter)
@@ -400,7 +402,7 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
       </div>
 
       {/* List */}
-      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+      <PullToRefresh onRefresh={refreshData} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         {/* Mini map strip — inside scroll so it scrolls away */}
         {onOpenMap && <MiniMapStrip listings={listings} onOpenMap={onOpenMap} />}
 
@@ -431,7 +433,7 @@ export default function PropertyList({ onOpenMap, readOnly = false }: { onOpenMa
             ))
           )}
         </div>
-      </div>
+      </PullToRefresh>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import { regulatedAreasAt } from '@/lib/regulated-areas'
 import { GRADE_HEX, scoreToGrade } from '@/lib/grades'
 import FavoriteButton from './FavoriteButton'
 import ExpenseDonut from './ExpenseDonut'
+import PullToRefresh from './PullToRefresh'
 import ListingLinks, { linkClass } from './ListingLinks'
 import { dataGaps, redfinRentalsUrl } from '@/lib/data-gaps'
 import { computeMetrics, computeConservativeRent, realisticRent, realisticAssumptions, REALISTIC, equityScenarios, tenYearRentalIncome, distanceMiles, LLC_ANNUAL_COST, OPERATING_RESERVE } from '@/lib/investment'
@@ -320,6 +321,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
   const savePropertyTypeToDb = useAppStore((s) => s.savePropertyTypeToDb)
   const saveUnitsToDb = useAppStore((s) => s.saveUnitsToDb)
   const saveUnitBedsToDb = useAppStore((s) => s.saveUnitBedsToDb)
+  const refreshData = useAppStore((s) => s.refresh)
   const rentalListings = useAppStore((s) => s.rentalListings)
   const saveLocationToDb = useAppStore((s) => s.saveLocationToDb)
   const listing = saleListings.find((l) => l.id === selectedId)
@@ -556,7 +558,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
       )}
 
       {/* Scrollable content */}
-      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+      <PullToRefresh onRefresh={refreshData} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         {/* Shared / Realtor views are view-only: a disabled fieldset turns every input and button
             inside into read-only (links still work; card link icons are spans, not buttons) */}
         <fieldset disabled={shareMode} className="contents">
@@ -2166,7 +2168,7 @@ export default function PropertyDetail({ onBack, shareMode = false, takeScrollTa
           <div className="h-4" />
         </div>
         </fieldset>
-      </div>
+      </PullToRefresh>
     </div>
   )
 }

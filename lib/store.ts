@@ -98,6 +98,9 @@ interface AppState {
   initialize: () => Promise<void>
   // Realtor Version: load everything from the read-only public endpoint (no login)
   initializeReadOnly: (key: string) => Promise<void>
+  // Re-fetch listings and comps in place (pull to refresh) — no loading screen
+  refresh: () => Promise<void>
+  readOnlyKey: string | null
   deleteListing: (id: string) => Promise<void>
   deleteListings: (ids: string[]) => Promise<void>
 
@@ -339,8 +342,19 @@ export const useAppStore = create<AppState>()(
 
       isLoading: false,
 
+      readOnlyKey: null,
+      refresh: async () => {
+        const key = get().readOnlyKey
+        try {
+          const data = await fetch(key ? `/api/realtor/${key}` : '/api/listings').then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+          set({ saleListings: data.saleListings ?? [], rentalListings: data.rentalListings ?? [] })
+        } catch (err) {
+          console.error('[store] refresh failed:', err)
+        }
+      },
+
       initializeReadOnly: async (key) => {
-        set({ isLoading: true, ignoreSearchFilters: true })
+        set({ isLoading: true, ignoreSearchFilters: true, readOnlyKey: key })
         try {
           const data = await fetch(`/api/realtor/${key}`).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
           set({
